@@ -142,13 +142,13 @@
 (define (fn-total-time/list ll)
   (cond
     [(empty? ll) ...]
-    [else (... (... (find-association "Total-time" (first ll) 0))
+    [else (... (... (find-association "Total Time" (first ll) 0))
              (fn-total-time/list (rest ll)))]))
 
 (define (total-time/list ll)
   (cond
     [(empty? ll) 0]
-    [else (+ (second (find-association "Total-time" (first ll) (list 0 0)))
+    [else (+ (second (find-association "Total Time" (first ll) (list 0 0)))
              (total-time/list (rest ll)))]))
 
 
