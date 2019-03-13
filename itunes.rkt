@@ -103,7 +103,7 @@
 ; LLists -> Number
 ; consumes an LLists ll and outputs the total play time
 
-(check-expect (total-time/list (list '())) 0)
+(check-expect (total-time/list '()) 0)
 
 (check-expect (total-time/list
                                (list (list
@@ -139,7 +139,7 @@
   '("Location"
     "http://traffic.libsyn.com/thewebplatform/WPP_185_Houdini_mixdown.mp3?dest-id=209800")))) 6612000)
 
-(define (fn-total-time/list)
+(define (fn-total-time/list ll)
   (cond
     [(empty? ll) ...]
     [else (... (... (find-association "Total-time" (first ll) 0))
@@ -148,8 +148,8 @@
 (define (total-time/list ll)
   (cond
     [(empty? ll) 0]
-    [else (+ (second (find-association "Total-time" (first ll) 0)
-                     (total-time/list (rest ll))))]))
+    [else (+ (second (find-association "Total-time" (first ll) (list 0 0)))
+             (total-time/list (rest ll)))]))
 
 
 (test)
