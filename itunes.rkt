@@ -164,7 +164,7 @@
 ; consumes a List-of-lists ll, checks lists of associations for Boolean
 ; attributes, and creates a unique set of strings of the keys of those
 ; Booleans
-(define (boolean-attributes ll) '())
+;(define (boolean-attributes ll) '())
 
 (check-expect (boolean-attributes '()) '())
 
@@ -203,22 +203,65 @@
                         "http://traffic.libsyn.com/thewebplatform/WPP_185_Houdini_mixdown.mp3?dest-id=209800"))))
               (list "Clean" "Podcast" "Unplayed"))
 
-(define (fn-booelan-attributes ll)
+(define (fn-boolean-attributes ll)
   (cond
     [(empty? ll) ...]
     [else (... (... (first ll))
                (... (fn-boolean-attributes (rest ll))))]))
 
+(define (boolean-attributes ll)
+  (cond
+    [(empty? ll) '()]
+    [else (create-set (cons (extract-boolean-key (first ll))
+                            (boolean-attributes (rest ll))))]))
+
 ; List-of-Asscociations -> String
 ; consumes a list of associations loa and outputs a string
 ; containing the key for associations with boolean values
-(define (exctract-boolean-key loa) "")
+
+(check-expect (extract-boolean-key
+              (list
+                      '("Track ID" 22753)
+                      '("Name" "185: Houdini")
+                      '("Album" "The Web Platform Podcast")
+                      '("Genre" "Balado")
+                      '("Size" 79947095)
+                      '("Total Time" 3311000)
+                      (list "Date Added" (create-date 2019 3 2 8 11 58))
+                      (list "Release Date" (create-date 2019 2 28 18 2 35))
+                      '("Persistent ID" "2F6EB0D6CD085154")
+                      '("Clean" #true)
+                      '("Track Type" "URL")
+                      '("Podcast" #true)
+                      '("Unplayed" #true)
+                      '("Location"
+                        "http://traffic.libsyn.com/thewebplatform/WPP_185_Houdini_mixdown.mp3?dest-id=209800")))
+              (list "Unplayed" "Podcast" "Clean"))
+
+(define (extract-boolean-key loa)
+  (cond
+    [(empty? loa) '()]
+    [else (if (boolean? (rest (first loa)))
+              (cons (first (first loa))
+                    (extract-boolean-key (rest loa)))
+              (extract-boolean-key (rest loa)))]))
 
 ; List-of-Strings -> List-of-Strings
 ; consumes a list of strings los and outputs a unique set of strings
-(define (create-set los) '())
 
+(check-expect (create-set '())
+              '())
 
+(check-expect (create-set (list "fizz" "buzz" "foo" "bar" "fizz"))
+              (list "buzz" "foo" "bar" "fizz"))
+
+(define (create-set los)
+  (cond
+    [(empty? los) '()]
+    [else (if (member? (first los) los)
+              (create-set (rest los))
+              (cons (first los)
+                    (create-set (rest los))))]))
 
 (test)
 
