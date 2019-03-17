@@ -83,14 +83,69 @@
 
 (check-expect (words->strings '()) '())
 
-;(check-expect (words->strings))
+(check-expect (words->strings
+               (list
+                (list "p" "i" "e")
+                (list "l" "o" "v" "e")))
+              (list "pie" "love"))
 
-(define (words->strings low) '())
+(define (fn-words->strings low)
+  (cond
+    [(empty? low) ...]
+    [else (... (... (first low))
+               (fn-words->strings (rest low)))]))
+
+(define (words->strings low)
+  (cond
+    [(empty? low) '()]
+    [else (cons (implode (first low))
+                  (words->strings (rest low)))]))
  
 ; List-of-strings -> List-of-strings
-; picks out all those Strings that occur in the dictionary 
-(define (in-dictionary los) '())
+; picks out all those Strings that occur in the dictionary
 
+(check-expect (in-dictionary '()) '())
 
+(check-expect (in-dictionary
+               (list "I" "love" "pklashdf"))
+              (list "I" "love"))
+
+(define (fn-in-dictionary los)
+  (cond
+    [(empty? los) ...]
+    [else (if (... (first los))
+              (... (first los)
+                   (fn-in-dictionary (rest los)))
+              (fn-in-dictionary (rest los)))]))
+
+(define (in-dictionary los)
+  (cond
+    [(empty? los) '()]
+    [else (if (match? (first los) dictionary)
+              (cons (first los)
+                    (in-dictionary (rest los)))
+              (in-dictionary (rest los)))]))
+
+; String Dictionary -> Boolean
+; consumes a string s and a dictionary d and outputs
+; true if the string exists in the dictionary
+
+(check-expect (match? "" (list "pew" "die" "pie")) #false)
+
+(check-expect (match? "pew" (list "pew" "die" "pie")) #true)
+
+(define (fn-match? s d)
+  (cond
+    [(empty? d) ...]
+    [else (if (... (... s (first d)))
+              #true
+              (fn-match? s (rest d)))]))
+
+(define (match? s d)
+  (cond
+    [(empty? d) #false]
+    [else (if (string=? s (first d))
+              #true
+              (match? s (rest d)))]))
 
 (test)
