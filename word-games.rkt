@@ -1,4 +1,4 @@
-#lang htdp/bsl+
+#lang htdp/bsl
 
 ; A Dictionary is a List-of-strings.
 (define dictionary (read-lines "words"))
@@ -12,14 +12,88 @@
 ; – (cons 1String Word)
 ; interpretation a Word is a list of 1Strings (letters)
 
-; A List-of-words is one of:
+(define WORD1 '())
+(define WORD2 (list "p" "e" "w"))
+(define WORD3 (list "d" "i" "e"))
+
+; A List-of-Words is one of:
 ; - '()
 ; - (cons Word List-of-words)
+; interpretation a List-of-Words is a list of a list of 1Strings
+; or the empty list
+
+(define LOW1 '())
+(define LOW2 (list
+              (list "p" "e" "w")
+              (list "d" "i" "e")
+              (list "p" "i" "e")))
+(define LOW3 (list
+              (list "f" "r" "e" "d")
+              (list "h" "a" "r" "r" "y")
+              (list "j" "u" "l" "i" "a")))
  
 ; Word -> List-of-words
 ; finds all rearrangements of word
-(define (arrangements word)
-  (list word))
+
+(check-expect (arrangements '()) (list '()))
+
+(check-expect (arrangements (list "e" "d"))
+              (cons (list "e" "d")
+                    (cons  (list "d" "e")
+                           '())))
+
+; Word -> List-of-words
+; creates all rearrangements of the letters in w
+(define (fn-arrangements w)
+  (cond
+    [(empty? w) ...]
+    [else (... (first w) ...
+           ... (fn-arrangements (rest w)) ...)]))
+
+(define (arrangements w)
+  (cond
+    [(empty? w) (list '())]
+    [else (insert-everywhere/in-all-words (first w)
+                                          (arrangements (rest w)))]))
+
+; 1String List-of-Words -> List-of-Words
+; conusmes a 1String s and inserts it at the beginning, end,
+; and in-between all letters of one arrangement of list of words 
+
+(check-expect (insert-everywhere/in-all-words "d" '())
+              (cons (list "d") '()))
+
+(check-expect
+ (insert-everywhere/in-all-words "d"
+                                 (cons  (list "p") '()))
+ (cons (list "d" "p")
+       (cons (list "p" "d")
+             '())))
+
+(check-expect
+ (insert-everywhere/in-all-words "d"
+                                 (cons (list "p")
+                                       (cons (list "i")
+                                             '())))
+ (cons (list "d" "p" "i")
+       (cons (list "d" "i" "p")
+             (cons (list "p" "d" "i")
+                   (cons (list "p" "i" "d")
+                         (cons (list "i" "p" "d")
+                               (cons (list "i" "d" "p")
+                                     '())))))))
+
+(define (fn-insert-everywhere/in-all-words s w)
+  (cond
+    [(empty? w) ...]
+    [else (... (... s (first w))
+               (fn-insert-everywhere/in-all-words s (rest w)))]))
+
+(define (insert-everywhere/in-all-words s w)
+  (cond
+    [(empty? w) (list '())]
+    [else (cons (append (list s) (first w))
+                (insert-everywhere/in-all-words s (rest w)))]))
 
 ; String -> Word
 ; converts s to the chosen word representation 
