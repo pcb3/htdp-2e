@@ -1,0 +1,113 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname snake) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; A simulation showing the effects of exponential growth on the length
+; of a snake
+
+(require 2htdp/universe)
+(require 2htdp/image)
+
+; Physical constants
+
+(define RADIUS 5)
+(define SEGMENT-WIDTH (* RADIUS 2))
+(define W (* 40 SEGMENT-WIDTH))
+(define H (* 40 SEGMENT-WIDTH))
+
+; Graphical constants
+
+(define SEGMENT (circle SEGMENT-WIDTH "solid" "red"))
+(define MT (empty-scene W H))
+
+(define-struct snake [position length])
+; A Snake is a structure:
+; (make-snake Posn Number)
+; Interpretation: a snake s represents the positon of the snake on the screen
+; in number of segments from the top and left border, and
+; the length of the snake is measured in segments.
+
+(define SNAKE1 (make-snake (make-posn 40 40) 1))
+(define SNAKE2 (make-snake (make-posn 10 10) 10))
+(define SNAKE3 (make-snake (make-posn 30 60) 2))
+
+; WorldState -> Image
+; renders the next image from the current world state
+
+(check-expect (render (make-snake (make-posn 0 0) 1))
+              (place-image SEGMENT 0 0 MT))
+
+(check-expect (render (make-snake (make-posn 10 10) 1))
+              (place-image SEGMENT 10 10 MT))
+
+(define (render s)
+  (place-image SEGMENT
+               (posn-x (snake-position s))
+               (posn-y (snake-position s))
+               MT))
+
+; Snake KeyEvent -> Snake
+; listens for a key press and updates the snakes positon based on the key
+
+(check-expect (control (make-snake (make-posn 0 0) 1) "right")
+              (make-snake (make-posn 10 0) 1))
+
+(check-expect (control (make-snake (make-posn 100 100) 1) "left")
+              (make-snake (make-posn 90 100) 1))
+
+(check-expect (control (make-snake (make-posn 50 50) 1) "up")
+              (make-snake (make-posn 50 40) 1))
+
+(check-expect (control (make-snake (make-posn 80 80) 1) "down")
+              (make-snake (make-posn 80 90) 1))
+
+(check-expect (control (make-snake (make-posn 0 0) 1) "x")
+              (make-snake (make-posn 0 0) 1))
+
+(define (control s key)
+  (cond
+    [(string=? "left" key)
+     (make-snake (make-posn (- (posn-x (snake-position s)) SEGMENT-WIDTH)
+                            (posn-y (snake-position s)))
+                 (snake-length s))]
+    [(string=? "right" key)
+     (make-snake (make-posn (+ SEGMENT-WIDTH (posn-x (snake-position s)))
+                            (posn-y (snake-position s)))
+                 (snake-length s))]
+    [(string=? "up" key)
+     (make-snake (make-posn (posn-x (snake-position s))
+                            (- (posn-y (snake-position s)) SEGMENT-WIDTH))
+                 (snake-length s))]
+    [(string=? "down" key)
+     (make-snake (make-posn (posn-x (snake-position s))
+                            (+ SEGMENT-WIDTH (posn-y (snake-position s))))
+                 (snake-length s))]
+    [else s]))                 
+
+; Snake -> Snake
+; with each new state the snake moves one segment-width
+
+(check-expect (tock (make-snake (make-posn 10 10) 1))
+              (make-snake (make-posn 20 20) 1))
+
+(define (tock s)
+  (make-snake (make-posn (+ SEGMENT-WIDTH (posn-x (snake-position s)))
+                         (+ SEGMENT-WIDTH (posn-y (snake-position s))))
+              (snake-length s)))
+
+; Snake -> Snake
+; launches the program from some initial state ws
+
+(define (snake-main rate)
+   (big-bang (make-snake (make-posn 40 40) 1)
+     [on-tick tock rate]
+     [to-draw render]
+     [on-key control]))
+
+; --usage
+;(snake-main 1)
+
+
+
+
+
+
