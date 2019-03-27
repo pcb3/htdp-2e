@@ -1,0 +1,67 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname snake) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; A simulation showing the effects of exponential growth on the length
+; of a snake
+
+(require 2htdp/universe)
+(require 2htdp/image)
+
+; Physical constants
+
+(define RADIUS 5)
+(define SEGMENT-WIDTH (* RADIUS 2))
+(define DELTA SEG-W)
+(define W (* 40 SEGMENT-WIDTH))
+(define H (* 40 SEGMENT-WIDTH))
+(define MT (empty-scene W H))
+
+; Graphical constants
+
+(define SEGMENT (circle SEGMENT-WIDTH "solid" "red"))
+
+(define-struct snake [position length])
+; A Snake is a structure:
+; (make-snake Posn Number)
+; Interpretation: a snake represents the positon of the snake on the screen
+; in number of segments from the top and left border, and
+; the length of the snake is measured in segments.
+
+(define SNAKE1 (make-snake (make-posn 40 40) 1))
+(define SNAKE2 (make-snake (make-posn 10 10) 10))
+(define SNAKE3 (make-snake (make-posn 30 60) 2))
+
+; WorldState: data that represents the state of the world (cw)
+ 
+; WorldState -> Image
+; when needed, big-bang obtains the image of the current 
+; state of the world by evaluating (render cw) 
+(define (render ws) ...)
+ 
+; WorldState -> WorldState
+; for each tick of the clock, big-bang obtains the next 
+; state of the world from (clock-tick-handler cw) 
+(define (clock-tick-handler cw) ...)
+ 
+; WorldState String -> WorldState 
+; for each keystroke, big-bang obtains the next state 
+; from (keystroke-handler cw ke); ke represents the key
+(define (keystroke-handler cw ke) ...)
+
+; WorldState -> WorldState
+; launches the program from some initial state ws
+
+(define (worm-main rate)
+   (big-bang (make-snake (make-posn 40 40) 1)
+     [on-tick tock rate]
+     [to-draw render]
+     [on-key control]))
+
+; --usage
+;(worm-main 1)
+
+
+
+
+
+

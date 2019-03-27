@@ -31,14 +31,17 @@
 (define SNAKE2 (make-snake (make-posn 10 10) 10))
 (define SNAKE3 (make-snake (make-posn 30 60) 2))
 
-(define-struct tail [position])
+(define-struct tail [position direction])
 ; A Tail is a structure:
-; (make-tail Posn)
-; Interpretation: A (make-tail p) is a connected segment of the snake
+; (make-tail Posn String)
+; Interpretation: A (make-tail p s) is a connected segment of the snake
 ; including the head. p is a Posn with an x and y coordinate.
+; s is String that indictates the direction of the segment; "up",
+; "down", "left", "right", and "".
 
-(define TAIL1 (make-posn 0 0))
-(define TAIL2 (make-posn 10 100))
+(define TAIL1 (make-tail (make-posn 0 0) ""))
+(define TAIL2 (make-tail (make-posn 10 100) "up"))
+(define TAIL3 (make-tail (make-posn 200 200) "right"))
 
 ; A LoCS (list of connected segments) is one of:
 ; - '()
@@ -48,10 +51,10 @@
 ; A segment is considered connected if only one coordinate
 ; is different than it's predecessor.
 
-(define LOCS1 (cons (make-posn 0 0)
-                    (cons (make-posn 10 0)
-                          (cons (make-posn 10 200)
-                                (cons (make-posn 123 200)
+(define LOCS1 (cons (make-tail (make-posn 0 0) "down")
+                    (cons (make-tail (make-posn 10 0) "right")
+                          (cons (make-tail (make-posn 10 200) "up")
+                                (cons (make-tail (make-posn 123 200) "left")
                                       '())))))
 
 ; WorldState -> Image
