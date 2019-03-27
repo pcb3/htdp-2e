@@ -18,6 +18,7 @@
 
 (define SEGMENT (circle SEGMENT-WIDTH "solid" "red"))
 (define MT (empty-scene W H))
+(define MSG (text "GAME OVER" 20 "black"))
 
 (define-struct snake [position length])
 ; A Snake is a structure:
@@ -94,6 +95,39 @@
                          (+ SEGMENT-WIDTH (posn-y (snake-position s))))
               (snake-length s)))
 
+; Snake -> Boolean
+; consumes a snake s and outputs true if the head of the  snake hits the
+; screen boundary
+
+(check-expect (last-world? (make-snake (make-posn 200 200) 1)) #false)
+
+(check-expect (last-world? (make-snake (make-posn 395 200) 1)) #true)
+
+(check-expect (last-world? (make-snake (make-posn 200 395) 1)) #true)
+
+(check-expect (last-world? (make-snake (make-posn 5 200) 1)) #true)
+
+(check-expect (last-world? (make-snake (make-posn 200 5) 1)) #true)
+
+(define (last-world? s)
+  (cond
+    [(or (<= (posn-x (snake-position s)) RADIUS)
+         (>= (posn-x (snake-position s)) (- W RADIUS))
+         (<= (posn-y (snake-position s)) RADIUS)
+         (>= (posn-y (snake-position s)) (- H RADIUS)))
+     #true]
+    [else
+     #false]))
+
+; Snake -> Image
+; if last-world is true renders the last scene of the world
+
+(define (last-picture s)
+  (place-image MSG
+               (/ W 2)
+               (/ H 2)
+               (render s)))
+
 ; Snake -> Snake
 ; launches the program from some initial state ws
 
@@ -101,7 +135,8 @@
    (big-bang (make-snake (make-posn 40 40) 1)
      [on-tick tock rate]
      [to-draw render]
-     [on-key control]))
+     [on-key control]
+     [stop-when last-world? last-picture]))
 
 ; --usage
 ;(snake-main 1)
