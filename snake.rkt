@@ -51,13 +51,62 @@
 ; A segment is considered connected if only one coordinate
 ; is different than it's predecessor.
 
-(define LOCS1 (cons (make-tail (make-posn 0 0) "down")
-                    (cons (make-tail (make-posn 10 0) "right")
-                          (cons (make-tail (make-posn 10 200) "up")
-                                (cons (make-tail (make-posn 123 200) "left")
+(define LOCS1 '())
+
+(define LOCS2 (cons (make-tail (make-posn 200 200) "")
+                    '()))
+
+(define LOCS3 (cons (make-tail (make-posn 0 0) "down")
+                    (cons (make-tail (make-posn 0 20) "right")
+                          (cons (make-tail (make-posn 20 20) "down")
+                                (cons (make-tail (make-posn  20 40) "")
                                       '())))))
 
-; WorldState -> Image
+; LoCS -> Image
+; consumes a list of connected segments (locs) and draws each segment
+; to the screen.
+
+(check-expect (render-connected '()) MT)
+
+(check-expect (render-connected
+               (cons (make-tail (make-posn 200 200) "")
+                     '()))
+              (place-images
+               (list SEGMENT)
+               (list (make-posn 200 200))
+               MT))
+
+(check-expect (render-connected
+               (cons (make-tail (make-posn 200 200) "down")
+                     (cons (make-tail (make-posn 200 220) "down")
+                           (cons (make-tail (make-posn 200 240) "right")
+                                 (cons (make-tail (make-posn 220 240) "up")
+                                       '())))))
+              (place-images
+               (list SEGMENT SEGMENT SEGMENT SEGMENT)
+               (list (make-posn 200 200)
+                     (make-posn 200 220)
+                     (make-posn 200 240)
+                     (make-posn 220 240))
+               MT))
+
+(define (fn-render-connected locs)
+  (cond
+    [(empty? locs) ...]
+    [else (... SEGMENT
+               (posn-x (tail-position (first locs)))
+               (posn-y (tail-position (first locs)))
+               (fn-render-connected (rest locs)))]))
+               
+(define (render-connected locs)
+  (cond
+    [(empty? locs) MT]
+    [else (place-image SEGMENT
+                       (posn-x (tail-position (first locs)))
+                       (posn-y (tail-position (first locs)))
+                       (render-connected (rest locs)))]))
+
+; Snake -> Image
 ; renders the next image from the current world state
 
 (check-expect (render (make-snake (make-posn 0 0) 1))
