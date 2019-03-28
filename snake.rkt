@@ -62,6 +62,11 @@
                                 (cons (make-tail (make-posn  20 40) "")
                                       '())))))
 
+(define LOCS4 (cons (make-tail (make-posn 200 200) "")
+                    (cons (make-tail (make-posn 220 200) "")
+                          (cons (make-tail (make-posn 220 220) "")
+                                '()))))
+
 ; LoCS -> Image
 ; consumes a list of connected segments (locs) and draws each segment
 ; to the screen.
@@ -275,6 +280,8 @@
 
 (define (tock-connected locs)
   (cond
+    [(string=? "" (tail-direction (first (reverse locs))))
+     locs]
     [(empty? (rest locs))
      (create-head (first locs))]
     [else (cons (first (rest locs))
@@ -383,6 +390,22 @@
     [else
      #false]))
 
+; LoCS -> Image
+; if last-world-connected? returns true the last world is displayed
+
+(check-expect (last-picture-connected
+               (cons (make-tail (make-posn 200 200) "right") '()))
+              (place-image MSG (/ W 2) (/ H 2)
+                           (render-connected
+                            (cons (make-tail (make-posn 200 200) "right") '()))))
+                           
+(define (fn-last-picture-connected locs)
+  (place-image ... ... ... ...))
+
+(define (last-picture-connected locs)
+  (place-image MSG (/ W 2) (/ H 2)
+               (render-connected locs)))
+
 ; Snake -> Image
 ; if last-world is true renders the last scene of the world
 
@@ -396,11 +419,11 @@
 ; launches the program from some initial state ws
 
 (define (snake-main rate)
-  (big-bang (make-snake (make-posn 40 40) 1)
-    [on-tick tock rate]
-    [to-draw render]
-    [on-key control]
-    [stop-when last-world? last-picture]))
+  (big-bang LOCS4
+    [on-tick tock-connected rate]
+    [to-draw render-connected]
+    [on-key control-connected]
+    [stop-when last-world-connected? last-picture-connected]))
 
 ; --usage
 ;(snake-main 1)
