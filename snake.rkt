@@ -151,19 +151,36 @@
               (cons (make-tail (make-posn 200 200) "left")
                      (cons (make-tail (make-posn 180 200) "right")
                            '())))
-            
-              
+
 (define (fn-control-connected locs key)
   (cond
+    [(empty? locs) ...]
     [(string=? "left" key)
+     (... locs key)]
+    [(string=? "right" key)
+     (... locs key)]
+    [(string=? "up" key)
+     (... locs key)]
+    [(string=? "down" key)
+     (... locs key)]
+    [else locs]))
 
-(define (control-connected locs key) locs)
+(define (control-connected locs key)
+  (cond
+    [(empty? locs) locs]
+    [(string=? "left" key)
+     (recur-replace-head locs key)]
+    [(string=? "right" key)
+     (recur-replace-head locs key)]
+    [(string=? "up" key)
+     (recur-replace-head locs key)]
+    [(string=? "down" key)
+     (recur-replace-head locs key)]
+    [else locs]))
 
 ; LoCS key -> LoCS
 ; recurs to the head of the list of connected segments and replaces it with
 ; a new tail structure with direction equal to key.
-
-(check-expect (recur-replace-head '() "") '())
 
 (check-expect (recur-replace-head
                (cons (make-tail (make-posn 200 200) "right") '()) "down")
@@ -190,7 +207,7 @@
                                  (posn-y (tail-position (first locs))))
                       key) '())]
     [else (cons (first locs)
-                (recur-replace-head (rest locs)))]))
+                (recur-replace-head (rest locs) key))]))
 
 ; Snake KeyEvent -> Snake
 ; listens for a key press and updates the snakes positon based on the key
