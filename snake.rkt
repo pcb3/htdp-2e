@@ -149,8 +149,8 @@
                      (cons (make-tail (make-posn 180 200) "down")
                            '())) "right")
               (cons (make-tail (make-posn 200 200) "left")
-                     (cons (make-tail (make-posn 180 200) "right")
-                           '())))
+                    (cons (make-tail (make-posn 180 200) "right")
+                          '())))
 
 (define (fn-control-connected locs key)
   (cond
@@ -191,8 +191,8 @@
                      (cons (make-tail (make-posn 220 200) "down")
                            '())) "left")
               (cons (make-tail (make-posn 200 200) "right")
-                     (cons (make-tail (make-posn 220 200) "left")
-                           '())))
+                    (cons (make-tail (make-posn 220 200) "left")
+                          '())))
 
 (define (fn-recur-replace-head locs key)
   (cond
@@ -247,6 +247,74 @@
                  (snake-length s))]
     [else s]))                 
 
+; LoCS -> LoCS
+; with each clock tick the list of connected segments is updated depending
+; on the direction field
+
+(check-expect (tock-connected
+               (cons (make-tail (make-posn 200 200) "") '()))
+              (cons (make-tail (make-posn 200 200) "") '()))
+
+(check-expect (tock-connected
+               (cons (make-tail (make-posn 200 200) "right") '()))
+              (cons (make-tail (make-posn 220 200) "right") '()))
+
+(check-expect (tock-connected
+               (cons (make-tail (make-posn 200 200) "right")
+                     (cons (make-tail (make-posn 220 200) "down")
+                           (cons (make-tail (make-posn 220 220) "left") '()))))
+              (cons (make-tail (make-posn 220 200) "down")
+                    (cons (make-tail (make-posn 220 220) "left")
+                          (cons (make-tail (make-posn 200 220) "left") '()))))
+
+(define (fn-tock-connected locs)
+  (cond
+    [(empty? (rest locs)) ...]
+    [else (... (first (rest locs))
+               (fn-tock-connected (rest locs)))]))
+
+(define (tock-connected locs)
+  (cond
+    [(empty? (rest locs))
+     (create-head (first locs))]
+    [else (cons (first (rest locs))
+                (tock-connected (rest locs)))]))
+
+; Tail -> LoCS
+; consumes the tail (head) of the snake. Creates a new list and head
+; displaced by twice the diameter of a segment in the direction of the  
+; field direction.
+
+(check-expect (create-head
+               (make-tail (make-posn 200 200) "right"))
+              (cons (make-tail (make-posn 220 200) "right") '()))
+
+(define (fn-create-head head) head)
+
+(define (create-head head)
+  (cond
+    [(string=? "left" (tail-direction head))
+     (cons
+      (make-tail (make-posn (- (posn-x (tail-position head)) (* SEGMENT-WIDTH 2))
+                            (posn-y (tail-position head)))
+                 (tail-direction head)) '())]
+    [(string=? "right" (tail-direction head))
+     (cons
+      (make-tail (make-posn (+ (* SEGMENT-WIDTH 2) (posn-x (tail-position head)))
+                            (posn-y (tail-position head)))
+                 (tail-direction head)) '())]
+    [(string=? "up" (tail-direction head))
+     (cons
+      (make-tail (make-posn (posn-x (tail-position head))
+                            (- (posn-y (tail-position head)) (* SEGMENT-WIDTH 2)))
+                 (tail-direction head)) '())]
+    [(string=? "down" (tail-direction head))
+     (cons
+      (make-tail (make-posn (posn-x (tail-position head))
+                            (+ (* SEGMENT-WIDTH 2) (posn-y (tail-position head))))
+                 (tail-direction head)) '())]
+    [else (cons head '())]))
+
 ; Snake -> Snake
 ; with each new state the snake moves one segment-width
 
@@ -295,11 +363,11 @@
 ; launches the program from some initial state ws
 
 (define (snake-main rate)
-   (big-bang (make-snake (make-posn 40 40) 1)
-     [on-tick tock rate]
-     [to-draw render]
-     [on-key control]
-     [stop-when last-world? last-picture]))
+  (big-bang (make-snake (make-posn 40 40) 1)
+    [on-tick tock rate]
+    [to-draw render]
+    [on-key control]
+    [stop-when last-world? last-picture]))
 
 ; --usage
 ;(snake-main 1)
