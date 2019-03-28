@@ -326,6 +326,39 @@
                          (+ SEGMENT-WIDTH (posn-y (snake-position s))))
               (snake-length s)))
 
+; LoCS -> Boolean
+; consumes a list of connected segements and outputs true if the head of the
+; snake collides with boundary
+
+(check-expect (last-world-connected?
+               (cons (make-tail (make-posn 20 20) "right") '())) #false)
+
+(check-expect (last-world-connected?
+               (cons (make-tail (make-posn W 200) "right") '())) #true)
+
+(check-expect (last-world-connected?
+               (cons (make-tail (make-posn 200 H) "down") '())) #true)
+
+(define (fn-last-world-connected? locs)
+  (cond
+    [(or (... (posn-x (tail-position (first (... locs)))) ...)
+         (... (posn-x (tail-position (first (... locs)))) ...)
+         (... (posn-y (tail-position (first (... locs)))) ...)
+         (... (posn-y (tail-position (first (... locs)))) ...))
+     ...]
+    [else
+     ...]))
+
+(define (last-world-connected? locs)
+  (cond
+    [(or (< (posn-x (tail-position (first (reverse locs)))) RADIUS)
+         (> (posn-x (tail-position (first (reverse locs)))) (- W RADIUS))
+         (< (posn-y (tail-position (first (reverse locs)))) RADIUS)
+         (> (posn-y (tail-position (first (reverse locs)))) (- H RADIUS)))
+     #true]
+    [else
+     #false]))
+    
 ; Snake -> Boolean
 ; consumes a snake s and outputs true if the head of the  snake hits the
 ; screen boundary
