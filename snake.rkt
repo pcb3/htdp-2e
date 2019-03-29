@@ -65,7 +65,9 @@
 (define LOCS4 (cons (make-tail (make-posn 200 200) "")
                     (cons (make-tail (make-posn 220 200) "")
                           (cons (make-tail (make-posn 220 220) "")
-                                '()))))
+                                (cons (make-tail (make-posn 240 220) "")
+                                      (cons (make-tail (make-posn 260 220) "")
+                                '()))))))
 
 ; LoCS -> Image
 ; consumes a list of connected segments (locs) and draws each segment
@@ -335,7 +337,7 @@
 
 ; LoCS -> Boolean
 ; consumes a list of connected segements and outputs true if the head of the
-; snake collides with boundary
+; snake collides with boundary or itself
 
 (check-expect (last-world-connected?
                (cons (make-tail (make-posn 20 20) "right") '())) #false)
@@ -345,6 +347,11 @@
 
 (check-expect (last-world-connected?
                (cons (make-tail (make-posn 200 H) "down") '())) #true)
+
+(check-expect (last-world-connected?
+               (cons (make-tail (make-posn 200 200) "right")
+                     (cons (make-tail (make-posn 200 200) "left")
+                           '()))) #true)
 
 (define (fn-last-world-connected? locs)
   (cond
@@ -361,11 +368,40 @@
     [(or (< (posn-x (tail-position (first (reverse locs)))) RADIUS)
          (> (posn-x (tail-position (first (reverse locs)))) (- W RADIUS))
          (< (posn-y (tail-position (first (reverse locs)))) RADIUS)
-         (> (posn-y (tail-position (first (reverse locs)))) (- H RADIUS)))
+         (> (posn-y (tail-position (first (reverse locs)))) (- H RADIUS))
+         (head-collide? locs))
      #true]
     [else
      #false]))
-    
+
+; LoCS -> Boolean
+; consumes a list of connected segments and outputs true if the coordinates
+; of the head is equal to the coordinates of another segment.
+
+(check-expect (head-collide? (cons (make-tail (make-posn 200 200) "right")
+                     (cons (make-tail (make-posn 200 200) "left")
+                           '()))) #true)
+
+(check-expect (head-collide? (cons (make-tail (make-posn 200 200) "right")
+                     (cons (make-tail (make-posn 180 180) "right")
+                           '()))) #false)
+
+(define (fn-head-collide? locs)
+  (cond
+    [(empty? (rest locs)) ...]
+    [(equal? (... (first (reverse locs)))
+             (... (first locs)))
+     ...]
+    [else (fn-head-collide? (rest locs))]))
+
+(define (head-collide? locs)
+  (cond
+    [(empty? (rest locs)) #false]
+    [(equal? (tail-position (first (reverse locs)))
+             (tail-position (first locs)))
+     #true]
+    [else (head-collide? (rest locs))]))
+
 ; Snake -> Boolean
 ; consumes a snake s and outputs true if the head of the  snake hits the
 ; screen boundary
