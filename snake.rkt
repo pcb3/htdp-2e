@@ -20,17 +20,6 @@
 (define MT (empty-scene W H))
 (define MSG (text "GAME OVER" 20 "black"))
 
-(define-struct snake [position length])
-; A Snake is a structure:
-; (make-snake Posn Number)
-; Interpretation: a snake s represents the positon of the snake on the screen
-; in number of segments from the top and left border, and
-; the length of the snake is measured in segments.
-
-(define SNAKE1 (make-snake (make-posn 40 40) 1))
-(define SNAKE2 (make-snake (make-posn 10 10) 10))
-(define SNAKE3 (make-snake (make-posn 30 60) 2))
-
 (define-struct tail [position direction])
 ; A Tail is a structure:
 ; (make-tail Posn String)
@@ -112,21 +101,6 @@
                        (posn-x (tail-position (first locs)))
                        (posn-y (tail-position (first locs)))
                        (render-connected (rest locs)))]))
-
-; Snake -> Image
-; renders the next image from the current world state
-
-(check-expect (render (make-snake (make-posn 0 0) 1))
-              (place-image SEGMENT 0 0 MT))
-
-(check-expect (render (make-snake (make-posn 10 10) 1))
-              (place-image SEGMENT 10 10 MT))
-
-(define (render s)
-  (place-image SEGMENT
-               (posn-x (snake-position s))
-               (posn-y (snake-position s))
-               MT))
 
 ; LoCS KeyEvent -> LoCS
 ; listens for a key press and updates the snakes head direction accordingly
@@ -214,45 +188,7 @@
                                  (posn-y (tail-position (first locs))))
                       key) '())]
     [else (cons (first locs)
-                (recur-replace-head (rest locs) key))]))
-
-; Snake KeyEvent -> Snake
-; listens for a key press and updates the snakes positon based on the key
-
-(check-expect (control (make-snake (make-posn 0 0) 1) "right")
-              (make-snake (make-posn 10 0) 1))
-
-(check-expect (control (make-snake (make-posn 100 100) 1) "left")
-              (make-snake (make-posn 90 100) 1))
-
-(check-expect (control (make-snake (make-posn 50 50) 1) "up")
-              (make-snake (make-posn 50 40) 1))
-
-(check-expect (control (make-snake (make-posn 80 80) 1) "down")
-              (make-snake (make-posn 80 90) 1))
-
-(check-expect (control (make-snake (make-posn 0 0) 1) "x")
-              (make-snake (make-posn 0 0) 1))
-
-(define (control s key)
-  (cond
-    [(string=? "left" key)
-     (make-snake (make-posn (- (posn-x (snake-position s)) SEGMENT-WIDTH)
-                            (posn-y (snake-position s)))
-                 (snake-length s))]
-    [(string=? "right" key)
-     (make-snake (make-posn (+ SEGMENT-WIDTH (posn-x (snake-position s)))
-                            (posn-y (snake-position s)))
-                 (snake-length s))]
-    [(string=? "up" key)
-     (make-snake (make-posn (posn-x (snake-position s))
-                            (- (posn-y (snake-position s)) SEGMENT-WIDTH))
-                 (snake-length s))]
-    [(string=? "down" key)
-     (make-snake (make-posn (posn-x (snake-position s))
-                            (+ SEGMENT-WIDTH (posn-y (snake-position s))))
-                 (snake-length s))]
-    [else s]))                 
+                (recur-replace-head (rest locs) key))]))             
 
 ; LoCS -> LoCS
 ; with each clock tick the list of connected segments is updated depending
@@ -324,17 +260,6 @@
                  (tail-direction head)) '())]
     [else (cons head '())]))
 
-; Snake -> Snake
-; with each new state the snake moves one segment-width
-
-(check-expect (tock (make-snake (make-posn 10 10) 1))
-              (make-snake (make-posn 20 20) 1))
-
-(define (tock s)
-  (make-snake (make-posn (+ SEGMENT-WIDTH (posn-x (snake-position s)))
-                         (+ SEGMENT-WIDTH (posn-y (snake-position s))))
-              (snake-length s)))
-
 ; LoCS -> Boolean
 ; consumes a list of connected segements and outputs true if the head of the
 ; snake collides with boundary or itself
@@ -402,30 +327,6 @@
      #true]
     [else (head-collide? (rest locs))]))
 
-; Snake -> Boolean
-; consumes a snake s and outputs true if the head of the  snake hits the
-; screen boundary
-
-(check-expect (last-world? (make-snake (make-posn 200 200) 1)) #false)
-
-(check-expect (last-world? (make-snake (make-posn 395 200) 1)) #true)
-
-(check-expect (last-world? (make-snake (make-posn 200 395) 1)) #true)
-
-(check-expect (last-world? (make-snake (make-posn 5 200) 1)) #true)
-
-(check-expect (last-world? (make-snake (make-posn 200 5) 1)) #true)
-
-(define (last-world? s)
-  (cond
-    [(or (<= (posn-x (snake-position s)) RADIUS)
-         (>= (posn-x (snake-position s)) (- W RADIUS))
-         (<= (posn-y (snake-position s)) RADIUS)
-         (>= (posn-y (snake-position s)) (- H RADIUS)))
-     #true]
-    [else
-     #false]))
-
 ; LoCS -> Image
 ; if last-world-connected? returns true the last world is displayed
 
@@ -441,15 +342,6 @@
 (define (last-picture-connected locs)
   (place-image MSG (/ W 2) (/ H 2)
                (render-connected locs)))
-
-; Snake -> Image
-; if last-world is true renders the last scene of the world
-
-(define (last-picture s)
-  (place-image MSG
-               (/ W 2)
-               (/ H 2)
-               (render s)))
 
 ; Snake -> Snake
 ; launches the program from some initial state ws
