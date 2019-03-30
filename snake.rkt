@@ -115,10 +115,38 @@
 (define (render-connected locs)
   (cond
     [(empty? locs) MT]
-    [else (place-image SEGMENT
+    [else
+     (place-image SEGMENT
                        (posn-x (tail-position (first locs)))
                        (posn-y (tail-position (first locs)))
                        (render-connected (rest locs)))]))
+
+; Snake -> Image
+; consumes a Snake s and renders an image of Food
+
+(check-expect (render-edible
+               (make-snake (cons (make-tail (make-posn 200 200) "") '())
+                           (make-posn 350 350)) MT)
+              (place-image FOOD 350 350 MT))
+
+(define (fn-render-edible s scene)
+  (place-image ...
+   (posn-x (snake-position s))
+   (posn-y (snake-position s))
+   scene))
+
+(define (render-edible s scene)
+  (place-image FOOD
+               (posn-x (snake-position s))
+               (posn-y (snake-position s))
+               scene))
+
+; LoCS Snake -> Image
+; renders the world given a list of connected segments (locs) and a snake (s)
+
+(define (render-world locs s)
+  (render-edible s 
+  (render-connected locs)))
 
 ; LoCS KeyEvent -> LoCS
 ; listens for a key press and updates the snakes head direction accordingly
@@ -370,7 +398,7 @@
     [to-draw render-connected]
     [on-key control-connected]
     [stop-when last-world-connected? last-picture-connected]
-    [state "freddy reddy"]))
+    [state #t]))
 
 ; --usage
 ;(snake-main 1)
