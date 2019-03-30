@@ -32,6 +32,17 @@
 (define TAIL2 (make-tail (make-posn 10 100) "up"))
 (define TAIL3 (make-tail (make-posn 200 200) "right"))
 
+(define-struct snake [Locs Position])
+; A Snake is a structure:
+; (make-snake LoCS Posn)
+; Interpretation: A (make-snake l p) is a representation of the programs state.
+; A Locs is a list of connected segments and Position is the coordinates of
+; the edibles.
+
+(define SNAKE1 (make-snake
+                (cons (make-tail (make-posn 200 200) "") '())
+                (make-posn 200 200)))
+
 ; A LoCS (list of connected segments) is one of:
 ; - '()
 ; - (cons tail LOCS)
@@ -351,7 +362,8 @@
     [on-tick tock-connected rate]
     [to-draw render-connected]
     [on-key control-connected]
-    [stop-when last-world-connected? last-picture-connected]))
+    [stop-when last-world-connected? last-picture-connected]
+    [state "freddy reddy"]))
 
 ; --usage
 ;(snake-main 1)
