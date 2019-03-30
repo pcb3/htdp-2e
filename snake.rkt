@@ -17,6 +17,7 @@
 ; Graphical constants
 
 (define SEGMENT (circle SEGMENT-WIDTH "solid" "red"))
+(define FOOD (circle SEGMENT-WIDTH "solid" "orange"))
 (define MT (empty-scene W H))
 (define MSG (text "GAME OVER" 20 "black"))
 
@@ -32,7 +33,7 @@
 (define TAIL2 (make-tail (make-posn 10 100) "up"))
 (define TAIL3 (make-tail (make-posn 200 200) "right"))
 
-(define-struct snake [Locs Position])
+(define-struct snake [locs position])
 ; A Snake is a structure:
 ; (make-snake LoCS Posn)
 ; Interpretation: A (make-snake l p) is a representation of the programs state.
@@ -42,6 +43,12 @@
 (define SNAKE1 (make-snake
                 (cons (make-tail (make-posn 200 200) "") '())
                 (make-posn 200 200)))
+
+(define SNAKE2 (make-snake
+                (cons (make-tail (make-posn 200 200) "")
+                      (cons (make-tail (make-posn 220 200) "")
+                            '()))
+                (make-posn 280 280)))
 
 ; A LoCS (list of connected segments) is one of:
 ; - '()
