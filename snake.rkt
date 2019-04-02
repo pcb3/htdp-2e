@@ -78,15 +78,45 @@
                                 (cons (make-tail (make-posn  20 40) "")
                                       '())))))
 
-(define LOCS4 (cons (make-tail (make-posn 200 200) "")
-                    (cons (make-tail (make-posn 220 200) "")
-                          (cons (make-tail (make-posn 220 220) "")
-                                (cons (make-tail (make-posn 240 220) "")
-                                      (cons (make-tail (make-posn 260 220) "")
-                                            '()))))))
 ; Snake -> Image
 ; consumes a snake and renders the state of the world to the screen
-;(define (render 
+
+(check-expect (render-snake
+               (make-snake (cons (make-tail (make-posn 200 200) "") '())
+                           (make-posn 100 100)))
+              (place-images
+               (list SEGMENT
+                     FOOD)
+               (list (make-posn 200 200)
+                     (make-posn 100 100))
+               MT))
+
+(define (fn-render-snake s)
+  (cond
+    [(empty? (snake-locs s))
+     (... FOOD
+          (posn-x (snake-position s))
+          (posn-y (snake-position s))
+          MT)]
+    [else (... SEGMENT
+               (posn-x (tail-position (first (snake-locs s))))
+               (posn-y (tail-position (first (snake-locs s))))
+               (fn-render-snake (make-snake (rest (snake-locs s))
+                                            (snake-position s))))]))
+
+(define (render-snake s)
+  (cond
+    [(empty? (snake-locs s))
+     (place-image FOOD
+                  (posn-x (snake-position s))
+                  (posn-y (snake-position s))
+                  MT)]
+    [else (place-image SEGMENT
+                       (posn-x (tail-position (first (snake-locs s))))
+                       (posn-y (tail-position (first (snake-locs s))))
+                       (render-snake (make-snake (rest (snake-locs s))
+                                                 (snake-position s))))]))
+  
 
 
 ; LoCS -> Image
@@ -542,13 +572,13 @@
 (define (snake-main rate)
   (big-bang SNAKE3
     [on-tick tock rate]
-    [to-draw render-world]
+    [to-draw render-snake]
     [on-key control-connected]
     [stop-when last-world-connected? last-picture]
     [state #t]))
 
 ; --usage
-(snake-main 0.5)
+; (snake-main 0.5)
 
 
 
