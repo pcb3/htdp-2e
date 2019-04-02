@@ -157,18 +157,10 @@
       scene)]))
 
 (define (render-edible s scene)
-  (cond
-    [(edible-collide? s)
-     (render-edible
-      (make-snake (snake-locs s)
-                  (make-posn (posn-x (food-create (snake-position s)))
-                             (posn-y (food-create (snake-position s)))))
-      scene)]
-    [else
-     (place-image FOOD
-                  (posn-x (snake-position s))
-                  (posn-y (snake-position s))
-                  scene)]))
+  (place-image FOOD
+               (posn-x (snake-position s))
+               (posn-y (snake-position s))
+               scene))
 
 ; LoCS Snake -> Image
 ; renders the world given a snake s
