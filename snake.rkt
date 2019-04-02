@@ -194,7 +194,8 @@
                 (recur-replace-head (rest locs) key))]))             
 
 ; Snake -> Snake
-; consumes a snake returns an updated list of connected segments after each tick
+; consumes a snake and returns an updated list of connected segments after
+; each tick
 
 (check-expect (tock
                (make-snake (cons (make-tail (make-posn 200 200) "up") '())
@@ -208,7 +209,9 @@
 
 (define (tock s)
   (make-snake (tock-connected (snake-locs s) s)
-              (snake-position s)))
+              (cond (else (if (edible-collide? s)
+                              (food-create (snake-position s))
+                              (snake-position s))))))
 
 ; Snake LoCS -> LoCS
 ; with each clock tick the list of connected segments is updated depending
