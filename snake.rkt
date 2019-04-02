@@ -485,7 +485,8 @@
 (check-satisfied (food-create (make-posn 1 1) SNAKE1) not=-1-1?)
 (define (food-create p s)
   (food-check-create
-   p (make-posn (random MAX) (random MAX)) s))
+   p (make-posn (* 20 (round (/ (random MAX) 20)))
+                (* 20 (round (/ (random MAX) 20)))) s))
  
 ; Posn Posn -> Posn 
 ; generative recursion 
