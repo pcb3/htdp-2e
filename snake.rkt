@@ -210,7 +210,7 @@
 (define (tock s)
   (make-snake (tock-connected (snake-locs s) s)
               (cond (else (if (edible-collide? s)
-                              (food-create (snake-position s))
+                              (food-create (snake-position s) s)
                               (snake-position s))))))
 
 ; Snake LoCS -> LoCS
@@ -458,23 +458,43 @@
                (make-posn 150 150))
               #false)
 
-(define (edible-segment-overlap? s candidate) #t)
+(define (fn-edible-segment-overlap? s candidate)
+  (cond
+    [else (... (member? candidate (list-of-positions (snake-locs s)))
+                  ...
+                  ...)]))
+
+(define (edible-segment-overlap? s candidate)
+  (cond
+    [else (if (member? candidate (list-of-positions (snake-locs s)))
+                  #true
+                  #false)]))
+
+; LoCS -> List
+; consumes a list of connected segments and outputs a list of
+; coordinates for the segments of the snake
+
+(define (list-of-positions locs)
+  (cond
+    [(empty? locs) '()]
+    [else (cons (tail-position (first locs))
+                (list-of-positions (rest locs)))]))
 
 ; Posn -> Posn 
 ; consumes coordinates of edible and outputs a different set of coordinates
-(check-satisfied (food-create (make-posn 1 1)) not=-1-1?)
-(define (food-create p)
+(check-satisfied (food-create (make-posn 1 1) SNAKE1) not=-1-1?)
+(define (food-create p s)
   (food-check-create
-   p (make-posn (random MAX) (random MAX))))
+   p (make-posn (random MAX) (random MAX)) s))
  
 ; Posn Posn -> Posn 
 ; generative recursion 
 ; checks if the current edible coordinates are the same as the newly
 ; generated set, or a member of the list of connected segments of the snake.
 ; If so, creates a new set to be checked again.
-(define (food-check-create p candidate)
-  (if (equal? p candidate)
-      (food-create p)
+(define (food-check-create p candidate s)
+  (if (or (equal? p candidate) (edible-segment-overlap? s candidate))
+      (food-create p s)
       candidate))
  
 ; Posn -> Boolean
