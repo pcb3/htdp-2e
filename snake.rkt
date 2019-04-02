@@ -116,91 +116,6 @@
                        (posn-y (tail-position (first (snake-locs s))))
                        (render-snake (make-snake (rest (snake-locs s))
                                                  (snake-position s))))]))
-  
-
-
-; LoCS -> Image
-; consumes a list of connected segments (locs) and draws each segment
-; to the screen.
-
-(check-expect (render-connected '()) MT)
-
-(check-expect (render-connected
-               (cons (make-tail (make-posn 200 200) "")
-                     '()))
-              (place-images
-               (list SEGMENT)
-               (list (make-posn 200 200))
-               MT))
-
-(check-expect (render-connected
-               (cons (make-tail (make-posn 200 200) "down")
-                     (cons (make-tail (make-posn 200 220) "down")
-                           (cons (make-tail (make-posn 200 240) "right")
-                                 (cons (make-tail (make-posn 220 240) "up")
-                                       '())))))
-              (place-images
-               (list SEGMENT SEGMENT SEGMENT SEGMENT)
-               (list (make-posn 200 200)
-                     (make-posn 200 220)
-                     (make-posn 200 240)
-                     (make-posn 220 240))
-               MT))
-
-(define (fn-render-connected locs)
-  (cond
-    [(empty? locs) ...]
-    [else (... SEGMENT
-               (posn-x (tail-position (first locs)))
-               (posn-y (tail-position (first locs)))
-               (fn-render-connected (rest locs)))]))
-               
-(define (render-connected locs)
-  (cond
-    [(empty? locs) MT]
-    [else
-     (place-image SEGMENT
-                  (posn-x (tail-position (first locs)))
-                  (posn-y (tail-position (first locs)))
-                  (render-connected (rest locs)))]))
-
-; Snake -> Image
-; consumes a Snake s and renders an image of Food
-
-(check-expect (render-edible
-               (make-snake (cons (make-tail (make-posn 200 200) "") '())
-                           (make-posn 350 350)) MT)
-              (place-image FOOD 350 350 MT))
-
-(define (fn-render-edible s scene)
-  (cond
-    [(edible-collide? s)
-     (...
-      ...
-      (posn-x (... (snake-position s)))
-      (posn-y (... (snake-position s)))
-      scene)]
-    [else 
-     (...
-      (posn-x (snake-position s))
-      (posn-y (snake-position s))
-      scene)]))
-
-(define (render-edible s scene)
-  (place-image FOOD
-               (posn-x (snake-position s))
-               (posn-y (snake-position s))
-               scene))
-
-; LoCS Snake -> Image
-; renders the world given a snake s
-
-(define (fn-render-world s)
-  (... s (... (snake-locs s))))
-
-(define (render-world s)
-  (render-edible s 
-                 (render-connected (snake-locs s))))
 
 ; Snake KeyEvent -> Snake
 ; listens for a key press and updates the snakes head direction accordingly
@@ -507,17 +422,17 @@
                (make-snake (cons (make-tail (make-posn 200 200) "right") '())
                            (make-posn 100 100)))
               (place-image MSG (/ W 2) (/ H 2)
-                           (render-world
+                           (render-snake
                             (make-snake
                              (cons (make-tail (make-posn 200 200) "right") '())
                              (make-posn 100 100)))))
               
 (define (fn-last-picture s)
-  (... MSG ... ... (render-world s)))
+  (... MSG ... ... (render-snake s)))
 
 (define (last-picture s)
   (place-image MSG (/ W 2) (/ H 2)
-               (render-world s)))
+               (render-snake s)))
 
 ; Snake Posn -> Boolean
 ; consumes the edible's coordinates and coordinates for the next edible candidate,
