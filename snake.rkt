@@ -1,24 +1,22 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname snake) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
-; A simulation showing the effects of exponential growth on the length
-; of a snake
+; A snake clone
 
 (require 2htdp/universe)
 (require 2htdp/image)
 
 ; Physical constants
 
-(define RADIUS 5)
-(define SEGMENT-WIDTH (* RADIUS 2))
-(define W (* 40 SEGMENT-WIDTH))
-(define H (* 40 SEGMENT-WIDTH))
-(define MAX (- W SEGMENT-WIDTH))
+(define RADIUS 10)
+(define W (* 40 RADIUS))
+(define H (* 40 RADIUS))
+(define MAX (+ 1 (- W RADIUS)))
 
 ; Graphical constants
 
-(define SEGMENT (circle SEGMENT-WIDTH "solid" "red"))
-(define FOOD (circle SEGMENT-WIDTH "solid" "orange"))
+(define SEGMENT (circle RADIUS "solid" "red"))
+(define FOOD (circle RADIUS "solid" "orange"))
 (define MT (empty-scene W H))
 (define MSG (text "GAME OVER" 20 "black"))
 
@@ -57,7 +55,6 @@
                             (cons (make-tail (make-posn 240 200) "right")
                                   '())))
                 (make-posn 100 100)))
-                                       
 
 ; A LoCS (list of connected segments) is one of:
 ; - '()
@@ -276,23 +273,23 @@
   (cond
     [(string=? "left" (tail-direction head))
      (cons
-      (make-tail (make-posn (- (posn-x (tail-position head)) (* SEGMENT-WIDTH 2))
+      (make-tail (make-posn (- (posn-x (tail-position head)) (* RADIUS 2))
                             (posn-y (tail-position head)))
                  (tail-direction head)) '())]
     [(string=? "right" (tail-direction head))
      (cons
-      (make-tail (make-posn (+ (* SEGMENT-WIDTH 2) (posn-x (tail-position head)))
+      (make-tail (make-posn (+ (* RADIUS 2) (posn-x (tail-position head)))
                             (posn-y (tail-position head)))
                  (tail-direction head)) '())]
     [(string=? "up" (tail-direction head))
      (cons
       (make-tail (make-posn (posn-x (tail-position head))
-                            (- (posn-y (tail-position head)) (* SEGMENT-WIDTH 2)))
+                            (- (posn-y (tail-position head)) (* RADIUS 2)))
                  (tail-direction head)) '())]
     [(string=? "down" (tail-direction head))
      (cons
       (make-tail (make-posn (posn-x (tail-position head))
-                            (+ (* SEGMENT-WIDTH 2) (posn-y (tail-position head))))
+                            (+ (* RADIUS 2) (posn-y (tail-position head))))
                  (tail-direction head)) '())]
     [else (cons head '())]))
 
@@ -417,6 +414,31 @@
   (append (snake-locs s)
           (create-head (first (reverse (snake-locs s))))))
 
+; Snake -> String
+; consumes a snake and outputs the length of the snake as a string
+
+(check-expect (snake-length
+               (make-snake
+                (cons (make-tail (make-posn 200 200) "") '())
+                (make-posn 100 100)))
+              "1")
+
+(define (fn-snake-length s)
+  (... (... (snake-locs s))))
+
+(define (snake-length s)
+  (number->string (length (snake-locs s))))
+
+; String String String -> Image
+; consumes three strings and creates a text image
+
+(define (length-msg s)
+  (text
+   (string-append "YOUR SNAKE IS " (snake-length s) " SEGMENTS LONG")
+   20 "black"))
+
+
+
 ; Snake -> Image
 ; consumes a Snake and renders the final world to the screen if last-world
 ; is true
@@ -424,18 +446,22 @@
 (check-expect (last-picture
                (make-snake (cons (make-tail (make-posn 200 200) "right") '())
                            (make-posn 100 100)))
-              (place-image MSG (/ W 2) (/ H 2)
-                           (render-snake
-                            (make-snake
-                             (cons (make-tail (make-posn 200 200) "right") '())
-                             (make-posn 100 100)))))
+              (place-image MSG (/ W 2) (/ H 3)
+                           (place-image (length-msg SNAKE1) (/ W 2) (/ H 1.5)
+                                        (render-snake
+                                         (make-snake
+                                          (cons (make-tail (make-posn 200 200) "right") '())
+                                          (make-posn 100 100))))))
               
 (define (fn-last-picture s)
   (... MSG ... ... (render-snake s)))
 
 (define (last-picture s)
-  (place-image MSG (/ W 2) (/ H 2)
-               (render-snake s)))
+  (place-image MSG (/ W 2) (/ H 3)
+               (place-image
+                (length-msg s)
+                (/ W 2) (/ H 1.5)
+                (render-snake s))))
 
 ; Snake Posn -> Boolean
 ; consumes the edible's coordinates and coordinates for the next edible candidate,
@@ -461,14 +487,14 @@
 (define (fn-edible-segment-overlap? s candidate)
   (cond
     [else (... (member? candidate (list-of-positions (snake-locs s)))
-                  ...
-                  ...)]))
+               ...
+               ...)]))
 
 (define (edible-segment-overlap? s candidate)
   (cond
     [else (if (member? candidate (list-of-positions (snake-locs s)))
-                  #true
-                  #false)]))
+              #true
+              #false)]))
 
 ; LoCS -> List
 ; consumes a list of connected segments and outputs a list of
@@ -485,16 +511,19 @@
 (check-satisfied (food-create (make-posn 1 1) SNAKE1) not=-1-1?)
 (define (food-create p s)
   (food-check-create
-   p (make-posn (* 20 (round (/ (random MAX) 20)))
-                (* 20 (round (/ (random MAX) 20)))) s))
- 
+   p (make-posn (* 10 (round (/ (random MAX) 10)))
+                (* 10 (round (/ (random MAX) 10)))) s))
+
 ; Posn Posn -> Posn 
 ; generative recursion 
 ; checks if the current edible coordinates are the same as the newly
 ; generated set, or a member of the list of connected segments of the snake.
 ; If so, creates a new set to be checked again.
 (define (food-check-create p candidate s)
-  (if (or (equal? p candidate) (edible-segment-overlap? s candidate))
+  (if (or (equal? p candidate)
+          (edible-segment-overlap? s candidate)
+          (zero? (modulo (posn-x candidate) 20))
+          (zero? (modulo (posn-y candidate) 20)))
       (food-create p s)
       candidate))
  
@@ -503,13 +532,12 @@
 (define (not=-1-1? p)
   (not (and (= (posn-x p) 1) (= (posn-y p) 1))))
 
-
-
 ; Snake -> Snake
 ; launches the program from some initial state s
 
 (define (snake-main rate)
-  (big-bang SNAKE3
+  (big-bang (make-snake (cons (make-tail (make-posn 190 190) "") '())
+                        (food-create (make-posn 0 0) SNAKE1))
     [on-tick tock rate]
     [to-draw render-snake]
     [on-key control-connected]
