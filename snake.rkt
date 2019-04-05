@@ -205,10 +205,14 @@
               (snake-position s)))
 
 (define (tock s)
-  (make-snake (tock-connected (snake-locs s) s)
-              (cond (else (if (edible-collide? s)
-                              (food-create (snake-position s) s)
-                              (snake-position s))))))
+;  [cond [else (if (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
+;                                                     (snake-position s)))
+;                  (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
+;                                                     (snake-position s)))
+                  (make-snake (tock-connected (snake-locs s) s)
+                              (cond (else (if (edible-collide? s)
+                                              (food-create (snake-position s) s)
+                                              (snake-position s))))))
 
 ; Snake LoCS -> LoCS
 ; with each clock tick the list of connected segments is updated depending
@@ -437,6 +441,7 @@
    (string-append "YOUR SNAKE IS " (snake-length s) " SEGMENTS LONG")
    20 "black"))
 
+; Snake -> Snake
 
 
 ; Snake -> Image
@@ -544,8 +549,32 @@
     [stop-when last-world-connected? last-picture]
     [state #t]))
 
-; --usage
-; (snake-main 0.5)
+; Snake -> Image
+
+(check-expect (start-screen? (make-snake (cons (make-tail (make-posn 200 200)
+                                                          "") '())
+                                         (make-posn 100 100))) #true)
+
+(check-expect (start-screen? (make-snake (cons (make-tail (make-posn 200 200)
+                                                          "right") '())
+                                         (make-posn 100 100))) #false)
+
+(define (fn-start-screen? s)
+  (cond
+    [(string=? (tail-direction (first (snake-locs s))) ...)
+     ...]
+    [else ...]))
+
+(define (start-screen? s)
+  (cond
+    [(string=? (tail-direction (first (snake-locs s))) "")
+     #true]
+    [else #false]))
+
+
+  
+
+
 
 
 
