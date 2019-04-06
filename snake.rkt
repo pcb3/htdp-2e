@@ -17,13 +17,12 @@
 
 (define SEGMENT (circle RADIUS "solid" "red"))
 (define FOOD (circle RADIUS "solid" "orange"))
-(define MT (empty-scene W H))
+(define MT (empty-scene W H "gray"))
 (define MSG (text "GAME OVER" 20 "black"))
-(define WELCOME-MSG (text "Welcome to Snake" 20 "black"))
+(define WELCOME-MSG (text "Welcome to Snake!" 20 "black"))
 (define INSTRUCTION-MSG
-  (text "Your snake is controlled by the direction keys.
-              Press one of them to start."
-        18 "black"))
+  (text ":Press a direction key to begin"
+        20 "black"))
 
 (define-struct tail [position direction])
 ; A Tail is a structure:
@@ -105,14 +104,12 @@
 ; consumes a snake and renders the state of the world to the screen
 
 (check-expect (render-snake
-               (make-snake (cons (make-tail (make-posn 200 200) "") '())
-                           (make-posn 100 100)))
-              (place-images
-               (list SEGMENT
-                     FOOD)
-               (list (make-posn 200 200)
-                     (make-posn 100 100))
-               MT))
+               (make-snake (cons (make-tail (make-posn 190 190) "") '())
+                           (make-posn 0 0)))
+              (place-image SEGMENT 190 190 
+               (place-image WELCOME-MSG (/ W 2) (/ H 3)
+                            (place-image
+                             INSTRUCTION-MSG (/ W 2) (/ H 1.5) MT))))
 
 (define (fn-render-snake s)
   (cond
@@ -466,11 +463,8 @@
 
 (define (length-msg s)
   (text
-   (string-append "YOUR SNAKE IS " (snake-length s) " SEGMENTS LONG")
+   (string-append "Your score is: " (snake-length s))
    20 "black"))
-
-; Snake -> Snake
-
 
 ; Snake -> Image
 ; consumes a Snake and renders the final world to the screen if last-world
@@ -480,7 +474,7 @@
                (make-snake (cons (make-tail (make-posn 200 200) "right") '())
                            (make-posn 100 100)))
               (place-image MSG (/ W 2) (/ H 3)
-                           (place-image (length-msg SNAKE1) (/ W 2) (/ H 1.5)
+                           (place-image (length-msg SNAKE1) (/ W 2) (/ H 2)
                                         (render-snake
                                          (make-snake
                                           (cons (make-tail (make-posn 200 200) "right") '())
@@ -493,7 +487,7 @@
   (place-image MSG (/ W 2) (/ H 3)
                (place-image
                 (length-msg s)
-                (/ W 2) (/ H 1.5)
+                (/ W 2) (/ H 2)
                 (render-snake s))))
 
 ; Snake Posn -> Boolean
@@ -565,19 +559,9 @@
 (define (not=-1-1? p)
   (not (and (= (posn-x p) 1) (= (posn-y p) 1))))
 
-; Snake -> Snake
-; launches the program from some initial state s
-
-(define (snake-main rate)
-  (big-bang (make-snake (cons (make-tail (make-posn 190 190) "") '())
-                        (food-create (make-posn 0 0) SNAKE1))
-    [on-tick tock rate]
-    [to-draw render-snake]
-    [on-key control-connected]
-    [stop-when last-world-connected? last-picture]
-    [state #t]))
-
 ; Snake -> Image
+; consumes a snake and returns true if the head of the snake has an
+; empty direction field
 
 (check-expect (start-screen? (make-snake
                               (cons (make-tail (make-posn 200 200)
@@ -602,13 +586,17 @@
      #true]
     [else #false]))
 
+; Snake -> Snake
+; launches the program from some initial state s
 
-  
+(define (snake-main rate)
+  (big-bang (make-snake (cons (make-tail (make-posn 190 190) "") '())
+                        (food-create (make-posn 0 0) SNAKE1))
+    [on-tick tock rate]
+    [to-draw render-snake]
+    [on-key control-connected]
+    [stop-when last-world-connected? last-picture]
+    [state #t]))
 
-
-
-
-
-
-
-
+; usage
+(snake-main 0.2)
