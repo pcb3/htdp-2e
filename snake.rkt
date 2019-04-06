@@ -19,6 +19,11 @@
 (define FOOD (circle RADIUS "solid" "orange"))
 (define MT (empty-scene W H))
 (define MSG (text "GAME OVER" 20 "black"))
+(define WELCOME-MSG (text "Welcome to Snake" 20 "black"))
+(define INSTRUCTION-MSG
+  (text "Your snake is controlled by the direction keys.
+              Press one of them to start."
+        18 "black"))
 
 (define-struct tail [position direction])
 ; A Tail is a structure:
@@ -75,6 +80,27 @@
                                 (cons (make-tail (make-posn  20 40) "")
                                       '())))))
 
+; Image Image -> Image
+; consumes two images as text and outputs a rendered welcome image
+; to the screen
+
+(check-expect (first-scene WELCOME-MSG INSTRUCTION-MSG)
+              (place-image SEGMENT 190 190 
+              (place-image WELCOME-MSG (/ W 2) (/ H 3)
+                           (place-image INSTRUCTION-MSG
+                                        (/ W 2) (/ H 1.5)
+                                        MT))))
+
+(define (fn-first-scene welcome instructions)
+  (place-image welcome ... ...
+               (place-image instructions ... ... ...)))
+
+(define (first-scene welcome instructions)
+  (place-image SEGMENT 190 190 
+               (place-image welcome (/ W 2) (/ H 3)
+                            (place-image
+                             instructions (/ W 2) (/ H 1.5) MT))))
+
 ; Snake -> Image
 ; consumes a snake and renders the state of the world to the screen
 
@@ -103,6 +129,8 @@
 
 (define (render-snake s)
   (cond
+    [(start-screen? s)
+     (first-scene WELCOME-MSG INSTRUCTION-MSG)]
     [(empty? (snake-locs s))
      (place-image FOOD
                   (posn-x (snake-position s))
@@ -205,14 +233,14 @@
               (snake-position s)))
 
 (define (tock s)
-;  [cond [else (if (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
-;                                                     (snake-position s)))
-;                  (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
-;                                                     (snake-position s)))
-                  (make-snake (tock-connected (snake-locs s) s)
-                              (cond (else (if (edible-collide? s)
-                                              (food-create (snake-position s) s)
-                                              (snake-position s))))))
+  ;  [cond [else (if (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
+  ;                                                     (snake-position s)))
+  ;                  (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
+  ;                                                     (snake-position s)))
+  (make-snake (tock-connected (snake-locs s) s)
+              (cond (else (if (edible-collide? s)
+                              (food-create (snake-position s) s)
+                              (snake-position s))))))
 
 ; Snake LoCS -> LoCS
 ; with each clock tick the list of connected segments is updated depending
@@ -551,13 +579,15 @@
 
 ; Snake -> Image
 
-(check-expect (start-screen? (make-snake (cons (make-tail (make-posn 200 200)
-                                                          "") '())
-                                         (make-posn 100 100))) #true)
+(check-expect (start-screen? (make-snake
+                              (cons (make-tail (make-posn 200 200)
+                                               "") '())
+                              (make-posn 100 100))) #true)
 
-(check-expect (start-screen? (make-snake (cons (make-tail (make-posn 200 200)
-                                                          "right") '())
-                                         (make-posn 100 100))) #false)
+(check-expect (start-screen? (make-snake
+                              (cons (make-tail (make-posn 200 200)
+                                               "right") '())
+                              (make-posn 100 100))) #false)
 
 (define (fn-start-screen? s)
   (cond
@@ -567,6 +597,7 @@
 
 (define (start-screen? s)
   (cond
+    [(empty? (snake-locs s)) #false]
     [(string=? (tail-direction (first (snake-locs s))) "")
      #true]
     [else #false]))
