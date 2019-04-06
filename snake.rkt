@@ -1,26 +1,29 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname snake) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
-; A simulation showing the effects of exponential growth on the length
-; of a snake
+; A snake clone
 
 (require 2htdp/universe)
 (require 2htdp/image)
 
 ; Physical constants
 
-(define RADIUS 5)
-(define SEGMENT-WIDTH (* RADIUS 2))
-(define W (* 40 SEGMENT-WIDTH))
-(define H (* 40 SEGMENT-WIDTH))
-(define MAX (- W SEGMENT-WIDTH))
+(define RADIUS 10)
+(define W (* 40 RADIUS))
+(define H (* 40 RADIUS))
+(define MAX (+ 1 (- W RADIUS)))
 
 ; Graphical constants
 
-(define SEGMENT (circle SEGMENT-WIDTH "solid" "red"))
-(define FOOD (circle SEGMENT-WIDTH "solid" "orange"))
+(define SEGMENT (circle RADIUS "solid" "red"))
+(define FOOD (circle RADIUS "solid" "orange"))
 (define MT (empty-scene W H))
 (define MSG (text "GAME OVER" 20 "black"))
+(define WELCOME-MSG (text "Welcome to Snake" 20 "black"))
+(define INSTRUCTION-MSG
+  (text "Your snake is controlled by the direction keys.
+              Press one of them to start."
+        18 "black"))
 
 (define-struct tail [position direction])
 ; A Tail is a structure:
@@ -57,7 +60,6 @@
                             (cons (make-tail (make-posn 240 200) "right")
                                   '())))
                 (make-posn 100 100)))
-                                       
 
 ; A LoCS (list of connected segments) is one of:
 ; - '()
@@ -78,99 +80,67 @@
                                 (cons (make-tail (make-posn  20 40) "")
                                       '())))))
 
-(define LOCS4 (cons (make-tail (make-posn 200 200) "")
-                    (cons (make-tail (make-posn 220 200) "")
-                          (cons (make-tail (make-posn 220 220) "")
-                                (cons (make-tail (make-posn 240 220) "")
-                                      (cons (make-tail (make-posn 260 220) "")
-                                            '()))))))
+; Image Image -> Image
+; consumes two images as text and outputs a rendered welcome image
+; to the screen
+
+(check-expect (first-scene WELCOME-MSG INSTRUCTION-MSG)
+              (place-image SEGMENT 190 190 
+              (place-image WELCOME-MSG (/ W 2) (/ H 3)
+                           (place-image INSTRUCTION-MSG
+                                        (/ W 2) (/ H 1.5)
+                                        MT))))
+
+(define (fn-first-scene welcome instructions)
+  (place-image welcome ... ...
+               (place-image instructions ... ... ...)))
+
+(define (first-scene welcome instructions)
+  (place-image SEGMENT 190 190 
+               (place-image welcome (/ W 2) (/ H 3)
+                            (place-image
+                             instructions (/ W 2) (/ H 1.5) MT))))
+
 ; Snake -> Image
 ; consumes a snake and renders the state of the world to the screen
-;(define (render 
 
-
-; LoCS -> Image
-; consumes a list of connected segments (locs) and draws each segment
-; to the screen.
-
-(check-expect (render-connected '()) MT)
-
-(check-expect (render-connected
-               (cons (make-tail (make-posn 200 200) "")
-                     '()))
-              (place-images
-               (list SEGMENT)
-               (list (make-posn 200 200))
-               MT))
-
-(check-expect (render-connected
-               (cons (make-tail (make-posn 200 200) "down")
-                     (cons (make-tail (make-posn 200 220) "down")
-                           (cons (make-tail (make-posn 200 240) "right")
-                                 (cons (make-tail (make-posn 220 240) "up")
-                                       '())))))
-              (place-images
-               (list SEGMENT SEGMENT SEGMENT SEGMENT)
-               (list (make-posn 200 200)
-                     (make-posn 200 220)
-                     (make-posn 200 240)
-                     (make-posn 220 240))
-               MT))
-
-(define (fn-render-connected locs)
-  (cond
-    [(empty? locs) ...]
-    [else (... SEGMENT
-               (posn-x (tail-position (first locs)))
-               (posn-y (tail-position (first locs)))
-               (fn-render-connected (rest locs)))]))
-               
-(define (render-connected locs)
-  (cond
-    [(empty? locs) MT]
-    [else
-     (place-image SEGMENT
-                  (posn-x (tail-position (first locs)))
-                  (posn-y (tail-position (first locs)))
-                  (render-connected (rest locs)))]))
-
-; Snake -> Image
-; consumes a Snake s and renders an image of Food
-
-(check-expect (render-edible
+(check-expect (render-snake
                (make-snake (cons (make-tail (make-posn 200 200) "") '())
-                           (make-posn 350 350)) MT)
-              (place-image FOOD 350 350 MT))
+                           (make-posn 100 100)))
+              (place-images
+               (list SEGMENT
+                     FOOD)
+               (list (make-posn 200 200)
+                     (make-posn 100 100))
+               MT))
 
-(define (fn-render-edible s scene)
+(define (fn-render-snake s)
   (cond
-    [(edible-collide? s)
-     (...
-      ...
-      (posn-x (... (snake-position s)))
-      (posn-y (... (snake-position s)))
-      scene)]
-    [else 
-     (...
-      (posn-x (snake-position s))
-      (posn-y (snake-position s))
-      scene)]))
+    [(empty? (snake-locs s))
+     (... FOOD
+          (posn-x (snake-position s))
+          (posn-y (snake-position s))
+          MT)]
+    [else (... SEGMENT
+               (posn-x (tail-position (first (snake-locs s))))
+               (posn-y (tail-position (first (snake-locs s))))
+               (fn-render-snake (make-snake (rest (snake-locs s))
+                                            (snake-position s))))]))
 
-(define (render-edible s scene)
-  (place-image FOOD
-               (posn-x (snake-position s))
-               (posn-y (snake-position s))
-               scene))
-
-; LoCS Snake -> Image
-; renders the world given a snake s
-
-(define (fn-render-world s)
-  (... s (... (snake-locs s))))
-
-(define (render-world s)
-  (render-edible s 
-                 (render-connected (snake-locs s))))
+(define (render-snake s)
+  (cond
+    [(start-screen? s)
+     (first-scene WELCOME-MSG INSTRUCTION-MSG)]
+    [(empty? (snake-locs s))
+     (place-image FOOD
+                  (posn-x (snake-position s))
+                  (posn-y (snake-position s))
+                  MT)]
+    [else (place-image SEGMENT
+                       (posn-x (tail-position (first (snake-locs s))))
+                       (posn-y (tail-position (first (snake-locs s))))
+                       (render-snake (make-snake (rest (snake-locs s))
+                                                 (snake-position s))))]))
 
 ; Snake KeyEvent -> Snake
 ; listens for a key press and updates the snakes head direction accordingly
@@ -249,7 +219,8 @@
                 (recur-replace-head (rest locs) key))]))             
 
 ; Snake -> Snake
-; consumes a snake returns an updated list of connected segments after each tick
+; consumes a snake and returns an updated list of connected segments after
+; each tick
 
 (check-expect (tock
                (make-snake (cons (make-tail (make-posn 200 200) "up") '())
@@ -262,8 +233,14 @@
               (snake-position s)))
 
 (define (tock s)
+  ;  [cond [else (if (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
+  ;                                                     (snake-position s)))
+  ;                  (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
+  ;                                                     (snake-position s)))
   (make-snake (tock-connected (snake-locs s) s)
-              (snake-position s)))
+              (cond (else (if (edible-collide? s)
+                              (food-create (snake-position s) s)
+                              (snake-position s))))))
 
 ; Snake LoCS -> LoCS
 ; with each clock tick the list of connected segments is updated depending
@@ -328,23 +305,23 @@
   (cond
     [(string=? "left" (tail-direction head))
      (cons
-      (make-tail (make-posn (- (posn-x (tail-position head)) (* SEGMENT-WIDTH 2))
+      (make-tail (make-posn (- (posn-x (tail-position head)) (* RADIUS 2))
                             (posn-y (tail-position head)))
                  (tail-direction head)) '())]
     [(string=? "right" (tail-direction head))
      (cons
-      (make-tail (make-posn (+ (* SEGMENT-WIDTH 2) (posn-x (tail-position head)))
+      (make-tail (make-posn (+ (* RADIUS 2) (posn-x (tail-position head)))
                             (posn-y (tail-position head)))
                  (tail-direction head)) '())]
     [(string=? "up" (tail-direction head))
      (cons
       (make-tail (make-posn (posn-x (tail-position head))
-                            (- (posn-y (tail-position head)) (* SEGMENT-WIDTH 2)))
+                            (- (posn-y (tail-position head)) (* RADIUS 2)))
                  (tail-direction head)) '())]
     [(string=? "down" (tail-direction head))
      (cons
       (make-tail (make-posn (posn-x (tail-position head))
-                            (+ (* SEGMENT-WIDTH 2) (posn-y (tail-position head))))
+                            (+ (* RADIUS 2) (posn-y (tail-position head))))
                  (tail-direction head)) '())]
     [else (cons head '())]))
 
@@ -469,6 +446,32 @@
   (append (snake-locs s)
           (create-head (first (reverse (snake-locs s))))))
 
+; Snake -> String
+; consumes a snake and outputs the length of the snake as a string
+
+(check-expect (snake-length
+               (make-snake
+                (cons (make-tail (make-posn 200 200) "") '())
+                (make-posn 100 100)))
+              "1")
+
+(define (fn-snake-length s)
+  (... (... (snake-locs s))))
+
+(define (snake-length s)
+  (number->string (length (snake-locs s))))
+
+; String String String -> Image
+; consumes three strings and creates a text image
+
+(define (length-msg s)
+  (text
+   (string-append "YOUR SNAKE IS " (snake-length s) " SEGMENTS LONG")
+   20 "black"))
+
+; Snake -> Snake
+
+
 ; Snake -> Image
 ; consumes a Snake and renders the final world to the screen if last-world
 ; is true
@@ -476,18 +479,22 @@
 (check-expect (last-picture
                (make-snake (cons (make-tail (make-posn 200 200) "right") '())
                            (make-posn 100 100)))
-              (place-image MSG (/ W 2) (/ H 2)
-                           (render-world
-                            (make-snake
-                             (cons (make-tail (make-posn 200 200) "right") '())
-                             (make-posn 100 100)))))
+              (place-image MSG (/ W 2) (/ H 3)
+                           (place-image (length-msg SNAKE1) (/ W 2) (/ H 1.5)
+                                        (render-snake
+                                         (make-snake
+                                          (cons (make-tail (make-posn 200 200) "right") '())
+                                          (make-posn 100 100))))))
               
 (define (fn-last-picture s)
-  (... MSG ... ... (render-world s)))
+  (... MSG ... ... (render-snake s)))
 
 (define (last-picture s)
-  (place-image MSG (/ W 2) (/ H 2)
-               (render-world s)))
+  (place-image MSG (/ W 2) (/ H 3)
+               (place-image
+                (length-msg s)
+                (/ W 2) (/ H 1.5)
+                (render-snake s))))
 
 ; Snake Posn -> Boolean
 ; consumes the edible's coordinates and coordinates for the next edible candidate,
@@ -510,23 +517,47 @@
                (make-posn 150 150))
               #false)
 
-(define (edible-segment-overlap? s candidate) #t)
+(define (fn-edible-segment-overlap? s candidate)
+  (cond
+    [else (... (member? candidate (list-of-positions (snake-locs s)))
+               ...
+               ...)]))
+
+(define (edible-segment-overlap? s candidate)
+  (cond
+    [else (if (member? candidate (list-of-positions (snake-locs s)))
+              #true
+              #false)]))
+
+; LoCS -> List
+; consumes a list of connected segments and outputs a list of
+; coordinates for the segments of the snake
+
+(define (list-of-positions locs)
+  (cond
+    [(empty? locs) '()]
+    [else (cons (tail-position (first locs))
+                (list-of-positions (rest locs)))]))
 
 ; Posn -> Posn 
 ; consumes coordinates of edible and outputs a different set of coordinates
-(check-satisfied (food-create (make-posn 1 1)) not=-1-1?)
-(define (food-create p)
+(check-satisfied (food-create (make-posn 1 1) SNAKE1) not=-1-1?)
+(define (food-create p s)
   (food-check-create
-   p (make-posn (random MAX) (random MAX))))
- 
+   p (make-posn (* 10 (round (/ (random MAX) 10)))
+                (* 10 (round (/ (random MAX) 10)))) s))
+
 ; Posn Posn -> Posn 
 ; generative recursion 
 ; checks if the current edible coordinates are the same as the newly
 ; generated set, or a member of the list of connected segments of the snake.
 ; If so, creates a new set to be checked again.
-(define (food-check-create p candidate)
-  (if (equal? p candidate)
-      (food-create p)
+(define (food-check-create p candidate s)
+  (if (or (equal? p candidate)
+          (edible-segment-overlap? s candidate)
+          (zero? (modulo (posn-x candidate) 20))
+          (zero? (modulo (posn-y candidate) 20)))
+      (food-create p s)
       candidate))
  
 ; Posn -> Boolean
@@ -534,21 +565,47 @@
 (define (not=-1-1? p)
   (not (and (= (posn-x p) 1) (= (posn-y p) 1))))
 
-
-
 ; Snake -> Snake
 ; launches the program from some initial state s
 
 (define (snake-main rate)
-  (big-bang SNAKE3
+  (big-bang (make-snake (cons (make-tail (make-posn 190 190) "") '())
+                        (food-create (make-posn 0 0) SNAKE1))
     [on-tick tock rate]
-    [to-draw render-world]
+    [to-draw render-snake]
     [on-key control-connected]
     [stop-when last-world-connected? last-picture]
     [state #t]))
 
-; --usage
-(snake-main 0.5)
+; Snake -> Image
+
+(check-expect (start-screen? (make-snake
+                              (cons (make-tail (make-posn 200 200)
+                                               "") '())
+                              (make-posn 100 100))) #true)
+
+(check-expect (start-screen? (make-snake
+                              (cons (make-tail (make-posn 200 200)
+                                               "right") '())
+                              (make-posn 100 100))) #false)
+
+(define (fn-start-screen? s)
+  (cond
+    [(string=? (tail-direction (first (snake-locs s))) ...)
+     ...]
+    [else ...]))
+
+(define (start-screen? s)
+  (cond
+    [(empty? (snake-locs s)) #false]
+    [(string=? (tail-direction (first (snake-locs s))) "")
+     #true]
+    [else #false]))
+
+
+  
+
+
 
 
 
