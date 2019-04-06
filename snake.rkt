@@ -1,7 +1,7 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname snake) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
-; A snake clone
+; A snake clone 
 
 (require 2htdp/universe)
 (require 2htdp/image)
@@ -15,9 +15,9 @@
 
 ; Graphical constants
 
-(define SEGMENT (circle RADIUS "solid" "red"))
-(define FOOD (circle RADIUS "solid" "orange"))
-(define MT (empty-scene W H "gray"))
+(define SEGMENT (circle RADIUS "solid" "darksalmon"))
+(define FOOD (circle RADIUS "solid" "goldenrod"))
+(define MT (empty-scene W H "rosybrown"))
 (define MSG (text "GAME OVER" 20 "black"))
 (define WELCOME-MSG (text "Welcome to Snake!" 20 "black"))
 (define INSTRUCTION-MSG
@@ -155,7 +155,6 @@
                            '()))
                (make-posn 100 100)))
                 
-
 (define (fn-control-connected s key)
   (cond
     [(empty? (snake-locs s)) ...]
@@ -174,14 +173,18 @@
     [(empty? (snake-locs s))
      s]
     [(string=? "left" key)
+     (cond [else (if (in-opposition? s key) s
      (make-snake
-      (recur-replace-head (snake-locs s) key) (snake-position s))]
+      (recur-replace-head (snake-locs s) key) (snake-position s)))])]
     [(string=? "right" key)
-     (make-snake (recur-replace-head (snake-locs s) key) (snake-position s))]
+     (cond [else (if (in-opposition? s key) s
+     (make-snake (recur-replace-head (snake-locs s) key) (snake-position s)))])]
     [(string=? "up" key)
-     (make-snake (recur-replace-head (snake-locs s) key) (snake-position s))]
+     (cond [else (if (in-opposition? s key) s
+     (make-snake (recur-replace-head (snake-locs s) key) (snake-position s)))])]
     [(string=? "down" key)
-     (make-snake (recur-replace-head (snake-locs s) key) (snake-position s))]
+     (cond [else (if (in-opposition? s key) s
+     (make-snake (recur-replace-head (snake-locs s) key) (snake-position s)))])]
     [else s]))
 
 ; LoCS key -> LoCS
@@ -230,10 +233,6 @@
               (snake-position s)))
 
 (define (tock s)
-  ;  [cond [else (if (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
-  ;                                                     (snake-position s)))
-  ;                  (last-world-connected? (make-snake (tock-connected (snake-locs s) s)
-  ;                                                     (snake-position s)))
   (make-snake (tock-connected (snake-locs s) s)
               (cond (else (if (edible-collide? s)
                               (food-create (snake-position s) s)
@@ -586,6 +585,65 @@
      #true]
     [else #false]))
 
+; Snake -> Boolean
+; returns true if the direction field of the head of the snake is
+; moving in opposition to the key pressed
+
+(check-expect (in-opposition?
+               (make-snake (cons (make-tail (make-posn 200 200)
+                                            "right") '())
+                           (make-posn 0 0))
+              "down")
+              #false)
+
+(check-expect (in-opposition?
+               (make-snake (cons (make-tail (make-posn 200 200)
+                                            "right") '())
+                           (make-posn 0 0))
+              "left")
+              #true)
+
+(define (fn-in-opposition? s key)
+  (cond
+    [(and (string=? ... key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                    ...))
+     ...]
+    [(and (string=? ... key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                    ...))
+     ...]
+    [(and (string=? ... key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                    ...))
+     ...]
+    [(and (string=? ... key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                    ...))
+     ...]
+    [else ...]))
+
+(define (in-opposition? s key)
+  (cond
+    [(and (string=? "left" key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                  "right"))
+     #true]
+    [(and (string=? "right" key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                  "left"))
+     #true]
+    [(and (string=? "up" key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                  "down"))
+     #true]
+    [(and (string=? "down" key)
+          (string=? (tail-direction (first (reverse (snake-locs s))))
+                  "up"))
+     #true]
+    [else
+     #false]))
+
 ; Snake -> Snake
 ; launches the program from some initial state s
 
@@ -596,7 +654,8 @@
     [to-draw render-snake]
     [on-key control-connected]
     [stop-when last-world-connected? last-picture]
-    [state #t]))
+    [state #t]
+    [name "Snake"]))
 
 ; usage
 (snake-main 0.2)
