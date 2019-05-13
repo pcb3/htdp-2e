@@ -47,9 +47,10 @@
 ; SimulationState.v2 KeyEvent -> SimulationState.v2
 ; finds the next state from ke and cs
 (define (find-next-state an-fsm ke)
-  (make-fs
-   (fs-fsm an-fsm)
-   (find ke (fs-fsm an-fsm) (fs-current an-fsm))))
+  (make-fsm
+   (find ke (fsm-transitions an-fsm) (fsm-initial an-fsm))
+   (fsm-transitions an-fsm)
+   (fsm-final an-fsm)))
 
 ;(check-expect
 ; (find-next-state (make-fs fsm-traffic "red") "n")
@@ -82,7 +83,7 @@
 ;              (square 100 "solid" "red"))
 
 (define (state-as-colored-square an-fsm)
-  (square 100 "solid" (fs-current an-fsm)))
+  (square 100 "solid" (fsm-initial an-fsm)))
 
 ; FSM FSM-State -> FSM-State
 ; finds the state representing current in transitions
@@ -121,6 +122,39 @@
                            (make-ktransition "yellow" "b" "yellow")
                            (make-ktransition "yellow" "c" "yellow")
                            (make-ktransition "yellow" "d" "green")))
+
+;; FSM
+
+(define-struct fsm [initial transitions final])
+; An FSM.v2 is a structure: 
+;   (make-fsm FSM-State LOT FSM-State)
+; A LOT is one of: 
+; – '() 
+; – (cons Transition.v3 LOT)
+; A Transition.v3 is a structure: 
+;   (make-transition FSM-State KeyEvent FSM-State)
+
+; FSM FSM-State -> SimulationState.v2 
+; match the keys pressed with the given FSM 
+(define (fsm-simulate initial an-fsm final)
+  (big-bang (make-fsm initial an-fsm final)
+    [to-draw state-as-colored-square]
+    [on-key find-next-state]
+    [stop-when final? final-pic]))
+
+; SimulationState.v2 -> SimulationState.v2
+; consumes a simulation state and stops the program when the it's in the
+; final state
+(define (final? fsm)
+  (cond
+    [(equal? (fsm-initial fsm) (fsm-final fsm))
+     #true]
+    [else
+     #false]))
+
+(define (final-pic fsm)
+  (square 100 "solid" (fsm-initial fsm)))
+  
 	
 
 
