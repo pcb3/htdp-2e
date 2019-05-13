@@ -8,22 +8,13 @@
 
 ; An FSM is one of:
 ;   – '()
-;   – (cons Transition FSM)
- 
-(define-struct transition [current next])
-; A Transition is a structure:
-;   (make-transition FSM-State FSM-State)
+;   – (cons Ktransition FSM)
  
 ; FSM-State is a Color.
  
 ; interpretation An FSM represents the transitions that a
 ; finite state machine can take from one state to another 
 ; in reaction to keystrokes
-
-(define fsm-traffic
-  (list (make-transition "red" "green")
-        (make-transition "green" "yellow")
-        (make-transition "yellow" "red")))
 
 ; FSM-State  FSM-State -> Boolean
 ; consumes two states s1 s2, and returns true if they are equal
@@ -44,34 +35,6 @@
     [(equal? s1 s2) #true]
     [else #false]))
 
-; A BW machine is a:
-; - Transition
-
-; Interpretation A BW represents the sequence of transitions from black to white
-; and back after a key press
-
-(define BW (list (make-transition "black" "white")
-                 (make-transition "white" "black")))
-
-; A SimulationState.v1 is an FSM-State. 
-
-;(define (simulate.v1 fsm0)
-;  (big-bang initial-state
-;    [to-draw render-state.v1]
-;    [on-key find-next-state.v1]))
-
-; SimulationState.v1 -> Image
-; renders a world state as an image 
-(define (render-state.v1 s)
-  empty-image)
- 
-; SimulationState.v1 KeyEvent -> SimulationState.v1
-; finds the next state from ke and cs
-(define (find-next-state.v1 cs ke)
-  cs)
-
-;; v2
-
 (define-struct fs [fsm current])
 ; A SimulationState.v2 is a structure: 
 ;   (make-fs FSM FSM-State)
@@ -86,23 +49,23 @@
 (define (find-next-state an-fsm ke)
   (make-fs
    (fs-fsm an-fsm)
-   (find (fs-fsm an-fsm) (fs-current an-fsm))))
+   (find ke (fs-fsm an-fsm) (fs-current an-fsm))))
 
-(check-expect
- (find-next-state (make-fs fsm-traffic "red") "n")
- (make-fs fsm-traffic "green"))
-
-(check-expect
- (find-next-state (make-fs fsm-traffic "red") "a")
- (make-fs fsm-traffic "green"))
-
-(check-expect
- (find-next-state (make-fs fsm-traffic "green") "q")
- (make-fs fsm-traffic "yellow"))
-
-(check-expect
- (find-next-state (make-fs fsm-traffic "yellow") "z")
- (make-fs fsm-traffic "red"))
+;(check-expect
+; (find-next-state (make-fs fsm-traffic "red") "n")
+; (make-fs fsm-traffic "red"))
+;
+;(check-expect
+; (find-next-state (make-fs fsm-traffic "white") "a")
+; (make-fs fsm-traffic "yellow"))
+;
+;(check-expect
+; (find-next-state (make-fs fsm-traffic "yellow") "b")
+; (make-fs fsm-traffic "yellow"))
+;
+;(check-expect
+; (find-next-state (make-fs fsm-traffic "yellow") "c")
+; (make-fs fsm-traffic "yellow"))
 
 ; FSM FSM-State -> SimulationState.v2 
 ; match the keys pressed with the given FSM 
@@ -114,10 +77,10 @@
 ; SimulationState.v2 -> Image 
 ; renders current world state as a colored square 
  
-(check-expect (state-as-colored-square
-               (make-fs fsm-traffic "red"))
-              (square 100 "solid" "red"))
- 
+;(check-expect (state-as-colored-square
+;               (make-fs fsm-traffic "red"))
+;              (square 100 "solid" "red"))
+
 (define (state-as-colored-square an-fsm)
   (square 100 "solid" (fs-current an-fsm)))
 
@@ -125,31 +88,47 @@
 ; finds the state representing current in transitions
 ; and retrieves the next field
 
-(check-expect (find fsm-traffic "red") "green")
+;(check-expect (find fsm-traffic "red") "green")
+;
+;(check-expect (find fsm-traffic "green") "yellow")
+;
+;(check-expect (find fsm-traffic "yellow") "red")
+;
+;(check-error (find fsm-traffic "black")
+;             "not found: black")
 
-(check-expect (find fsm-traffic "green") "yellow")
-
-(check-expect (find fsm-traffic "yellow") "red")
-
-(check-error (find fsm-traffic "black")
-             "not found: black")
-
-(define (fn-find transitions current)
+(define (fn-find ke transitions current)
   (cond
     [(empty? transitions) ...]
-    [else (if (... (transition-current (first transitions))
-                   current)
-              (transition-next (first transitions))
-              (fn-find (rest transitions) current))]))
+    [else (if (... (... (ktransition-current (first transitions)) current)
+                   (... (ktransitions-key (first transitions)) ke))
+              (ktransition-next (first transitions))
+              (fn-find ke (rest transitions) current))]))
 
-(define (find transitions current)
+(define (find ke transitions current)
   (cond
     [(empty? transitions) (error (string-append "not found: " current))]
-    [else (if (state=? (transition-current (first transitions))
-                       current)
-              (transition-next (first transitions))
-              (find (rest transitions) current))]))
+    [else (if (and (state=? (ktransition-current (first transitions)) current)
+                   (equal? (ktransition-key (first transitions)) ke))
+              (ktransition-next (first transitions))
+              (find ke (rest transitions) current))]))
 
+(define-struct ktransition [current key next])
+; A Transition.v2 is a structure:
+;   (make-ktransition FSM-State KeyEvent FSM-State)
+
+(define fsm-sequence (list (make-ktransition "white" "a" "yellow")
+                           (make-ktransition "yellow" "b" "yellow")
+                           (make-ktransition "yellow" "c" "yellow")
+                           (make-ktransition "yellow" "d" "green")))
+	
+
+
+
+
+
+
+ 
 
 
 
