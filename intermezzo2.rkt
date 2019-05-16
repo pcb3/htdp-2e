@@ -49,12 +49,12 @@
               (list 'html
                     (list 'body
                           (list 'table (list (list 'border "1"))
-                          (list 'tr (list (list 'width "200"))
-                                (list 'td "1")
-                                (list 'td "2"))
-                          (list 'tr (list (list 'width "200"))
-                                (list 'td "99")
-                                (list 'td "65"))))))
+                                (list 'tr (list (list 'width "200"))
+                                      (list 'td "1")
+                                      (list 'td "2"))
+                                (list 'tr (list (list 'width "200"))
+                                      (list 'td "99")
+                                      (list 'td "65"))))))
 
 ;; ex 234
 
@@ -80,23 +80,87 @@
 ; produces a web page with given author and title
 (define (my-first-web-page author title)
   `(html
-     (head
-       (title ,title)
-       (meta ((http-equiv "content-type")
-              (content "text-html"))))
-     (body
-       (h1 ,title)
-       (p "I, " ,author ", made this page.")
-       (table ((border "1"))
-                        (tr ((width "800"))
-                            ,@(make-row '( 1  2)))
-                        (tr ((width "200"))
-                            ,@(make-row '(99 65)))))))
+    (head
+     (title ,title)
+     (meta ((http-equiv "content-type")
+            (content "text-html"))))
+    (body
+     (h1 ,title)
+     (p "I, " ,author ", made this page.")
+     (table ((border "1"))
+            (tr ((width "800"))
+                ,@(make-row '( 1  2)))
+            (tr ((width "200"))
+                ,@(make-row '(99 65)))))))
               
+; LoS -> Table
+; consumes a list of strings los, and outputs a table
+
+(check-expect (make-ranking one-list)
+              (list
+ 'table
+ (list (list 'border "1"))
+ (list
+  'tr
+  (list (list 'width "200"))
+  (list 'cons (list 'td "1") (list 'td 1 "DJ Boring: Winona")))
+ (list
+  'tr
+  (list (list 'width "200"))
+  (list 'cons (list 'td "2") (list 'td 2 "Melo Ball: One")))
+ (list
+  'tr
+  (list (list 'width "200"))
+  (list
+   'cons
+   (list 'td "3")
+   (list 'td 3 "Justin Bieber: What do you mean")))))
+              
+
+(define (fn-make-ranking los)
+  `(... ((... ...))
+         (... ((... ...))
+             (cons (... ,(number->string
+                         (first (first (ranking los)))))
+                   (... ,@(first (ranking los)))))
+         (... ((... ...))
+             (cons (... ,(number->string
+                         (first (first (rest (ranking los))))))
+                   (... ,@(first (rest (ranking los))))))
+         (... ((... ...))
+             (cons (... ,(number->string
+                         (first (second (rest (ranking los))))))
+                   (... ,@(second (rest (ranking los))))))))
+  
+
+(define (make-ranking los)
+  `(table ((border "1"))
+         (tr ((width "200"))
+             (cons (td ,(number->string
+                         (first (first (ranking los)))))
+                   (td ,@(first (ranking los)))))
+         (tr ((width "200"))
+             (cons (td ,(number->string
+                         (first (first (rest (ranking los))))))
+                   (td ,@(first (rest (ranking los))))))
+         (tr ((width "200"))
+             (cons (td ,(number->string
+                         (first (second (rest (ranking los))))))
+                   (td ,@(second (rest (ranking los))))))))
+
+; example
 (show-in-browser
-   `(table ((border "1"))
-           (tr ((width "200"))
-               (cons (td ,(number->string (first (first (ranking one-list)))))
-               (td ,@(first (ranking one-list)))))))
+ `(table ((border "1"))
+         (tr ((width "200"))
+             (cons (td ,(number->string
+                         (first (first (ranking one-list)))))
+                   (td ,@(first (ranking one-list)))))
+         (tr ((width "200"))
+             (cons (td ,(number->string
+                         (first (first (rest (ranking one-list))))))
+                   (td ,@(first (rest (ranking one-list))))))
+         (tr ((width "200"))
+             (cons (td ,(number->string
+                         (first (second (rest (ranking one-list))))))
+                   (td ,@(second (rest (ranking one-list))))))))
  
-              
