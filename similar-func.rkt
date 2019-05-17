@@ -150,10 +150,29 @@
 (define (sup-1 l)
   (extracted > l))
 
-;(sup-1 (list 25 24 23 22 21 20 19 18 17 16 15 14 13
+
+; R Nelon -> Number
+; consumes a non-empty list of numbers l, and outputs
+; the mininmum number in l
+
+(define (fn-extract-min l)
+  (cond
+    [(empty? (rest l)) ...]
+    [else
+     (if (... (first l) (fn-extract-min (rest l)))
+         (first l)
+         (fn-extract-min (rest l)))]))
+     
+
+(define (extract-min l)
+  (cond
+    [(empty? (rest l)) (first l)]
+    [else (min (first l) (extract-min (rest l)))]))
+    
+;(extract-min (list 25 24 23 22 21 20 19 18 17 16 15 14 13
 ;      12 11 10 9 8 7 6 5 4 3 2 1))
  
-;(sup-1 (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+;(extract-min (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
 ;      17 18 19 20 21 22 23 24 25))
 
 
