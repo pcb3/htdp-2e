@@ -22,3 +22,74 @@
 ; (cons Boolean (cons String '()))
 
 (define LIST2 (cons #true (cons "Happy" '())))
+
+;; ex 240
+
+(define-struct layer [stuff])
+
+; An LStr is one of: 
+; – String
+; – (make-layer LStr)
+
+(define LSTR1 "hi")
+(define LSTR2 (make-layer LSTR1))
+
+; An LNum is one of: 
+; – Number
+; – (make-layer LNum)
+
+(define LNUM1 42)
+(define LNUM2 (make-layer LNUM1))
+
+; A [LAYER ITEM] is a structure:
+; - ITEM
+; - (make-layer ITEM)
+
+; [LAYER LSTR]
+; [LAYER LNUM]
+
+;; ex 241
+
+; An NEList-of-temperatures is one of: 
+; – (cons CTemperature '())
+; – (cons CTemperature NEList-of-temperatures)
+; interpretation non-empty lists of Celsius temperatures 
+
+; An NEList-of-bools is one of:
+; - (cons Bool '())
+; - (cons Bool NEList-of-bools)
+
+; A [TB ITEM] is a structure:
+; - Boolean
+; - CTemperature
+
+; A [List-of [TB ITEM]] is a structure:
+; - (cons TB '())
+; - (cons TB List-of-[TB ITEM])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
