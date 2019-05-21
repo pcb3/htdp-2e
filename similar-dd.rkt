@@ -126,10 +126,9 @@
 
 (define (s-to-end s los)
   (cond
-    [(empty? (rest los)) (cons (first los) '())]
+    [(empty? (rest los)) '()]
     [else (if (string=? s (first los))
-              (cons (first (rest los))
-                    (s-to-end s (rest los)))
+              (rest los)
               (s-to-end s (rest los)))]))
 
 
