@@ -67,6 +67,54 @@
 (define (tan-from-tab-math n )
   (tab-math n tan))
 
+;; exercise 251
+
+; [List-of Number] -> Number
+; computes the sum of 
+; the numbers on l
+(define (sum l)
+  (cond
+    [(empty? l) 0]
+    [else
+     (+ (first l)
+        (sum (rest l)))]))
+	
+; [List-of Number] -> Number
+; computes the product of 
+; the numbers on l
+(define (product l)
+  (cond
+    [(empty? l) 1]
+    [else
+     (* (first l)
+        (product (rest l)))]))
+
+; [List-of Number] -> Number
+; computes the product or sum of the numbers on l
+
+(check-expect (fold1 '(1 2 3) +) 6)
+
+(check-expect (fold1 '(1 2 3) *) 6)
+
+(define (fn-fold1 l g)
+  (cond
+    [(empty? l)
+     (cond
+       [(equal? g +) ...]
+       [else ...])]
+    [else
+     (g (first l)
+        (fn-fold1 (rest l) g))]))
+
+(define (fold1 l g)
+  (cond
+    [(empty? l)
+     (cond
+       [(equal? g +) 0]
+       [else 1])]
+    [else
+     (g (first l)
+        (fold1 (rest l) g))]))
 
 
 
