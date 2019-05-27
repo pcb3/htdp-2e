@@ -5,10 +5,20 @@
 
 ;; Exercise 254. Formulate signatures for the following functions:
 
-; [List-of Numbers] [Number Number -> Boolean] -> [List-of Numbers] 
+; [List-of Number] [Number Number -> Boolean] -> [List-of Number] 
 
-; [List-of Strings] [String String -> Boolean] -> [List-of Strings]
+; [List-of String] [String String -> Boolean] -> [List-of String]
 
 ; [x Y] [List-of X] [X X -> Y] -> [List-of X]
 
 ; [List-of IR] [IR IR -> Boolean] -> [List-of IR]
+
+;; Exercise 254
+
+; [List-of Number] [Number -> Number] -> [List-of Number]
+
+; [List-of String] [String -> String] -> [List-of String]
+
+; [X] [List-of X] [X -> X] -> [List-of X]
+
+; [List-of IR] [String -> String] -> [List-of String]
