@@ -11,7 +11,16 @@
 ; then (>= (f x-i) (f x-1)), (>= (f x-i) (f x-2)), ...
 (define (argmax f lx) ...)
 
-; takes a function f and a list, applies f to the first item,
-; tests if it the maximum possible value.
-; if it is the max then it returns that item, else it goes to next
-; item in the list
+; takes a function f and a non-empty list, applies f to the first item,
+; and the second item in the list, takes the maximum of the two
+; items when f is applied, and tests the next item.
+; returns the item who has the maximum value when f is applied
+; in the list
+
+; [Number -> Number] [NEList-of Number] -> Number
+
+; argmin:
+; takes a function f and a non-empty list and applies f to the first
+; and second item, takes the minimum. takes the item that had the
+; minimum value and tests it against the next item in the list.
+; returns the minimum item
