@@ -11,14 +11,52 @@
 
 ; Word -> List-of-words
 ; creates all arrangements of the letters in w
+(check-expect (arrangements '()) '())
+(check-expect (arrangements '("a")) '("a"))
+(check-expect (arrangements (list "a" "b")) (list '("b") '("a")))
+
 (define (fn-arrangements w)
   (cond
     [(empty? w) ...]
     [else (... (first w) ...
                ... (fn-arragnements (rest w)) ...)]))
 
-(define
+(define (arrangements w)
+  (cond
+    [(empty? w) '()]
+    [else (insert-everywhere (first w))
+          (arrangements (rest w))]))
 
+; 1String List-of-Words -> List-of-Words
+; takes the each word permutation in list of words and the 1String
+; of word, and inserts the 1String into every possible place in each word
+(check-expect (insert-everywhere "a" '()) '("a"))
+(check-expect (insert-everywhere "a" '("b")) (list '("a" "b") '("b" "a")))
+
+(define (fn-insert-everywhere 1str low)
+  (cond
+    [(empty? low) ...]
+    [else (... (... 1str (first low))
+               (fn-insert-everywhere 1str (rest low)))]))
+
+(define (insert-everywhere 1str low)
+  (cond
+    [(empty? low) '()]
+    [else (cons (build-word 1str (first low))
+                (insert-everywhere 1str (rest low)))]))
+
+; 1String Word -> Word
+; builds the new word by appending prefix, 1str and suffix
+(define (build-word 1str word-mats) '())
+
+; Word -> Word
+; creates a prefix
+(define (prefix p) '())
+
+; Word -> Word
+; creates a suffix
+(define (suffix s) '())
+  
 ;(define (arrangements w)
 ;  (local (; 1String List-of-words -> List-of-words
 ;          ; inserts the first letter of w into every possible place
