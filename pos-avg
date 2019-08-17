@@ -1,0 +1,29 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname pos-avg) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; List-of-Numbers Number -> Number
+; consumes a list of numbers lon that outputs the
+; average of all positive numbers
+
+(define LIST (list 1 2 3))
+(define LIST2 (list -1 -1 -999))
+(define LIST3 (list 1 2 3 -1))
+
+(define (posi-list lon)
+  (cond
+    [(empty? lon) '()]
+    [(equal? (first lon) -999) '()]
+    [else
+     (if (positive? (first lon))
+         (cons (first lon) (posi-list (rest lon)))
+         (posi-list (rest lon)))]))
+
+(define (sum l)
+  (cond
+    [(empty? l) 0]
+    [else
+     (+ (first l) (sum (rest l)))]))
+
+(define (avg l)
+  (/ (sum (posi-list l)) (length l)))
+  

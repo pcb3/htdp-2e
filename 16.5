@@ -1,0 +1,24 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname |16|) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; 16.5 Using abstractions, by example
+
+(define (keep-good lop)
+  (local (; Posn -> Posn
+          ; should this Posn stay on the list
+          (define (good? p)
+            (<= (posn-y p) 100)))
+    (filter good? lop)))
+
+; Posn Posn Number -> Boolean
+; is the distance between p and q less than d
+(define (close-to p q d)
+  (local (; Number Number -> Number
+          ; finds the distance between two points
+          (define (distance p q)
+            (sqrt (+ (sqr (- (posn-x p)
+                             (posn-x q)))
+                     (sqr (- (posn-y p)
+                             (posn-y q)))))))
+    (<= (distance p q) d)))
+          

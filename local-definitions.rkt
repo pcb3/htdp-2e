@@ -5,6 +5,8 @@
 
 (require 2htdp/image)
 
+
+; exercise 258
 (define MT (empty-scene 400 400))
 
 ; Image Polygon -> Image
@@ -36,3 +38,33 @@
 (render-polygon MT (list (make-posn 10 10)
                          (make-posn 50 200)
                          (make-posn 350 10)))
+
+
+            
+            
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

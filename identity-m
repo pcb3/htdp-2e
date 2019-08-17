@@ -1,0 +1,66 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname identity-m) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; Exercise 262
+
+; Number -> List-of-LoN
+; consumes a number n and outputs the identity
+; matrix
+
+(check-expect (identity-m 1) (list (list 1)))
+(check-expect (identity-m 2) (list (list 1 0)
+                                   (list 0 1)))
+(check-expect (identity-m 3) (list (list 1 0 0)
+                                   (list 0 1 0)
+                                   (list 0 0 1)))
+(define (identity-m n)
+  (cond
+    [(equal? n 1) (list (list 1))]
+    [else
+     (local (; Number -> LoN
+             ; consumes a Number n and produces a row
+             ; with n zeros
+             (define (zero-row n)
+               (cond
+                 [(zero? n) '()]
+                 [else
+                  (cons 0 (zero-row (sub1 n)))]))
+
+             ; LoN -> LoN
+             ; consumes a list of numbers lon
+             ; and returns a new list with a 1
+             ; inserted at position i
+             (define (insert-1 lon n)
+               (cond
+                 [(empty? lon) '()]
+                 [else
+                  (if
+                   (equal? 1 n)
+                   (cons 1 (insert-1 (rest lon)
+                                     (sub1 n)))
+                   (cons (first lon)
+                         (insert-1 (rest lon)
+                                   (sub1 n))))]))
+
+             ; Number Number -> List-LoN
+             ; consumes a number n and produces the
+             ; zero matrix with n zeros m times
+             (define (create-zero n m)
+               (cond
+                 [(zero? m) '()]
+                 [else
+                  (cons (reverse
+                         (insert-1 (zero-row n) m))
+                        (create-zero n (sub1 m)))])))
+       (create-zero n n))]))
+       
+
+
+
+
+
+
+
+
+
+                      

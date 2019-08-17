@@ -24,8 +24,8 @@
 (define (arrangements w)
   (cond
     [(empty? w) '()]
-    [else (insert-everywhere (first w))
-          (arrangements (rest w))]))
+    [else (insert-everywhere (first w)
+          (arrangements (rest w)))]))
 
 ; 1String List-of-Words -> List-of-Words
 ; takes the each word permutation in list of words and the 1String
@@ -47,6 +47,16 @@
 
 ; 1String Word -> Word
 ; builds the new word by appending prefix, 1str and suffix
+(check-expect (build-word "a" '()) '())
+(check-expect (build-word "a" '("b")) (list "a" "b"))
+
+(define (fn-build-word 1str word-mats)
+  (cond
+    [(empty? word-mats) ...]
+    [else (... (empty? prefix)
+               (... 1str (suffix word-mats))
+               (... (... (first (word-mats)) prefix) 1str (suffix (rest word-mats))))]))
+
 (define (build-word 1str word-mats) '())
 
 ; Word -> Word
