@@ -170,7 +170,33 @@
             (< (IR-sell records) ua)))
     (filter threshold<? lor)))
 
+; String List-of-IR -> List-of-IR
+; consumes the name of an inventory item, ty, and
+; a list of inventory records and produces a list
+; of inventory records that do not use the name ty
 
+(check-expect (recall "" '()) '())
+
+(check-expect
+ (recall "snake" LOR)
+ (list
+  (make-IR "giraffe" "herbivore" 1000 2500)
+  (make-IR "rhino" "herbivore" 5000 9999)))
+ 
+(define (fn-recall ty lor)
+  (local (; String lor -> Boolean
+          ;...
+          (define (name-equal? records)
+            ...))
+    (filter name-equal? lor)))
+
+(define (recall ty lor)
+  (local (; String lor -> Boolean
+          ; consumes a name and an IR and returns
+          ; true if name has not been used 
+          (define (name-equal? records)
+            (not (equal? (IR-name records) ty))))
+    (filter name-equal? lor)))
 
 
 
