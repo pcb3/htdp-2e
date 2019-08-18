@@ -115,9 +115,9 @@
 (check-expect
  (sort-ir LOR)
  (list
- (make-IR "giraffe" "herbivore" 1000 2500)
- (make-IR "snake" "carnivore" 899 3000)
- (make-IR "rhino" "herbivore" 5000 9999)))
+  (make-IR "giraffe" "herbivore" 1000 2500)
+  (make-IR "snake" "carnivore" 899 3000)
+  (make-IR "rhino" "herbivore" 5000 9999)))
 
 (define (fn-sort-ir lor)
   (local (; IR -> Number
@@ -138,6 +138,38 @@
              (- (IR-sell b)
                 (IR-buy b)))))
     (sort lor dif<=)))
+
+; exercise 269
+
+; Number List-of-IR -> List-of-IR
+; consumes a threshold, ua, and a list of IR,
+; produces a list of IR whose sales price is below
+; ua
+
+(check-expect (eliminate-expensive 0 '()) '())
+
+(check-expect
+ (eliminate-expensive 3999 LOR)
+ (list
+  (make-IR "giraffe" "herbivore" 1000 2500)
+  (make-IR "snake" "carnivore" 899 3000)))
+
+(define (fn-eliminate-expensive ua lor)
+  (local (; Number lor -> Boolean
+          ;...
+          (define (threshold<? records)
+            ...))
+    (filter threshold<? lor)))
+
+(define (eliminate-expensive ua lor)
+  (local (; Number lor -> Boolean
+          ; consumes a threshold and a list of
+          ; IR and returns true if the record sell
+          ; price is below the threshold t
+          (define (threshold<? records)
+            (< (IR-sell records) ua)))
+    (filter threshold<? lor)))
+
 
 
 
