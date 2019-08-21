@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-intermediate-reader.ss" "lang")((modname finger-x-abstraction) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname finger-x-abstraction) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ; 16.7 Finger exercises: Abstraction
 
 ; exercise 267
@@ -198,6 +198,178 @@
             (not (equal? (IR-name records) ty))))
     (filter name-equal? lor)))
 
+; List-of-Strings List-of-Strings -> List-of-Strings
+; consumes two lists of names and selects all those
+; from the second that are also in the first
+
+(check-expect (selection '() '()) '())
+
+(check-expect (selection '(1 2 3) '(3 4 5)) '(3))
+
+(check-expect (selection '(1 2 3) '(4 5 6)) '())
+
+(define (fn-selection l1 l2)
+  (local (; List-of-Strings String -> Boolean
+          ; ...
+          (define (in-both? l s)
+            ...))
+    (filter in-both? l1)))
+
+(define (selection l1 l2)
+  (local (; List-of-Strings -> Boolean
+          ; checks s is in l
+          (define (in-both? s)
+            (member? s l2)))
+    (filter in-both? l1)))
+
+; exercise 270
+
+; Number -> List-of-Numbers
+; builds a list from 0 to n - 1
+
+(check-expect (build0 0) '())
+
+(check-expect (build0 3) '(0 1 2))
+
+(define (fn-build0 n)
+  (local (; Number -> Number
+          ;...
+          (define (add0 x)
+            ...))
+    (build-list n add0)))
+
+(define (build0 n)
+  (local (; Number -> Number
+          ; adds zero to x
+          (define (add0 x)
+            (+ x 0)))
+    (build-list n add0)))
+
+; Number -> List-of-Numbers
+; builds a list from 1 to n
+
+(check-expect (buildn 0) '())
+
+(check-expect (buildn 3) '(1 2 3))
+
+(define (buildn n)
+  (build-list n add1))
+
+; Number -> List-of-Numbers
+; builds a list of 1 / n items
+
+(check-expect (buildQ 0) '())
+
+(check-expect (buildQ 3) '(1 1/2 1/3))
+
+(define (fn-buildQ n)
+  (local (; Number -> Number
+          ;...
+          (define (rationalise q)
+            ...))
+    (build-list n rationalise)))
+
+(define (buildQ n)
+  (local (; Number -> Number
+          ; divides 1 by n
+          (define (rationalise q)
+            (/ 1 (add1 q))))
+    (build-list n rationalise)))
+
+; Number -> List-of-Numbers
+; builds a list of the first n even items
+
+(check-expect (build-even 0) '())
+
+(check-expect (build-even 3) '(0 2 4))
+
+(define (fn-build-even n)
+  (local (; Number -> Number
+          ;...
+          (define (*2 q)
+            ...))
+    (build-list n *2)))
+
+(define (build-even n)
+  (local (; Number -> Number
+          ; consumes a number and returns and even
+          (define (*2 g)
+            (* 2 g)))
+    (build-list n *2)))
+            
+; Number -> List-of-List-LoN
+; creates the identity matrix for n rows
+
+;(check-expect (build-identity 0) '())
+;
+;(check-expect (build-identity 1) (list '(1)))
+;
+;(check-expect (build-identity 2) (list
+;                                  (list 1 0)
+;                                  (list 0 1)))
+
+(define (fn-build-identity n)
+  (local (; Number -> LoN
+          ;...
+          (define (build-row r)
+            ...)
+
+          ; Number -> List-LoN
+          ;...
+          (define (build-m s)
+            ...)
+
+          ; Number LoN -> LoN
+          ;...
+          (define (add-1s t)
+            ...)
+
+          ; Number -> Number
+          ;...
+          (define (zeroed p)
+            ...)
+
+          ; List-of-LoN -> List-of-LoN
+          ;...
+          (define (extract-row lolon)
+            (cond
+              [(empty? lolon) ...]
+              [else
+               (cons (... (first lolon))
+                     (extract-row (rest lolon)))])))
+    
+    (build-list n ...)))
+
+(define (build-identity n)
+  (local (; Number -> LoN
+          ; consumes a number and creates a row of
+          ;zero's
+          (define (build-row r)
+            (build-list n zeroed))
+
+          ; Number -> List-LoN
+          ; consumes a number s and builds the zero
+          ; matrix for n
+          (define (build-m s)
+            (build-list n build-row))
+
+          ; Number -> Number
+          ; returns 0
+          (define (zeroed p)
+            (* 0 p)))
+                     
+    (build-m n)))
+
+; Number -> List-of-LoN
+; consumes a number n and returns the identity
+; matrix
+
+(define (buidl n)
+  (build-list n
+              (lambda (i)
+                (build-list n
+                            (lambda (j)
+                              (if (= i j) 1 0))))))
 
 
 
@@ -219,11 +391,4 @@
 
 
 
-
-
-
-
-
-
-
-
+  
