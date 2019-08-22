@@ -371,6 +371,28 @@
                             (lambda (j)
                               (if (= i j) 1 0))))))
 
+; [ X Y ] [ X -> Y] -> [List-of Y]
+; constructs a list by applying f to n, n - 1,
+; ..., (sub1 n)
+
+(check-expect (tabulate sin 0) (list 0))
+
+(check-expect (tabulate tan 0) (list 0))
+
+(define (fn-tabulate f n)
+  (local (; [X] N [N -> X] -> [List-of X]
+          ; ...
+          (define (builder f n)
+            ...))
+    (builder f n)))
+
+(define (tabulate f n)
+  (local (; [X] N [N -> X] -> [List-of X]
+          ; constructs the list by applying f to
+          ; 0, 1, ..., (sub1 n)
+          (define (builder f n)
+            (build-list n f)))
+    (cons (f n) (builder f n))))
 
 
 
@@ -391,4 +413,4 @@
 
 
 
-  
+
