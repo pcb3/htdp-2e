@@ -15,33 +15,33 @@
 ;                    '("a" "b")
 ;                    '("a")))
 
-(define (prefix lo1)
-  (local (
-          (define (helper l)
-            (cond
-              [(empty? l) '()]
-              [else
-               (cons
-                (drop-last l)
-                (helper
-                 (reverse (rest (reverse l)))))]))
-          ; List-of X -> List-of X
-          ; ...
-          (define (fn-drop-last lx)
-            (cond
-              [(empty? (rest lx)) ...]
-              [else
-               (... (first lx)
-                    (fn-drop-last (rest lx)))]))
-          
-          (define (drop-last lx)
-            (cond
-              [(empty? (rest lx)) '()]
-              [else
-               (cons (first lx)
-                     (drop-last (rest lx)))])))
-    
-    (helper lo1)))
+;(define (prefix lo1)
+;  (local (
+;          (define (helper l)
+;            (cond
+;              [(empty? l) '()]
+;              [else
+;               (cons
+;                (drop-last l)
+;                (helper
+;                 (reverse (rest (reverse l)))))]))
+;          ; List-of X -> List-of X
+;          ; ...
+;          (define (fn-drop-last lx)
+;            (cond
+;              [(empty? (rest lx)) ...]
+;              [else
+;               (... (first lx)
+;                    (fn-drop-last (rest lx)))]))
+;          
+;          (define (drop-last lx)
+;            (cond
+;              [(empty? (rest lx)) '()]
+;              [else
+;               (cons (first lx)
+;                     (drop-last (rest lx)))])))
+;    
+;    ()))
 
 (define (prefix-builder lo1)
   (local (; List-of-1Strings -> List-of-1Strings
@@ -73,7 +73,16 @@
    
 (prefix-counter '(1 2 3))
 
+; [ X ] [ List-of X ] -> Boolean
+; consumes an X and a list of X and produces true
+; when it is the last element in a list
 
+(check-expect (last? 0 '(0)) #true)
+(check-expect (last? 0 '(0 1 2 3)) #false)
+(check-expect (last? 3 '(1 2 3)) #true)
+
+(define (last? x lx)
+  (equal? x (first (reverse lx))))
 
 
 
