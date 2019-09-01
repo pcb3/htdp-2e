@@ -102,7 +102,7 @@
 
 (define (prefix-filter lo1)
   (cond
-    [(empty? lo1) lo1]
+    [(empty? lo1) '()]
     [else
      (cons lo1
            (prefix-filter (remove-last lo1)))]))
