@@ -73,16 +73,41 @@
    
 (prefix-counter '(1 2 3))
 
-; [ X ] [ List-of X ] -> Boolean
-; consumes an X and a list of X and produces true
-; when it is the last element in a list
+; [ List-of X -> Boolean ] -> [ List-of X ]
+; consumes a list and returns the list with
+; the last item removed
 
-(check-expect (last? 0 '(0)) #true)
-(check-expect (last? 0 '(0 1 2 3)) #false)
-(check-expect (last? 3 '(1 2 3)) #true)
+(check-expect (remove-last '(0)) '())
+(check-expect (remove-last '(0 1 2 3)) '(0 1 2))
+(check-expect (remove-last '(1 2 3 0)) '(1 2 3))
 
-(define (last? x lx)
-  (equal? x (first (reverse lx))))
+(define (fn-remove-last lx)
+  (local (; [ List-of X ] -> Boolean
+          ; ...
+          (define (last? x)
+            (equal? ... (... (... lx)))))
+    (filter last? lx)))
+
+(define (remove-last lx)
+  (local (; [ List-of X ] -> Boolean
+          ; consumes an item x and produces false
+          ; when it is the last element in a list
+          (define (last? x)
+            (not (equal? x (first (reverse lx))))))
+    (filter last? lx)))
+
+; List-of-1Strings -> List-of List-of-1Stirngs
+; consumes a list of 1 strings lo1 and produces
+; all prefixes
+
+(define (prefix-filter lo1)
+  (cond
+    [(empty? lo1) lo1]
+    [else
+     (cons lo1
+           (prefix-filter (remove-last lo1)))]))
+
+
 
 
 
