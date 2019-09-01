@@ -107,11 +107,25 @@
      (cons lo1
            (prefix-filter (remove-last lo1)))]))
 
+;; suffix
 
+(define (suffix-filter lo1)
+  (cond
+    [(empty? lo1) '()]
+    [else
+     (cons lo1
+           (suffix-filter
+            (remove-first lo1)))]))
 
+(define (remove-first lx)
+  (local (; [ List-of X ] -> Boolean
+          ; consumes an item x and produces false
+          ; when it is the first element in a list
+          (define (first? x)
+           (not (equal? x (first lx)))))
+    (filter first? lx)))
 
-
-
+ 
 
 
 
