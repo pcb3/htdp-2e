@@ -80,13 +80,25 @@
   (filter (lambda (inv) (< (inv-price inv) ua)) lor)) 
 
 
-; recall
+; String List-of-inv -> List-of-inv
+; consumes a list of inventory records and produces
+; a new list of records excluding record names equal
+; to th
+
 (check-expect (recall "Daikon" '()) '())
 (check-expect (recall "Daikon" LOR) (list INV2 INV3))
 
 (define (recall ty lor)
   (filter (lambda (inv) (not (equal? (inv-name inv)
                                      ty))) lor))
+
+; List-of-Names List-of-Names -> List-of-Names
+; consumes two lists of names and produces a new
+; list of every name in both lists
+
+(define (selection lon1 lon2)
+  (filter (lambda (x) (member? x lon2)) lon1))
+
              
 
 
