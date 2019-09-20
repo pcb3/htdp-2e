@@ -99,6 +99,99 @@
 (define (selection lon1 lon2)
   (filter (lambda (x) (member? x lon2)) lon1))
 
+; exercise 288
+
+; Number -> List-of-Numbers
+
+; consumes a Number n and returns a list of numbers
+; from 0 to n - 1
+
+(check-expect (build-nat 3) (list 0 1 2))
+
+(define (build-nat n)
+  (build-list n (lambda (x) x)))
+
+; consumes a Number n and  produces a list of numbers
+; 1 - n
+
+(check-expect (build>0 3) (list 1 2 3))
+
+(define (build>0 n)
+  (build-list n (lambda (x) (add1 x))))
+
+; consumes a Number n and produces the list of
+; rationals 1 / 1 - 1 / n + 1
+
+(check-expect (build-rational 3)
+              (list 1 (/ 1 2) (/ 1 3)))
+
+(define (build-rational n)
+  (build-list n (lambda (x) (/ 1 (add1 x)))))
+
+; consumes a Number n and produces the first n even
+; numbers
+
+(check-expect (build-even 3) (list 0 2))
+
+(define (build-even n)
+  (filter (lambda (y) (even? y))
+          (build-list n (lambda (x) x))))
+
+; Nubmer -> List of List-of-Numbers
+; consumes a natural Number n and produces the
+; n x n identity matrix
+
+(check-expect (/identity 1) (list (list 1)))
+(check-expect (/identity 3) (list (list 1 0 0)
+                                  (list 0 1 0)
+                                  (list 0 0 1)))
+
+(define (/identity n)
+  (local (; consumes a Number n and builds a list
+          ; with n lists within and 1's on the
+          ; diagonal in each list
+
+          (define (fn-build-matrix m)
+            (cond
+              [(zero? m) ...]
+              [else
+               (... ...
+                (fn-build-matrix (sub1 m)))]))
+
+          (define (build-matrix m)
+            (cond
+              [(zero? m) '()]
+              [else
+               (cons
+                (reverse
+                 (build-list
+                  n
+                  (lambda (x)
+                    (if (= (add1 x) m) 1 0))))
+                (build-matrix (sub1 m)))])))
+              
+    (build-matrix n)))
+
+; entry-from racket-docs buiild-list function
+; does'nt seem to work tho?
+
+(define (/matrix n)
+  (build-list 3 (lambda (x)
+                  (if (equal? n x) 1 0))))
+
+;==
+
+; consumes a Number n a list 1 - n + 1 and produces
+; true if all numbers a rational
+
+(andmap (lambda (x) (rational? x))
+        (build-list 1000
+                    (lambda (x)
+                      (/ 1 (add1 x)))))
+
+
+
+
              
 
 
