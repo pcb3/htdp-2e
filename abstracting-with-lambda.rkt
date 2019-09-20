@@ -172,15 +172,23 @@
               
     (build-matrix n)))
 
-; entry-from racket-docs buiild-list function
-; does'nt seem to work tho?
+; [ X Y ] [ X -> Y] -> [List-of Y]
+; consumes a Number X and applies a function Y to
+; n, n - 1,... 0
 
-(define (/matrix n)
-  (build-list 3 (lambda (x)
-                  (if (equal? n x) 1 0))))
+(check-expect (tabulate sin 0) (list 0))
+(check-expect (tabulate sqr 5)
+              (list 25 16 9 4 1 0))
+
+(define (fn-tabulate f n)
+  (build-list (... n)
+              (lambda (x) (... x))))
+
+(define (tabulate f n)
+  (reverse (build-list (add1 n)
+                       (lambda (x) (f x)))))
 
 ;==
-
 ; consumes a Number n a list 1 - n + 1 and produces
 ; true if all numbers a rational
 
@@ -188,6 +196,21 @@
         (build-list 1000
                     (lambda (x)
                       (/ 1 (add1 x)))))
+
+;==
+; identity matrix using lambda from some uknown
+; source
+
+; Number -> List-of-LoN
+; consumes a number n and returns the identity
+; matrix
+
+(define (buidl n)
+  (build-list n
+              (lambda (i)
+                (build-list n
+                            (lambda (j)
+                              (if (= i j) 1 0))))))
 
 
 
