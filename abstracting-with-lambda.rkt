@@ -272,14 +272,6 @@
 (define (fn-starts-with los 1str)
   (andmap (lambda (x) (equal? (... (... x)) 1str))))
 
-;(define (starts-with los 1str)
-;  (cond
-;    [(empty? los) #false]
-;    [else
-;     (andmap (lambda (x)
-;               (equal? (first (explode x)) 1str))
-;             los)]))
-
 (define starts-with
   (lambda (x y)
     (cond
@@ -309,9 +301,39 @@
 (define append-from-fold
   (lambda (x y) (foldr cons y x)))
 
+; X [List-of X] -> X
+; consumes a list of numbers and produces the sum
 
-  
+(check-expect
+ ((lambda (x) (foldr + 0 x)) '(1 2 3)) 6)
 
+; X [List-of X] -> X
+; consumes a list of numbers and produces the product
+
+(check-expect
+ ((lambda (x) (foldr * 1 x)) '(1 2 3)) 6)
+
+; exercise 291
+
+; [ X Y ] [ X -> Y] [ List-of X] -> [ List-of Y ]
+; consumes a function and a list and applies f to
+; each item in the list
+
+(check-expect (map-via-fold add1 '(1 2 3)) '(2 3 4))
+
+; previous implementation
+;(define (map-from-fold f lx)
+;  (local (; [X Y] [Y -> Y] -> [List-of X Y] 
+;          ; consumes a base and an item from a list,
+;          ; applies f to that item and conses it to
+;          ; the base
+;          (define (cons-and-f item base)
+;            (cons (f item) base)))
+;    (foldr cons-and-f '() lx)))
+
+(define map-via-fold
+  (lambda (f x)
+    (foldr (lambda (p q) (cons (f p) q)) '() x)))
 
 
 
