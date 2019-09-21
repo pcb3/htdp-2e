@@ -241,6 +241,7 @@
           ; consumes two lists of strings and
           ; produces true if each letter in the
           ; first string is in the second in order
+          
           (define (check-letter los1 los2)
             (cond
               [(empty? los1) #true]
@@ -249,18 +250,40 @@
                (if (equal? (first los1) (first los2))
                    (check-letter (rest los1)
                                  (rest los2))
-                   #false)]))
-          
-          ; List-of-1Strings -> Boolean
-          ; consumes a 1String and produces true
-          ; if check-letter produces true
+                   #false)])))
 
-          (define (helper l)
-            (check-letter (explode s) l)))
+    (ormap (lambda (l) (check-letter (explode s) l))
+           (map explode los))))
 
-    (ormap helper (map explode los))))
+; List-of-Strings 1String -> Boolean
+; consumes a list of names and a letter and produces
+; true if all names start with given letter
 
-          
+(check-expect (starts-with '() "a") #false)
+
+(check-expect
+ (starts-with (list "andrew" "andy" "anderson") "a")
+ #true)
+
+(check-expect
+ (starts-with (list "andrew" "gemma" "anderson") "a")
+ #false)
+
+(define (fn-starts-with los 1str)
+  (andmap (lambda (x) (equal? (... (... x)) 1str))))
+
+(define (starts-with los 1str)
+  (cond
+    [(empty? los) #false]
+    [else
+     (andmap (lambda (x)
+               (equal? (first (explode x)) 1str))
+             los)]))
+
+; Use ormap. It with return true as soon as the
+; first instance of the condition. Its faster!
+
+
   
 
 
