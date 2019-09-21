@@ -212,6 +212,57 @@
                             (lambda (j)
                               (if (= i j) 1 0))))))
 
+; exercise 289
+
+; String List-of Strings -> Boolean
+; consumes a name and a list of names and determines
+; if the name or an extension of the name exists
+; in the given list
+
+(check-expect (find-name "" '()) #false)
+
+(check-expect (find-name "a" '("aa" "bb" "vc"))
+              #true)
+
+(check-expect (find-name "aabra" '("aa" "bb" "cc"))
+              #false)
+
+(check-expect (find-name "pie" '("aa" "bb" "cc"))
+              #false)
+
+(check-expect (find-name "matos" '("a" "b" "c"))
+              #false)
+
+(define (fn-find-name s los)
+  (ormap (lambda (x) (... s ...))))
+
+(define (find-name s los)
+  (local (; LoS LoS -> Boolean
+          ; consumes two lists of strings and
+          ; produces true if each letter in the
+          ; first string is in the second in order
+          (define (check-letter los1 los2)
+            (cond
+              [(empty? los1) #true]
+              [(empty? los2) #false]
+              [else
+               (if (equal? (first los1) (first los2))
+                   (check-letter (rest los1)
+                                 (rest los2))
+                   #false)]))
+          
+          ; List-of-1Strings -> Boolean
+          ; consumes a 1String and produces true
+          ; if check-letter produces true
+
+          (define (helper l)
+            (check-letter (explode s) l)))
+
+    (ormap helper (map explode los))))
+
+          
+  
+
 
 
 
