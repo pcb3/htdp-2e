@@ -272,16 +272,42 @@
 (define (fn-starts-with los 1str)
   (andmap (lambda (x) (equal? (... (... x)) 1str))))
 
-(define (starts-with los 1str)
-  (cond
-    [(empty? los) #false]
-    [else
-     (andmap (lambda (x)
-               (equal? (first (explode x)) 1str))
-             los)]))
+;(define (starts-with los 1str)
+;  (cond
+;    [(empty? los) #false]
+;    [else
+;     (andmap (lambda (x)
+;               (equal? (first (explode x)) 1str))
+;             los)]))
+
+(define starts-with
+  (lambda (x y)
+    (cond
+      [(empty? x) #false]
+      [else
+       (andmap (lambda (z)
+                 (equal? (first (explode z)) y))
+               x)])))
 
 ; Use ormap. It with return true as soon as the
 ; first instance of the condition. Its faster!
+
+; exercise 290
+
+; X Y [List-of X] [List-of X] -> [List-of Y]
+; consumes two lists and concatenate them
+
+(check-expect (append-from-fold '() '()) '())
+
+(check-expect (append-from-fold '() '(1)) '(1))
+
+(check-expect (append-from-fold '(1) '()) '(1))
+
+(check-expect (append-from-fold '(1 2 3) '(4 5 6))
+              '(1 2 3 4 5 6))
+
+(define append-from-fold
+  (lambda (x y) (foldr cons y x)))
 
 
   
