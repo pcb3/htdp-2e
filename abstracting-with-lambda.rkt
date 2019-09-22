@@ -200,7 +200,7 @@
 
 ;==
 ; consumes a Number n a list 1 - n + 1 and produces
-; true if all numbers a rational
+; true if all numbers are rational
 
 (andmap (lambda (x) (rational? x))
         (build-list 1000
