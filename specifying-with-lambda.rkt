@@ -24,4 +24,87 @@
     [else (if (cmp (first l) (first (rest l)))
               (sorted? cmp (rest l))
               #false)]))
-  
+
+; redefine sorted to use sorted?
+
+
+; [X X -> Boolean] -> [[List-of X] -> Boolean]
+; is the given list l0 sorted according to cmp
+
+(define (sorted cmp)
+  (lambda (l0)
+    (if (empty? l0) #true (sorted? cmp l0))))
+
+; exercise 293
+
+; X [List-of X] -> [Maybe [List-of X]]
+; returns the first sublist of l that starts
+; with x, #false otherwise
+(define (find x l)
+  (cond
+    [(empty? l) #false]
+    [else
+     (if (equal? (first l) x) l (find x (rest l)))]))
+
+
+; X [List-of X] -> [X X -> Boolean] -> [List-of X List-of X -> Boolean]
+; checks that the empty list l is a sublist of itself
+; checks that the sublist is a member of l
+; checks that the sublist is equal to the sublist of l from x
+
+;(check-expect [(found? "a" '()) '()] #true)
+(check-expect [(found? "b" '("a" "b" "c")) '("b" "c")]
+              #true)
+(check-expect [(found? "b" '("a" "b" "c")) '("c")]
+              #false)
+
+(define (fn-found? 1str l) #true)
+
+(define (found? 1str l)
+  (lambda (l0)
+    (local (; produces true if the all element in the sublist
+            ; are members of l
+            (define contains?
+              (andmap (lambda (in-l) (member? in-l l)) l0))
+
+            ; produces the sublist of l from x
+            (define (sublist lx)
+              (cond
+                [(empty? l) #false]
+                [(equal? (first lx) 1str) lx]
+                [else
+                 (sublist (rest lx))]))
+
+            ; produces true if the sublist of l is equal to
+            ; the sublist l0
+            (define sublist-eq?
+              (equal? (sublist l) l0)))
+
+      (and sublist-eq?
+           contains?))))
+
+(check-satisfied (find "a" '("b" "a" "c"))
+                 (found? "a" '("b" "a" "c")))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
