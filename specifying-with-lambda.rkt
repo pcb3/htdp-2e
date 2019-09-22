@@ -52,7 +52,7 @@
 ; checks that the sublist is a member of l
 ; checks that the sublist is equal to the sublist of l from x
 
-;(check-expect [(found? "a" '()) '()] #true)
+(check-expect [(found? "a" '()) '()] #true)
 (check-expect [(found? "b" '("a" "b" "c")) '("b" "c")]
               #true)
 (check-expect [(found? "b" '("a" "b" "c")) '("c")]
@@ -80,8 +80,10 @@
             (define sublist-eq?
               (equal? (sublist l) l0)))
 
-      (and sublist-eq?
-           contains?))))
+      (or (and (empty? l)
+               (empty? l0))
+          (and sublist-eq?
+           contains?)))))
 
 (check-satisfied (find "a" '("b" "a" "c"))
                  (found? "a" '("b" "a" "c")))
