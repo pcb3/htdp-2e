@@ -47,7 +47,7 @@
      (if (equal? (first l) x) l (find x (rest l)))]))
 
 
-; X [List-of X] -> [X X -> Boolean] -> [List-of X List-of X -> Boolean]
+; X [List-of X] -> [List-of X List-of X -> Boolean]
 ; checks that the empty list l is a sublist of itself
 ; checks that the sublist is a member of l
 ; checks that the sublist is equal to the sublist of l from x
@@ -64,6 +64,9 @@
   (lambda (l0)
     (local (; produces true if the all element in the sublist
             ; are members of l
+
+            ; this function is now covered by sublist-eq?
+            ; but left as an exemplar of currying
             (define contains?
               (andmap (lambda (in-l) (member? in-l l)) l0))
 
@@ -87,6 +90,59 @@
 
 (check-satisfied (find "a" '("b" "a" "c"))
                  (found? "a" '("b" "a" "c")))
+
+; exercise 294
+
+; X [List-of X] -> [Maybe N]
+; determine the index of the first occurrence
+; of x in l, #false otherwise
+(define (index x l)
+  (cond
+    [(empty? l) #false]
+    [else (if (equal? (first l) x)
+              0
+              (local ((define i (index x (rest l))))
+                (if (boolean? i) i (+ i 1))))]))
+
+(check-satisfied (index "a" '("a"))
+                 (is-index? "a" '("a")))
+(check-satisfied (index "a" '("a" "b" "c"))
+                 (is-index? "a" '("a")))
+
+; X [List-of X] -> [Number -> Boolean]
+; is the index equal to x in l
+; is the index of an x not in l false
+
+(check-expect [(is-index? "a" '("a")) 0] #true)
+(check-expect [(is-index? "a" '( "x" "a")) 0] #false)
+(check-expect [(is-index? "a" '("b" "a" "a")) 1] #true)
+
+(define (is-index? x l)
+  (lambda (dex)
+    (local (; produces true if x is in l
+            ; and false otherwise
+            (define x-in-l?
+              (member? x l))
+
+            ; finds the index of x in l
+            (define (x-index l i)
+              (cond
+                [(empty? l) #false]
+                [(equal? (first l) x) i]
+                [else
+                 (x-index (rest l) (add1 i))]))
+
+            ; compares x-index and dex for equality
+            (define compare
+              (eq? (x-index l 0) dex)))
+
+      (and x-in-l?
+           compare))))
+              
+ 
+
+
+
 
 
 
