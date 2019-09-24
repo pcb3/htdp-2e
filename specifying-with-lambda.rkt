@@ -138,8 +138,73 @@
 
       (and x-in-l?
            compare))))
-              
+
+; exercise 295
+
+; distances in terms of pixels 
+(define WIDTH 300)
+(define HEIGHT 300)
  
+; N -> [List-of Posn]
+; generates n random Posns in [0,WIDTH) by [0,HEIGHT)
+(check-satisfied (random-posns 3)
+                 (n-inside-playground? 3))
+(define (random-posns n)
+  (build-list
+    n
+    (lambda (i)
+      (make-posn (random WIDTH) (random HEIGHT)))))
+
+; Number -> [list-of Posn] -> Boolean]]
+; consumes a Number count and a list of Posns and
+; checks if:
+; the length of the given list is equal to the count
+; all Posns are within the WIDTH by HEIGHT rectangle
+
+(check-expect [(n-inside-playground? 1)
+               (list (make-posn 0 0))]
+              #true)
+(check-expect [(n-inside-playground? 3)
+               (list (make-posn 0 0)
+                     (make-posn 400 -20)
+                     (make-posn 0 0))]
+              #false)
+
+(define (fn-n-inside-playground? n)
+  (lambda (lop)
+    (local (
+            (define n-length-eq?
+              (... n (... lop)))
+
+            (define (check-width pos)
+              (... (... (posn-x pos) ...)
+                   (... (posn-x pos) ...)))
+
+            (define (check-height pos)
+              (... (... (posn-y pos) ...)
+                   (... (posn-y pos) ...))))
+      
+      (... n-length-eq?
+           (... check-width ...)
+           (... check-height ...)))))
+
+(define (n-inside-playground? n)
+  (lambda (lop)
+    (local (
+            (define n-length-eq?
+              (eq? n (length lop)))
+
+            (define (check-width pos)
+              (and (< (posn-x pos) WIDTH)
+                   (>= (posn-x pos) 0)))
+
+            (define (check-height pos)
+              (and (< (posn-y pos) HEIGHT)
+                   (>= (posn-y pos) 0))))
+      
+      (and n-length-eq?
+           (andmap check-width lop)
+           (andmap check-height lop)))))
 
 
 
