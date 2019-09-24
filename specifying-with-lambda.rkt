@@ -86,7 +86,7 @@
       (or (and (empty? l)
                (empty? l0))
           (and sublist-eq?
-           contains?)))))
+               contains?)))))
 
 (check-satisfied (find "a" '("b" "a" "c"))
                  (found? "a" '("b" "a" "c")))
@@ -151,9 +151,9 @@
                  (n-inside-playground? 3))
 (define (random-posns n)
   (build-list
-    n
-    (lambda (i)
-      (make-posn (random WIDTH) (random HEIGHT)))))
+   n
+   (lambda (i)
+     (make-posn (random WIDTH) (random HEIGHT)))))
 
 ; Number -> [list-of Posn] -> Boolean]]
 ; consumes a Number count and a list of Posns and
@@ -190,21 +190,24 @@
 
 (define (n-inside-playground? n)
   (lambda (lop)
-    (local (
-            (define n-length-eq?
+    (local ((define n-length-eq?
               (eq? n (length lop)))
 
-            (define (check-width pos)
-              (and (< (posn-x pos) WIDTH)
-                   (>= (posn-x pos) 0)))
+            (define check-width
+              (andmap
+               (lambda (pos)
+                 (and (< (posn-x pos) WIDTH)
+                      (>= (posn-x pos) 0))) lop))
 
-            (define (check-height pos)
-              (and (< (posn-y pos) HEIGHT)
-                   (>= (posn-y pos) 0))))
+            (define check-height
+              (andmap
+               (lambda (pos)
+                 (and (< (posn-y pos) HEIGHT)
+                      (>= (posn-y pos) 0))) lop)))
       
       (and n-length-eq?
-           (andmap check-width lop)
-           (andmap check-height lop)))))
+           check-width
+           check-height))))
 
 
 
