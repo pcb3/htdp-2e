@@ -209,6 +209,16 @@
            check-width
            check-height))))
 
+; N -> [List-of Posn]
+; generates n random Posns in
+; [0, WIDTH) by [0,HEIGHT) that satisfies
+; n-inside-playground but does not live up to
+; expectations of original purpose statement
+
+;(check-satisfied (random-posns/bad 3)
+;                 (n-inside-playground? 3))
+;
+;(define (random-posns/bad n) '())
 
 
 
