@@ -24,3 +24,52 @@
             (build-list (length lx)
                         (lambda (i) i))))
     (map list lx index)))
+
+
+; [List-of X] [List-of Y] -> [List-of [List X Y]]
+; generates all pairs of items from l1 and l2
+(check-satisfied (cross '(a b c) '(1 2))
+                 (lambda (c) (= (length c) 6)))
+
+(define (cross l1 l2)
+  (local (; creates a list of each element in l1
+          (define create-list (map list l1))
+
+          ; consumes the second list and extracts the
+          ; first element of l2
+          (define (extract l)
+            (cond
+              [(empty? (rest l))
+               (add-element (first l)
+                            create-list)]
+              [else
+               (append (add-element (first l)
+                                  create-list)
+                     (extract (rest l)))]))
+
+          ; adds the elements of l1 to l2
+          (define (add-element l ll)
+            (cond
+              [(empty? ll) '()]
+              [else
+               (cons (cons l (first ll))
+                       (add-element l (rest ll)))])))
+    (extract l2)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
