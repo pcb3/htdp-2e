@@ -44,8 +44,8 @@
                             create-list)]
               [else
                (append (add-element (first l)
-                                  create-list)
-                     (extract (rest l)))]))
+                                    create-list)
+                       (extract (rest l)))]))
 
           ; adds the elements of l1 to l2
           (define (add-element l ll)
@@ -53,8 +53,59 @@
               [(empty? ll) '()]
               [else
                (cons (cons l (first ll))
-                       (add-element l (rest ll)))])))
+                     (add-element l (rest ll)))])))
     (extract l2)))
+
+; reformulate all for/... exercises using existing
+; abstractions
+
+; design and-map and or-map using ISL+ abstractions
+
+; List-of X [X -> Boolean] -> List-of X
+; consumes a list and a Boolean producing function
+; and produces the list if they all evaluate to true
+; or false otherwise
+
+(check-expect (and-map even? '(1 2 3)) #false)
+
+(check-expect (and-map even? '(0 2 4)) '(0 2 4))
+
+(define (fn-and-map f l)
+  (cond
+    [(... l) '()]
+    [... (... (f (first l))
+              (... (first l)
+                   (fn-and-map f (rest l))
+                   ...))]))
+
+(define (and-map f l)
+  (cond
+    [(empty? l) '()]
+    [else (if (f (first l))
+              (cons (first l)
+                    (and-map f (rest l)))
+              #false)]))
+
+(define (local-and-map f l)
+  (local (
+          (define (check-items l)
+            (cond
+              [(empty? l) #true]
+              [else (if (f (first l))
+                        (check-items (rest l))
+                        #false)])))
+    (if (check-items l)
+        l
+        #false)))
+          
+
+
+
+
+
+
+
+
 
 
 
