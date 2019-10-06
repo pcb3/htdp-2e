@@ -12,7 +12,8 @@
 
 (check-expect (enumerate '()) '())
 (check-expect (enumerate '(a b c))
-              (list (list 'a 0) (list 'b 1) (list 'c 2)))
+              (list
+               (list 'a 0) (list 'b 1) (list 'c 2)))
 
 (define (fn-enumerate lx)
   (local ((define index
@@ -61,30 +62,14 @@
 
 ; design and-map and or-map using ISL+ abstractions
 
-; List-of X [X -> Boolean] -> List-of X
+; List-of X [X -> Boolean] -> List-of X or #false
 ; consumes a list and a Boolean producing function
 ; and produces the list if they all evaluate to true
 ; or false otherwise
 
-(check-expect (and-map even? '(1 2 3)) #false)
+(check-expect (local-and-map even? '(1 2 3)) #false)
 
-(check-expect (and-map even? '(0 2 4)) '(0 2 4))
-
-(define (fn-and-map f l)
-  (cond
-    [(... l) '()]
-    [... (... (f (first l))
-              (... (first l)
-                   (fn-and-map f (rest l))
-                   ...))]))
-
-(define (and-map f l)
-  (cond
-    [(empty? l) '()]
-    [else (if (f (first l))
-              (cons (first l)
-                    (and-map f (rest l)))
-              #false)]))
+(check-expect (local-and-map even? '(0 2 4)) '(0 2 4))
 
 (define (local-and-map f l)
   (local (
@@ -97,6 +82,43 @@
     (if (check-items l)
         l
         #false)))
+
+; List-of X [X -> Boolean] -> List-of X
+; consumes a list and a Boolean producing function
+; and produces the a list of all items that
+; evaluate to true or false otherwise
+
+(check-expect (or-map even? '(1 2 3)) '(2))
+
+(check-expect (or-map even? '(1 3 5)) #false)
+
+(check-expect (or-map even? '(0 1 2 3)) '(0 2))
+
+(define (fn-or-map f l)
+  (local (
+          (define (check-items l)
+            (...
+             [(empty? l) '()]
+             [else (... (f (first l))
+                        (... (first l)
+                             (check-items (rest l)))
+                        (check-items (rest l)))])))
+    (... (empty? (check-items l))
+         ...
+         (check-items l))))
+
+(define (or-map f l)
+  (local (
+          (define (check-items l)
+            (cond
+              [(empty? l) '()]
+              [else (if (f (first l))
+                        (cons (first l)
+                              (check-items (rest l)))
+                        (check-items (rest l)))])))
+    (if (empty? (check-items l))
+        #false
+        (check-items l))))
           
 
 
