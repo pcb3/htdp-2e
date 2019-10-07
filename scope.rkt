@@ -126,12 +126,12 @@
 
 (check-expect ((for-and 10)
                (lambda (x) (> (- 9 x) 0)))
-                 (for/and ((i 10)) (> (- 9 i) 0)))
+              (for/and ((i 10)) (> (- 9 i) 0)))
 
 (check-expect ((for-and 10)
                (lambda (x) (>= x 0)))
-                 (for/and ((i 10))
-                   (if (>= i 0) i #false)))
+              (for/and ((i 10))
+                (if (>= i 0) i #false)))
 
 (define (for-and i)
   (lambda (f)
@@ -143,9 +143,45 @@
           (first (reverse list-builder))
           #false))))
 
+; .../or
 
+;(for/or ([i 10]) (if (= (- 9 i) 0) i #false))
+;(for/or ([i 10]) (if (< i 0) i #false))
 
+(define (for-or i)
+  (lambda (f)
+    (local (
+            (define list-builder
+              (build-list i (lambda (x) x))))
+      
+      (if (ormap f list-builder)
+          (first (reverse list-builder))
+          #false))))
 
+; .../sum
+
+;(for/sum ([c "abc"]) (string->int c))
+
+(define (for-sum i)
+  (lambda (f)
+    (local (
+            (define list-builder
+              (cond
+                [(string? i)
+                 (map f (explode i))]
+                [else
+                 (build-list i (lambda (x) x))])))
+      (foldl + 0 list-builder))))
+            
+
+; .../product
+
+;(for/product ([c "abc"]) (+ (string->int c) 1))
+
+; .../string
+
+;(define a (string->int "a"))
+;(for/string ([j 10]) (int->string (+ a j)))
 
 
 
