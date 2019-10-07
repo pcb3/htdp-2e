@@ -57,8 +57,7 @@
                      (add-element l (rest ll)))])))
     (extract l2)))
 
-; reformulate all for/... exercises using existing
-; abstractions
+;===============
 
 ; design and-map and or-map using ISL+ abstractions
 
@@ -120,12 +119,29 @@
         #false
         (check-items l))))
           
+; reformulate all for/... exercises using existing
+; abstractions
 
+; .../and
 
+(check-expect ((for-and 10)
+               (lambda (x) (> (- 9 x) 0)))
+                 (for/and ((i 10)) (> (- 9 i) 0)))
 
+(check-expect ((for-and 10)
+               (lambda (x) (>= x 0)))
+                 (for/and ((i 10))
+                   (if (>= i 0) i #false)))
 
-
-
+(define (for-and i)
+  (lambda (f)
+    (local (
+            (define list-builder
+              (build-list i (lambda (x) x))))
+      
+      (if (andmap f list-builder)
+          (first (reverse list-builder))
+          #false))))
 
 
 
