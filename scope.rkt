@@ -183,6 +183,54 @@
 ;(define a (string->int "a"))
 ;(for/string ([j 10]) (int->string (+ a j)))
 
+;===============
+
+; Exercise 305
+
+; List-of Numbers -> List-of Numbers
+; converts a list of US$ amounts to Euros at
+; US$1.06 per Euro
+
+(check-expect (convert-euro '(1 2 3))
+              (list 1.06 2.12 3.18))
+
+(define (convert-euro l)
+  (for/list ((i l)) (* i 1.06)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
