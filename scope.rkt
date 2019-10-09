@@ -197,6 +197,46 @@
 (define (convert-euro l)
   (for/list ((i l)) (* i 1.06)))
 
+; Number -> List-of Numbers
+; consumes a natural number n and produces the list
+; [0, n-1)
+
+(check-expect (for-nat 3) '(0 1 2))
+
+(define (for-nat n) (for/list ((i n)) i))
+
+; Number -> List-of Numbers
+; consumes a natural n and produces the list [0, n]
+
+(check-expect (for-nat-incl 3) '(0 1 2 3))
+
+(define (for-nat-incl n) (for/list ((i (add1 n))) i))
+
+; Number -> List-of Numbers
+; consumes a natural n and produces the list
+; [1, 1/2, ..., 1/n]
+
+(check-expect (1/n 1) '(1))
+(check-expect (1/n 3) (list 1 (/ 1 2) (/ 1 3)))
+
+(define (fn-1/n n)
+  (for/list [(... (... ... n ...))]
+     (... ... ...)))
+
+(define (1/n n)
+  (for/list [(item (in-range 1 (add1 n) 1))]
+     (/ 1 item)))
+
+; Number -> List-of Numbers
+; consumes a natural n and produces a list of the
+; first n evens
+
+(check-expect (first-n 1) (list 0))
+(check-expect (first-n 3) (list 0 2 4))
+
+(define (first-n n)
+  (for/list [(i n)] (* 2 i)))
+              
 
 
 
