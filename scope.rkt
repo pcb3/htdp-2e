@@ -256,6 +256,20 @@
   (for/list [(i n)]
     (for/list [(j n)]
       (if (= i j) 1 0))))
+
+; Number -> [List-of Number]
+; consumes a number n and a function f and
+; produces a list of [0, n] apllied to f
+
+(check-expect (for-tab 0 sin) (list 0))
+(check-expect (for-tab 1 sin) (list (sin 1) 0))
+(check-expect (for-tab 1 cos) (list (cos 1) 1))
+
+(define (fn-for-tab n f)
+  (for/list [(... n)] (f ...)))
+
+(define (for-tab n f)
+  (for/list [(i (add1 n))] (f i)))
           
               
 
