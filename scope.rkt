@@ -221,11 +221,11 @@
 
 (define (fn-1/n n)
   (for/list [(... (... ... n ...))]
-     (... ... ...)))
+    (... ... ...)))
 
 (define (1/n n)
   (for/list [(item (in-range 1 (add1 n) 1))]
-     (/ 1 item)))
+    (/ 1 item)))
 
 ; Number -> List-of Numbers
 ; consumes a natural n and produces a list of the
@@ -236,6 +236,27 @@
 
 (define (first-n n)
   (for/list [(i n)] (* 2 i)))
+
+; Number -> List List-of Numbers
+; consumes a natural n and produces the n identity
+; matrix
+
+(check-expect (for-identity 1) (list (list 1)))
+
+(check-expect (for-identity 3) (list (list 1 0 0)
+                                     (list 0 1 0)
+                                     (list 0 0 1)))
+
+(define (fn-for-identity n)
+  (for/list [(... n)]
+    (list (for/list [(... n)]
+            (... ...)))))
+
+(define (for-identity n)
+  (for/list [(i n)]
+    (for/list [(j n)]
+      (if (= i j) 1 0))))
+          
               
 
 
