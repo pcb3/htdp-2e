@@ -261,18 +261,47 @@
 ; consumes a number n and a function f and
 ; produces a list of [0, n] apllied to f
 
-(check-expect (for-tab 0 sin) (list 0))
-(check-expect (for-tab 1 sin) (list (sin 1) 0))
-(check-expect (for-tab 1 cos) (list (cos 1) 1))
-
 (define (fn-for-tab n f)
   (for/list [(... n)] (f ...)))
 
 (define (for-tab n f)
   (for/list [(i (add1 n))] (f i)))
           
-              
+; Exercise 307
 
+; String List-of String -> String
+; consumes a name s and a list of names los and
+; produces the first name equal to or an extension
+; of the name s
+
+(check-expect
+ (find-name "seifer" (list "cloud"
+                           "selphie"
+                           "seifer")) "seifer")
+
+(check-expect
+ (find-name "seifer" (list "cloud"
+                           "seiferb"
+                           "selphie"
+                           "seifer")) "seiferb")
+
+(define (fn-find-name s los)
+  (for/list [(i s) (j (first los))]
+    (... (... i j)
+         (first los)
+         (fn-find-name s (rest los)))))
+         
+(define (find-name s los)
+  (cond
+    [(empty? los) #false]
+    [else
+     (if
+      (for/and [(i s) (j (first los))]
+        (and (string=? i j)
+             (>= (string-length (first los))
+                 (string-length s))))
+      (first los)
+      (find-name s (rest los)))]))
 
 
 
