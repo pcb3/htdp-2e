@@ -173,7 +173,6 @@
                  (build-list i (lambda (x) x))])))
       (foldl + 0 list-builder))))
             
-
 ; .../product
 
 ;(for/product ([c "abc"]) (+ (string->int c) 1))
@@ -302,6 +301,98 @@
                  (string-length s))))
       (first los)
       (find-name s (rest los)))]))
+
+; another implementation for find-name
+
+; String [String -> Boolean] -> Boolean
+; consumes a string s and applies a string
+; t and returns true if that string is
+; equal to or an extension of s
+
+(define (for-find-name s)
+  (lambda (t)
+    (local ((define check-letters
+              (for/and [(i s) (j t)]
+                (string=? i j)))
+
+            (define t>=s
+              (>= (string-length t)
+                  (string-length s))))
+      (and check-letters t>=s))))
+
+; [String String -> Boolean] List-of String
+; -> String
+; consumes a function and a list of strings
+; los and produces the first string that
+; is equal to or an extension of the string s
+; else false
+
+(check-expect
+ (alt-find-name "julia"
+                (list  "justin" "freddy" "j"))
+ #false)
+
+(check-expect
+ (alt-find-name "julia"
+                (list  "juli" "freddy" "julian"))
+ "julian")
+
+(define (alt-find-name str los)
+  (cond
+    [(empty? los) #false]
+    [else
+     (if [(for-find-name str) (first los)]
+         (first los)
+         (alt-find-name str (rest los)))]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
