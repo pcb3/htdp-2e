@@ -345,7 +345,24 @@
          (first los)
          (alt-find-name str (rest los)))]))
 
+; String List-of String -> String or #false
+; consumes a name s and a list of names los
+; and returns the first name that exceeds the
+; length of s
 
+(check-expect
+ (exceeds-width "pc" (list "op" "p" "pop"))
+ "pop")
+
+(check-expect
+ (exceeds-width "pc" (list "op" "pi" "po"))
+ #false)
+
+(define (exceeds-width s los)
+  (for/or [(i los)]
+    (if (> (string-length i)
+        (string-length s))
+        i #false)))
 
 
 
