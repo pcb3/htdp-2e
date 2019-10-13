@@ -10,8 +10,8 @@
 
 (define (move-right lop delta-x)
   (for/list [(p lop)]
-       (make-posn
-        (+ (posn-x p) delta-x) (posn-y p))))
+    (make-posn
+     (+ (posn-x p) delta-x) (posn-y p))))
 
 ; Exercise 308
 
@@ -45,7 +45,23 @@
     (match p
       [(phone x y z) (make-phone area y z)])))
 
+; Exercise 309
 
+; List-of List-of String -> Number
+; consumes a list of items, each item being
+; a list of strings and produces the number of
+; strings per item
+
+(define input (list (list "a" "b" "c")
+                    (list "aa" "bb" "cc" "dd")))
+(define expect (list 3 4))
+
+(check-expect (words-on-line input) expect)
+
+(define (words-on-line lolos)
+  (for/list [(i lolos)]
+    (match i
+      [(? list) (length i)])))
 
 
 
