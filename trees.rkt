@@ -45,6 +45,38 @@
         (count-persons (child-father an-ftree))
         (count-persons (child-mother an-ftree)))]))
 
+; Exercise 311
+
+; FT Number -> Number
+; consumes a family tree an-ftree and the current year
+; and produces the average age of all child structures
+
+(check-expect (average-age Carl 2019) 93)
+(check-expect (average-age Gustav 2019) 64.8)
+
+(define (fn-average-age an-ftree year)
+  (cond
+    [(no-parent? an-ftree) ...]
+    [else (... (fn-average-age
+                (child-date (child-mother an-ftree)))
+               (...
+                (fn-average-age
+                 (child-date (child-father an-ftree)))
+                ...))]))
+
+(define (average-age ftree year)
+  (local (
+          (define (sum-ages ft)
+       (cond
+         [(no-parent? ft) 0]
+         [else
+          (+ (- year (child-date ft))
+             (sum-ages (child-mother ft))
+             (sum-ages (child-father ft)))])))
+    (/ (sum-ages ftree)
+       (count-persons ftree))))
+           
+
 
         
           
