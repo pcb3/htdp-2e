@@ -67,16 +67,47 @@
 (define (average-age ftree year)
   (local (
           (define (sum-ages ft)
-       (cond
-         [(no-parent? ft) 0]
-         [else
-          (+ (- year (child-date ft))
-             (sum-ages (child-mother ft))
-             (sum-ages (child-father ft)))])))
+            (cond
+              [(no-parent? ft) 0]
+              [else
+               (+ (- year (child-date ft))
+                  (sum-ages (child-mother ft))
+                  (sum-ages (child-father ft)))])))
     (/ (sum-ages ftree)
        (count-persons ftree))))
            
+; Exercise 312
 
+; FT -> List-of String
+; consumes a family tree ftree and produces a list
+; of all the eye colours
+
+(check-expect
+ (andmap
+  (lambda (x)
+    (member x
+            (list "brown" "pink" "blue" "green"
+                  "green")))
+  (eye-colours Gustav)) #true)
+                        
+
+(define (fn-eye-colours ftree)
+  (cond
+    [(no-parent? ftree) ...]
+    [else (... (child-eyes ftree)
+               (...
+                (fn-eye-colours (child-mother ftree))
+                (fn-eye-colours (child-father ftree))
+                ))]))
+
+(define (eye-colours ftree)
+  (cond
+    [(no-parent? ftree) '()]
+    [else
+     (cons (child-eyes ftree)
+           (append
+            (eye-colours (child-mother ftree))
+            (eye-colours (child-father ftree))))]))
 
         
           
