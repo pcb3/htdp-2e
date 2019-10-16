@@ -17,13 +17,13 @@
 ; Oldest Generation:
 (define Carl (make-child NP NP "Carl" 1926 "green"))
 (define Bettina (make-child NP NP "Bettina" 1926 "green"))
- 
+
 ; Middle Generation:
 (define Adam (make-child Carl Bettina "Adam" 1950 "hazel"))
 (define Dave (make-child Carl Bettina "Dave" 1955 "black"))
 (define Eva (make-child Carl Bettina "Eva" 1965 "blue"))
 (define Fred (make-child NP NP "Fred" 1966 "pink"))
- 
+
 ; Youngest Generation: 
 (define Gustav (make-child Fred Eva "Gustav" 1988 "brown"))
 
@@ -109,8 +109,40 @@
             (eye-colours (child-mother ftree))
             (eye-colours (child-father ftree))))]))
 
-        
-          
+; Exercise 313
+
+; FT -> Boolean
+; consumes a family tree and produces true if a
+; a direct ancestor has blue eyes
+
+(check-expect (blue-eyed-ancestor? Eva) #false)
+(check-expect (blue-eyed-ancestor? Gustav) #true)
+
+(define (blue-eyed-ancestor? ftree)
+  (local
+    ((define blue-eyes?
+       (lambda (c)
+         (string=? "blue" (child-eyes c))))
+
+     (define (tree-father ft)
+       (cond
+         [(no-parent? (child-father ft)) #false]
+         [else
+          (if (blue-eyes? (child-father ft))
+              #true
+              (tree-father (child-father ft)))]))
+
+     (define (tree-mother ft)
+       (cond
+         [(no-parent? (child-mother ft)) #false]
+         [else
+          (if (blue-eyes? (child-mother ft))
+              #true
+              (tree-father (child-mother ft)))])))
+
+    (or (tree-father ftree)
+        (tree-mother ftree))))
+  
 
 
 
