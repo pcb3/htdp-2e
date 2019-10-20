@@ -27,6 +27,21 @@
 ; Youngest Generation: 
 (define Gustav (make-child Fred Eva "Gustav" 1988 "brown"))
 
+
+; FT -> Boolean
+; does an-ftree contain a child
+; structure with "blue" in the eyes field
+
+(check-expect (blue-eyed-child? Carl) #false)
+(check-expect (blue-eyed-child? Gustav) #true)
+ 
+(define (blue-eyed-child? an-ftree)
+  (cond
+    [(no-parent? an-ftree) #false]
+    [else (or (string=? (child-eyes an-ftree) "blue")
+              (blue-eyed-child? (child-father an-ftree))
+              (blue-eyed-child? (child-mother an-ftree)))]))
+
 ; Exercise 310
 
 ; FT -> Number
@@ -142,7 +157,90 @@
 
     (or (tree-father ftree)
         (tree-mother ftree))))
-  
+
+; 19.2 Forests
+
+; An FF (short for family forest) is one of: 
+; – '()
+; – (cons FT FF)
+; interpretation a family forest represents several
+; families (say, a town) and their ancestor trees
+
+(define ff1 (list Carl Bettina))
+(define ff2 (list Fred Eva))
+(define ff3 (list Fred Eva Carl))
+
+; Exercise 314
+
+; An FF (family forest) is one of:
+; - '()
+; - (cons [List-of X] [List-of Y])
+; interpretation a family forest represents several
+; families and their ancestors
+
+; X [List of X] -> Boolean
+; consumes an X and produces true if there is a child
+; with "blue" eyes
+
+(check-expect (blue-eyed-child-in-forest? ff1) #false)
+(check-expect (blue-eyed-child-in-forest? ff2) #true)
+(check-expect (blue-eyed-child-in-forest? ff3) #true)
+
+(define (blue-eyed-child-in-forest? a-forest)
+  (ormap blue-eyed-child? a-forest))
+
+; Exercise 315
+
+; FF Number -> Number
+; consumes an FF forest and a year yr and
+; produces the mean of the ages.
+; Not true mean as there will be duplicates
+
+(check-expect (mean-age ff1 2019) 93)
+(check-expect (mean-age ff2 2019) 66.5)
+
+(define (mean-age forest yr)
+  (local
+    ((define forest-length (length forest))
+
+     (define (sum-age-forest fr)
+       (cond
+         [(empty? fr) 0]
+         [else
+          (+ (average-age (first fr) yr)
+             (sum-age-forest (rest fr)))])))
+    (/ (sum-age-forest forest)
+       forest-length)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
