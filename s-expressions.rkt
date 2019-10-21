@@ -1,0 +1,120 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname s-expressions) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; 19.3 S-expressions
+
+; An S-expr is one of: 
+; – Atom
+; – SL
+
+; An SL is one of: 
+; – '()
+; – (cons S-expr SL)
+
+; An Atom is one of: 
+; – Number
+; – String
+; – Symbol
+
+; Exercise 316
+
+; X -> Boolean
+; consumes an object x and produces true if it is
+; either a number, string or symbol
+
+(check-expect (atom? 1) #true)
+(check-expect (atom? "hi there") #true)
+(check-expect (atom? '$) #true)
+(check-expect (atom? '()) #false)
+
+(define (fn-atom? x)
+  (or (number? ...)
+      (string? ...)
+      (symbol? ...)))
+
+(define (atom? x)
+  (or (number? x)
+      (string? x)
+      (symbol? x)))
+
+; S-expr Symbol -> N
+; counts all occurrences of sy in sexp
+
+(check-expect (count 'world 'hello) 0)
+(check-expect (count '(world hello) 'hello) 1)
+(check-expect
+ (count '(((world) hello) hello) 'hello) 2)
+
+(define (fn-count sexp sy)
+  (cond
+    [(atom? sexp)
+     (fn-count-atom sexp sy)]
+    [else
+     (fn-count-sl sexp sy)]))
+
+(define (fn-count-sl sl sy)
+  (cond
+    [(empty? sl) ...]
+    [else
+     (...
+      (fn-count (first sl) sy)
+      ...
+      (fn-count-sl (rest sl) sy)
+      ...)]))
+
+(define (fn-count-atom at sy)
+  (cond
+    [(number? at) ...]
+    [(string? at) ...]
+    [(symbol? at) ...]))
+
+; Exercise 317
+
+(define (count sexp sy)
+  (local
+    (; SL -> N
+     ; counts all occurrences of sy in sl
+     (define (count-sl sl)
+       (cond
+         [(empty? sl) 0]
+         [else
+          (+ (count (first sl) sy)
+             (count-sl (rest sl)))]))
+
+     ; Atom -> N
+     ; counts all occurrences of sy in at
+     (define (count-atom at)
+       (cond
+         [(number? at) 0]
+         [(string? at) 0]
+         [(symbol? at)
+          (if (symbol=? at sy) 1 0)])))
+
+    (cond
+      [(atom? sexp) (count-atom sexp)]
+      [else (count-sl sexp)])))
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
