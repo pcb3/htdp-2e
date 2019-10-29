@@ -94,7 +94,55 @@
       [(atom? sexp) (count-atom sexp)]
       [else (count-sl sexp)])))
 
+; Exercise 318
+
+; S-expr -> Number
+; consumes an S-expression sexp and determines its
+; depth. An atom has depth 1 and a list of an atom
+; has depth 1 plus 1
+
+(check-expect (depth 99) 1)
+(check-expect (depth (list "abc" "cba")) 2)
+(check-expect (depth (list
+                      (list '@))) 3)
+(check-expect (depth (list
+                      (list
+                       (list "sup")))) 4)
+
+(define (fn-depth sexp)
+  (cond
+    [(atom? sexp) ...]
+    [else
+     (fn-traverse sexp)]))
+         
+(define (fn-traverse sl)
+  (cond
+    [(empty? sl) ...]
+    [else
+     (... (fn-depth (first sl))
+          ...
+          (fn-traverse (rest sl)))]))
+
+(define (depth sexp)
+  (local
+    (; S-expr -> Number
+     ; consumes and S-expression and produces the
+     ; depth
+     (define (traverse-sl sl)
+       (cond
+         [(empty? sl) 1]
+         [else
+          (max (depth (first sl))
+               (traverse-sl (rest sl)))])))
     
+    (cond
+      [(atom? sexp) 1]
+      [else
+       (add1 (traverse-sl sexp))])))
+
+
+     
+     
 
 
 
