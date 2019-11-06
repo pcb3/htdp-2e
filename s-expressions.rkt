@@ -140,6 +140,72 @@
       [else
        (add1 (traverse-sl sexp))])))
 
+; Exercise 318
+
+; S-expr Symbol Symbol -> S-expr
+; consumes an S-expression s and two symbols old
+; and new and creates a new S-expr with old replaced
+; by new
+
+(check-expect (substitute '() '$ '@) '())
+
+(check-expect (substitute (list '$) '$ '@) (list '@))
+
+(check-expect (substitute
+               (list '*) '$ '@) (list '*))
+
+(check-expect (substitute
+               (list '*
+                     (list '* '$
+                           (list '* '$)))
+               '$ '@)
+              (list '*
+                    (list '* '@
+                          (list '* '@))))
+
+(define (fn-substitute s old new)
+  (cond
+    [(atom? s)
+     (fn-symbol s ... ...)]
+    [else
+     (fn-traverse-sub-sl (... s) ... ...)]))
+
+(define (fn-symbol sym old new)
+  (cond
+    [else (if (... (symbol? sym)
+                   (symbol=? sym old))
+              ... ...)]))         
+
+(define (fn-traverse-sub-sl sl old new)
+  (cond
+    [(empty? sl) ...]
+    [else
+     (... (fn-substitute (first sl) ... ...)
+          (... (fn-traverse-sub-sl (rest sl)
+                                   ... ...)))]))
+
+(define (substitute s old new)
+  (local
+    ((define (traverse-sub-sl sl)
+       (cond
+         [(empty? sl) '()]
+         [else
+          (cons (substitute (first sl) old new)
+                (traverse-sub-sl (rest sl)))]))
+
+     (define (symbol sym)
+       (cond
+         [else
+          (if (and (symbol? sym)
+                   (symbol=? sym old))
+              new sym)])))
+
+    (cond
+      [(atom? s) (symbol s)]
+      [else
+       (traverse-sub-sl s)])))
+     
+
 
      
      
