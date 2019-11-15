@@ -140,7 +140,7 @@
       [else
        (add1 (traverse-sl sexp))])))
 
-; Exercise 318
+; Exercise 319
 
 ; S-expr Symbol Symbol -> S-expr
 ; consumes an S-expression s and two symbols old
@@ -205,6 +205,78 @@
       [else
        (traverse-sub-sl s)])))
      
+; Exercise 320
+
+; An S-expr is one of: 
+; – Number
+; - String
+; - Symbol
+; – [List-of S-expr]
+
+(define SEXP1 1)
+(define SEXP2 "two")
+(define SEXP3 '$)
+(define SEXP4 '())
+(define SEXP5 (list SEXP1 SEXP2 SEXP3 SEXP4))
+
+; S-expr Symbol -> Number
+; counts the number of times a symbol sy appears
+; in an given S-expression sexp
+
+(check-expect (count-again '() '$) 0)
+(check-expect (count-again 33 '$) 0)
+(check-expect (count-again '@ '$) 0)
+(check-expect (count-again '$ '$) 1)
+(check-expect (count-again (list '$
+                                 (list '@ '$))'$) 2)
+
+(define (fn-count-again sexp sy)
+  (cond
+    [(atom? sexp)
+     (fn-count-symbol sexp sy)]
+    [else
+     (fn-traverse-list sexp sy)]))
+
+(define (fn-traverse-list sl sy)
+  (cond
+    [(empty? sl) ...]
+    [else
+     (...
+      (fn-count-again (first sl))
+      ...
+      (fn-traverse-list (rest sl) sy)
+      ...)]))
+
+(define (fn-count-symbol at sy)
+  (cond
+    [(number? at) ...]
+    [(string? at) ...]
+    [else
+     (... (... at sy) ...)]))
+
+(define (count-again sexp sy)
+  (cond
+    [(atom? sexp)
+     (count-symbol sexp sy)]
+    [else
+     (traverse-list sexp sy)]))
+
+(define (traverse-list sl sy)
+  (cond
+    [(empty? sl) 0]
+    [else
+     (+
+      (count-again (first sl) sy)
+      (traverse-list (rest sl) sy))]))
+
+(define (count-symbol at sy)
+  (cond
+    [(number? at) 0]
+    [(string? at) 0]
+    [else
+     (if (symbol=? at sy) 1 0)]))
+
+
 
 
      
