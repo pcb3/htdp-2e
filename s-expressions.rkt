@@ -3,6 +3,8 @@
 #reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname s-expressions) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ; 19.3 S-expressions
 
+(require 2htdp/abstraction)
+
 ; An S-expr is one of: 
 ; – Atom
 ; – SL
@@ -276,11 +278,36 @@
     [else
      (if (symbol=? at sy) 1 0)]))
 
+; An S-expr is one of:
+; '()
+; – Number
+; - String
+; - Symbol
+; – [NE-List-of sl]
 
+(define (count-v2 sexp sy)
+  (local
+    ((define (traverse-sexp s)
+       (cond
+         [(empty? s) 0]
+         [else
+          (+ (count-v2 (first s) sy)
+             (traverse-sexp (rest s)))]))
 
+     (define (count-sy at)
+       (cond
+         [(not (symbol? at)) 0]
+         [else
+          (if (symbol=? at sy) 1 0)])))
 
-     
-     
+    (cond
+      [(atom? sexp)
+       (count-sy sexp)]
+      [else
+       (traverse-sexp sexp)])))
+          
+         
+         
 
 
 
