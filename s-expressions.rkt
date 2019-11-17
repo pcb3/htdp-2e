@@ -325,6 +325,9 @@
 
 ; count-v3
 
+(check-expect
+ (count-v3 (list '$ '! (list '$ '%)) '$) 2)
+
 (define (count-v3 sexp sy)
   (local
     ((define (traverse-sexp s)
