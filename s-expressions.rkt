@@ -305,6 +305,41 @@
        (count-sy sexp)]
       [else
        (traverse-sexp sexp)])))
+      
+; Implementation by adaliu-gh
+; https://github.com/adaliu-gh/htdp
+
+(define (count.v3 sexp sy)
+  (cond
+    [(empty? sexp) 0]
+    [(list? sexp)
+     (foldl
+      (lambda (x y) (+ (count.v3 x sy) y)) 0 sexp)]
+    [else (if (equal? sexp sy) 1 0)]))
+
+(count.v3 (list '(world pig) 1 'world) 'world)
+(count.v3 (list (list (list 'world))) 'world)
+          
+; an Atom is:
+; - Any item
+
+; count-v3
+
+(define (count-v3 sexp sy)
+  (local
+    ((define (traverse-sexp s)
+       (cond
+         [(empty? s) 0]
+         [else
+          (+ (count-v3 (first s) sy)
+             (traverse-sexp (rest s)))])))
+
+    (cond
+      [(atom? sexp)
+       ((lambda (at)
+         (if (equal? at sy) 1 0)) sexp)]
+      [else
+       (traverse-sexp sexp)])))
           
          
          
