@@ -14,15 +14,23 @@
 (define BT1 (make-node 1 'a NONE NONE))
 
 (define BT2 (make-node 1 'a
-                       (make-node 2 'a NONE NONE)
-                       (make-node 3 'a NONE NONE)))
+                       (make-node 2 'b NONE NONE)
+                       (make-node 3 'c NONE NONE)))
 
 (define BT3
   (make-node 1 'a
-             (make-node 2 'a
-                        (make-node 9 'a NONE NONE)
+             (make-node 2 'b
+                        (make-node 9 'c NONE NONE)
                         NONE)
              NONE))
+
+(define BT4
+  (make-node 1 'a NONE
+             (make-node 2 'a
+                        (make-node 3 'a
+                                   (make-node 4 'a NONE NONE)
+                                   NONE)
+                        NONE)))
 
 ; Exercise 322
 
@@ -35,6 +43,7 @@
 (check-expect (contains-bt BT2 3) #true)
 (check-expect (contains-bt BT3 8) #false)
 (check-expect (contains-bt BT3 9) #true)
+(check-expect (contains-bt BT4 4) #true)
 
 (define (fn-contains-bt bt n)
   (local
@@ -67,9 +76,9 @@
          [(no-info? (node-left btree)) #false]
          [else
           (if (no-info? (node-ssn btree))
-               #false
-               (traverse-left
-                (node-left btree)))]))
+              #false
+              (contains-bt
+               (node-left btree) n))]))
 
      (define (traverse-right btree)
        (cond
@@ -77,12 +86,44 @@
          [(no-info? (node-right btree)) #false]
          [else
           (if (no-info? (node-ssn btree))
-               #false
-               (traverse-right
-                (node-right btree)))])))
+              #false
+              (contains-bt
+               (node-right btree) n))])))
 
     (or (traverse-left bt)
-         (traverse-right bt))))
+        (traverse-right bt))))
+
+; Exercise 323
+
+; BT Number -> BT or Boolean
+; consumes a BT bt and a number n and produces the
+; value at the name field of a node if the ssn is n
+; and false otherwise
+
+;(check-expect (search-bt BT1 1) 'a)
+;(check-expect (search-bt BT1 0) #false)
+;(check-expect (search-bt BT2 2) 'b)
+;(check-expect (search-bt BT1 4) #false)
+;(check-expect (search-bt BT1 9) 'c)
+;
+;(define (fn-search-bt bt n)
+;  (local
+;    ((define (fn-search-left btree)
+;       (cond
+;         [(
+;
+;(define (search-bt bt n) #false)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
