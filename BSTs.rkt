@@ -90,8 +90,11 @@
               (contains-bt
                (node-right btree) n))])))
 
-    (or (traverse-left bt)
-        (traverse-right bt))))
+    (cond
+      [(no-info? bt) #false]
+      [else
+       (or (traverse-left bt)
+           (traverse-right bt))])))
 
 ; Exercise 323
 
@@ -100,19 +103,69 @@
 ; value at the name field of a node if the ssn is n
 ; and false otherwise
 
-;(check-expect (search-bt BT1 1) 'a)
-;(check-expect (search-bt BT1 0) #false)
-;(check-expect (search-bt BT2 2) 'b)
-;(check-expect (search-bt BT1 4) #false)
-;(check-expect (search-bt BT1 9) 'c)
-;
-;(define (fn-search-bt bt n)
-;  (local
-;    ((define (fn-search-left btree)
-;       (cond
-;         [(
-;
-;(define (search-bt bt n) #false)
+(check-expect (search-bt BT1 1) 'a)
+(check-expect (search-bt BT1 0) #false)
+(check-expect (search-bt BT2 2) 'b)
+(check-expect (search-bt BT1 4) #false)
+(check-expect (search-bt BT3 9) 'c)
+(check-expect (search-bt BT4 4) 'a)
+
+(define (fn-search-bt bt n)
+  (local
+    ((define (fn-search-left btree)
+       (cond
+         [(no-info? btree) ...]
+         [(equal? (node-ssn btree) ...) ...]
+         [else
+          (fn-search-bt (node-left btree) ...)]))
+
+     (define (fn-search-right btree)
+       (cond
+         [(no-info? btree) ...]
+         [(equal? (node-ssn btree) ...) ...]
+         [else
+          (fn-search-bt (node-right btree) ...)])))
+
+    (cond
+      [(no-info? bt) ...]
+      [(equal? (node-ssn bt) n) ...]
+      [else
+       (... (fn-search-left (node-left bt))
+            (fn-search-right (node-right bt)))])))
+
+(define (search-bt bt n)
+  (local
+    ((define (search-left btree)
+       (cond
+         [(no-info? btree) #false]
+         [(equal? (node-ssn btree) n)
+          (node-name btree)]
+         [else
+          (if (contains-bt (node-left btree) n)
+              (search-bt (node-left btree) n)
+              (search-bt (node-right btree) n))]))
+
+     (define (search-right btree)
+       (cond
+         [(no-info? btree) #false]
+         [(equal? (node-ssn btree) n)
+          (node-name btree)]
+         [else
+          (if (contains-bt (node-left btree) n)
+              (search-bt (node-left btree) n)
+              (search-bt (node-right btree) n))])))
+
+    (cond
+      [(contains-bt bt n)
+       (cond
+         [(equal? (node-ssn bt) n)
+          (node-name bt)]
+         [else
+          (if (contains-bt (node-left bt) n)
+              (search-left (node-left bt))
+              (search-right (node-right bt)))])]
+      [else
+       #false])))
 
 
 
