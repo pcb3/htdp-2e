@@ -46,6 +46,7 @@
 (check-expect (contains-bt BT3 8) #false)
 (check-expect (contains-bt BT3 9) #true)
 (check-expect (contains-bt BT4 4) #true)
+(check-expect (contains-bt BT5 99) #false)
 
 (define (fn-contains-bt bt n)
   (local
