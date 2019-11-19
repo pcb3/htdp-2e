@@ -32,6 +32,8 @@
                                    NONE)
                         NONE)))
 
+(define BT5 NONE)
+
 ; Exercise 322
 
 ; BT Number -> Boolean
@@ -109,6 +111,7 @@
 (check-expect (search-bt BT1 4) #false)
 (check-expect (search-bt BT3 9) 'c)
 (check-expect (search-bt BT4 4) 'a)
+(check-expect (search-bt BT5 99) #false)
 
 (define (fn-search-bt bt n)
   (local
