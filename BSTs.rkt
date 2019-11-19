@@ -200,6 +200,46 @@
              (inorder (node-left bt))
              (inorder (node-right bt)))]))
 
+; Exercise 325
+
+(define BST1
+  (make-node 3 'a
+             (make-node 2 'b
+                        (make-node 1 'c NONE NONE)
+                        (make-node 4 'd NONE NONE))
+             (make-node 5 'e
+                        NONE
+                        (make-node 6 'f NONE NONE))))
+
+; BST Number -> BST
+; consumes a binary search tree bst a a number n
+; and produces the name of the node that has ssn
+; equal to n or NONE otherwise
+
+(check-expect (search-bst BST1 8) NONE)
+(check-expect (search-bst BST1 3) 'a)
+(check-expect (search-bst BST1 1) 'c)
+(check-expect (search-bst BST1 6) 'f)
+
+(define (fn-search-bst bst n)
+  (cond
+    [(not (contains-bt ... ...)) ...]
+    [(equal? (node-ssn ...) ...)
+     (node-name bst)]
+    [else
+     (... (... (node-ssn ...) ...)
+         (fn-search-bst (node-left ...) ...)
+         (fn-search-bst (node-right ...) ...))]))
+
+(define (search-bst bst n)
+   (cond
+    [(not (contains-bt bst n)) NONE]
+    [(equal? (node-ssn bst) n)
+     (node-name bst)]
+    [else
+     (if (> (node-ssn bst) n)
+         (search-bst (node-left bst) n)
+         (search-bst (node-right bst) n))]))
 
 
 
@@ -220,3 +260,13 @@
 
 
 
+
+
+
+
+
+
+
+
+
+  
