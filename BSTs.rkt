@@ -171,7 +171,34 @@
       [else
        #false])))
 
+; Exercise 324
 
+; BT -> List-of Number
+; consumes a binary tree bt and produces a squence
+; of all ssn numbers in the tree as they show up
+; from left to right
+
+(check-expect (inorder BT1) (list 1))
+(check-expect (inorder BT2) (list 1 2 3))
+(check-expect (inorder BT3) (list 1 2 9))
+(check-expect (inorder BT4) (list 1 2 3 4))
+(check-expect (inorder BT5) '())
+
+(define (fn-inorder bt)
+  (cond
+    [(no-info? bt) ...]
+    [else
+     (... (... (node-ssn bt))
+          (inorder (node-left bt))
+          (inorder (node-right bt)))]))
+
+(define (inorder bt)
+  (cond
+    [(no-info? bt) '()]
+    [else
+     (append (list (node-ssn bt))
+             (inorder (node-left bt))
+             (inorder (node-right bt)))]))
 
 
 
