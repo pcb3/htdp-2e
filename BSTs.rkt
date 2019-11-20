@@ -228,11 +228,11 @@
      (node-name bst)]
     [else
      (... (... (node-ssn ...) ...)
-         (fn-search-bst (node-left ...) ...)
-         (fn-search-bst (node-right ...) ...))]))
+          (fn-search-bst (node-left ...) ...)
+          (fn-search-bst (node-right ...) ...))]))
 
 (define (search-bst bst n)
-   (cond
+  (cond
     [(not (contains-bt bst n)) NONE]
     [(equal? (node-ssn bst) n)
      (node-name bst)]
@@ -241,11 +241,51 @@
          (search-bst (node-left bst) n)
          (search-bst (node-right bst) n))]))
 
+; Exercise 326
 
+(define BST2
+  (make-node 2 'a
+             (make-node 1 'b NONE NONE)
+             (make-node 3 'c NONE NONE)))                        
 
+; BST Number Symbol -> BST
+; consumes a BST b, a Number n, and a Symbol s.
+; produces a BST like b but in place of one of the
+; NONE subtrees we have (make-node n s NONE NONE)
 
+(check-expect
+ (create-bst BST2 4 'd)
+ (make-node 2 'a
+            (make-node 1 'b NONE NONE)
+            (make-node 3 'c NONE
+                       (make-node 4 'd NONE NONE))
+            ))
 
-
+(define (fn-create-bst b n s)
+  (cond
+    [(no-info? b) ...]
+    [else
+     (...
+      (... (node-ssn b) ...)
+      (fn-create-bst (node-left b) ... ...)
+      (fn-create-bst (node-right b) ... ...))]))
+                                               
+(define (create-bst b n s)
+  (cond
+    [(no-info? b)
+     (make-node n s NONE NONE)]
+    [else
+     (if (> (node-ssn b) n)
+         (make-node (node-ssn b)
+                    (node-name b)
+                    (create-bst
+                     (node-left b) n s)
+                    (node-right b))
+         (make-node (node-ssn b)
+                    (node-name b)
+                    (node-left b)
+                    (create-bst
+                     (node-right b) n s)))]))
 
 
 
