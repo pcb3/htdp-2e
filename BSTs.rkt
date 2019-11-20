@@ -287,7 +287,29 @@
                     (create-bst
                      (node-right b) n s)))]))
 
+; Exercise 327
 
+; [List-of [List Number Symbol]] -> BST
+; consumes a list l and produces BST
+
+(check-expect
+ (create-bst-from-list '((12 a) (10 b) (5 c)))
+ (make-node 5 'c
+            NONE
+            (make-node 10 'b NONE
+                       (make-node 12 'a NONE NONE))))
+
+(define (create-bst-from-list l)
+  (cond
+    [(empty? (rest l))
+     (make-node
+      (first (first l)) (second (first l))
+      NONE NONE)]
+    [else
+     (create-bst
+      (create-bst-from-list (rest l))
+      (first (first l))
+      (second (first l)))]))
 
 
 
