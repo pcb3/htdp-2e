@@ -1,0 +1,86 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname data-analysis) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+; 20 Iterative Refinement
+
+; 20.1 Data Analysis
+
+; A file is one of:
+; - Atom
+; - (cons Atom File)
+
+; 20.2 Refining Data Definitions
+
+; A Dir.v1 (short for directory) is one of: 
+; – '()
+; – (cons File.v1 Dir.v1)
+; – (cons Dir.v1 Dir.v1)
+ 
+; A File.v1 is a String.
+
+; Exercise 330
+
+(define CODE '("hang" "draw"))
+(define DOCS '("read"))
+(define TEXT '("part1" "part2" "part3"))
+(define LIBS (list CODE DOCS))
+(define TS (list TEXT "read!" LIBS))
+
+; Exercise 331
+
+; Dir.v1 -> Number
+; consumes a Dir.v1 dir and produces the number of
+; files in the given directory
+
+(check-expect (how-many '()) 0)
+(check-expect (how-many CODE) 2)
+(check-expect (how-many TS) 7)
+
+(define (fn-how-many dir)
+  (cond
+    [(empty? dir) ...]
+    [(list? (first dir))
+     (... (fn-how-many (first dir))
+          (fn-how-many (rest dir)))]
+    [(string? (first dir))
+     (... (fn-how-many (rest dir)))]
+    [else
+     (fn-how-many (rest dir))]))
+
+(define (how-many dir)
+  (cond
+    [(empty? dir) 0]
+    [(list? (first dir))
+     (+ (how-many (first dir))
+        (how-many (rest dir)))]
+    [(string? (first dir))
+     (add1 (how-many (rest dir)))]
+    [else
+     (how-many (rest dir))]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
