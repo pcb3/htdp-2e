@@ -58,9 +58,40 @@
     [else
      (how-many (rest dir))]))
 
+(define-struct dir [name content])
 
+; A Dir.v2 is a structure: 
+;   (make-dir String LOFD)
+ 
+; An LOFD (short for list of files and directories) is one of:
+; – '()
+; – (cons File.v2 LOFD)
+; – (cons Dir.v2 LOFD)
+ 
+; A File.v2 is a String.
 
+; Exercise 332
 
+(define DIR2
+  (make-dir "TS"
+            (cons
+             (make-dir "Text"
+                       (cons "part1"
+                             (cons "part2"
+                                   (cons "part3"
+                                         '()))))
+             (cons "read!"
+                   (cons
+                    (make-dir "Libs"
+                              (cons (make-dir "Code"
+                                              (cons "hang"
+                                                    (cons "draw" '())))
+                                    (cons
+                                     (make-dir "Docs"
+                                               (cons "read!" '())) '())))
+                    '())))))
+  
+        
 
 
 
