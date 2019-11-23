@@ -73,27 +73,59 @@
 ; Exercise 332
 
 (define DIR2
-  (make-dir "TS"
-            (cons
-             (make-dir "Text"
-                       (cons "part1"
-                             (cons "part2"
-                                   (cons "part3"
-                                         '()))))
-             (cons "read!"
-                   (cons
-                    (make-dir "Libs"
-                              (cons (make-dir "Code"
-                                              (cons "hang"
-                                                    (cons "draw" '())))
-                                    (cons
-                                     (make-dir "Docs"
-                                               (cons "read!" '())) '())))
-                    '())))))
+  (cons (make-dir "TS"
+                  (cons
+                   (make-dir "Text"
+                             (cons "part1"
+                                   (cons "part2"
+                                         (cons "part3"
+                                               '()))))
+                   (cons "read!"
+                         (cons
+                          (make-dir "Libs"
+                                    (cons (make-dir "Code"
+                                                    (cons "hang"
+                                                          (cons "draw" '())))
+                                          (cons
+                                           (make-dir "Docs"
+                                                     (cons "read!" '())) '())))
+                          '())))) '()))
   
-        
+; Exercise 333      
 
+; Dir.v2 -> Number
+; consumes a directory and determines the number of
+; files it contains
 
+(check-expect (how-many-v2 DIR2) 7)
+
+(define (fn-how-many-v2 dir)
+  (cond
+    [(empty? dir) ...]
+    [(dir? (first dir))
+     (fn-how-many-v2 (dir-content (first dir)))]
+    [(string? (first dir))
+     (... (fn-how-many-v2 (rest dir)))]
+    [(list? (first dir))
+     (... (fn-how-many-v2 (first dir))
+          (fn-how-many-v2 (rest dir)))]
+    [else
+     (fn-how-many-v2 (rest dir))]))
+     
+    
+(define (how-many-v2 dir)
+  (cond
+    [(empty? dir) 0]
+    [(dir? (first dir))
+     (+ (how-many-v2 (dir-content (first dir)))
+        (how-many-v2 (rest dir)))]
+    [(string? (first dir))
+     (add1 (how-many-v2 (rest dir)))]
+    [(list? (first dir))
+     (+ (how-many-v2 (first dir))
+        (how-many-v2 (rest dir)))]
+    [else
+     (how-many-v2 (rest dir))]))
 
 
 
