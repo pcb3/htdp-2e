@@ -127,6 +127,118 @@
     [else
      (how-many-v2 (rest dir))]))
 
+; Exercise 334
+
+(define-struct dir.v2 [name content size read?])
+
+; A dir-v2 is a structure:
+; (make-dir-v2 String LOFD Number String)
+; The size field is the amount of space consumed
+; by the directory. read? determines the rights of
+; use
+
+(define DIR.V2-1
+  (make-dir.v2 "Test" '() 10 "root"))
+
+;; Model 3
+
+(define-struct file [name size content])
+
+; A File.v3 is a structure:
+; (make-file String N String)
+
+(define-struct dir.v3 [name dirs files])
+
+; A Dir.v3 is a structure: 
+;   (make-dir.v3 String Dir* File*)
+ 
+; A Dir* is one of: 
+; – '()
+; – (cons Dir.v3 Dir*)
+ 
+; A File* is one of: 
+; – '()
+; – (cons File.v3 File*)
+
+; Exercise 335
+(define DIR.V3
+  (cons
+   (make-dir.v3 "TS"
+                (cons
+                 (make-dir.v3 "Text" '()
+                              (cons
+                               (make-file "part1" 99 "")
+                               (cons
+                                (make-file "part2" 52 "")
+                                (cons
+                                 (make-file "part3" 17 "")
+                                 '()))))
+                 (cons
+                  (make-dir.v3 "Libs"
+                               (cons
+                                (make-dir.v3 "Code" '()
+                                             (cons
+                                              (make-file "hang" 8 "")
+                                              (cons
+                                               (make-file "draw" 2 "")
+                                               '())))
+                                (cons
+                                 (make-dir.v3 "Docs" '()
+                                              (cons
+                                               (make-file "read!" 19 "")
+                                               '()))
+                                 '())) '())
+                  '()))
+                (cons
+                 (make-file "read!" 10 "")
+                 '()))
+   '()))
+           
+; Exercise 336
+
+; Dir.v3 -> Number
+; consumes a directory dir and produces the number
+; of files
+
+(check-expect (how-many-v3 DIR.V3) 7)
+
+(define (fn-how-many-v3 dir)
+  (cond
+    [(empty? dir) ...]
+    [(dir.v3? (first dir))
+     (... (... (... (dir.v3-files dir))
+               (fn-how-many-v3 (dir.v3-dirs dir)))
+          (fn-how-many-v3 (rest dir)))]
+    [else
+     (fn-how-many-v3 (rest dir))]))
+
+(define (how-many-v3 dir)
+  (cond
+    [(empty? dir) 0]
+    [(dir.v3? (first dir))
+     (+ (+ (length (dir.v3-files (first dir)))
+           (how-many-v3 (dir.v3-dirs (first dir))))
+        (how-many-v3 (rest dir)))]
+    [else
+     (how-many-v3 (rest dir))]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
