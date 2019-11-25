@@ -222,6 +222,29 @@
     [else
      (how-many-v3 (rest dir))]))
 
+; Exercise 337
+
+; A Dir* is:
+;- [List-of Dir.v3]
+
+; A File* is one of:
+;- [List-of File.v3]
+
+; Dir* -> Number
+; consumes a list of directories dir and produces
+; the number of files it contains
+
+(check-expect (how-many-higher-order DIR.V3) 7)
+
+(define (fn-how-many-higher-order dir) 0)
+  
+(define (how-many-higher-order dir)
+  (foldl
+   (lambda (x y)
+        (+ y (length (dir.v3-files x))
+           (how-many-higher-order (dir.v3-dirs x))))
+   0 dir))
+
 
 
 
