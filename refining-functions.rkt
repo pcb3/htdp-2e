@@ -17,12 +17,12 @@
 ; consumes a Dir dir and a filename f and returns
 ; true if the file occurs in the given dir
 
-(check-expect (find working-dir "itunes.rkt") #true)
-(check-expect (find working-dir "hello.py") #false)
-(check-expect (find working-dir "hi.py") #true)
-(check-expect (find test "thisone.txt") #true)
+(check-expect (find? working-dir "itunes.rkt") #true)
+(check-expect (find? working-dir "hello.py") #false)
+(check-expect (find? working-dir "hi.py") #true)
+(check-expect (find? test "thisone.txt") #true)
 
-(define (find dir f)
+(define (find? dir f)
   (cond
     [(empty? dir) #false]
     [(dir? dir)
@@ -36,8 +36,8 @@
 (define (check-dir-list l f)
   (cond
     [(empty? l) #false]
-    [else (or (find (first l) f)
-              (find (rest l) f))]))
+    [else (or (find? (first l) f)
+              (find? (rest l) f))]))
 
 (define (ormap-files d f)
   (ormap
