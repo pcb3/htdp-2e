@@ -9,6 +9,7 @@
 ; Exercise 338
 
 (define test (create-dir "/home/pc/code/test"))
+(define test2 (create-dir "/home/pc/code/test2"))
 (define working-dir (create-dir "/home/pc/code/htdp"))
 
 ; exercise 339
@@ -59,20 +60,6 @@
                            '/home/pc/code/test/second
                            "happy.txt" "test.txt" "thisone.txt")))
                (ls-empty? test)) #true)
-
-
-(define (fn-ls dir)
-  (... (dir-name dir)
-       (... (dir-files dir)
-            (map (lambda (d) (fn-ls d))
-                 (dir-dirs d)))))
-  
-(define (ls dir)
-  (cons (dir-name dir)
-        (append (map (lambda (f) (file-name f))
-                     (dir-files dir))
-                (map (lambda (d) (ls d))
-                     (dir-dirs dir)))))
         
 (define (ls-empty? dir)
   (cond
@@ -89,7 +76,56 @@
     [else (append (ls-empty? (first d))
                   (extract-dir (rest d)))]))
 
+; Exercise 341
 
+; Dir* -> Number
+; consumes a Dir* dir and produces the total size of
+; all files, assuming cost 1 per directory
+
+(define FILE-SIZE 29629947)
+(define SIZE-TEST2 (+ FILE-SIZE 3))
+
+(check-expect (du test2) SIZE-TEST2)
+
+(define (fn-du dir)
+  (cond
+    [(empty? dir) ...]
+    [(list? dir)
+     (... (process-files (dir-files (first dir)))
+          (fn-du (dir-dirs dir))
+          (fn-du (rest dir)))]
+    [else
+     (... (process-files (dir-files dir))
+          (fn-du (dir-dirs dir)))]))
+
+; List-of File* -> Number
+; consumes a File* f and produces the total size
+; of all the files
+
+(define (fn-process-files lf)
+  (cond
+    [(empty? lf) ...]
+    [else
+     (... (... (file-size (first lf))
+               (fn-process-files (rest lf))))]))
+
+(define (du dir)
+  (cond
+    [(empty? dir) 0]
+    [(list? dir)
+     (+ (process-files (dir-files (first dir)))
+        (du (dir-dirs (first dir)))
+        (du (rest dir)))]
+    [else
+     (+ (process-files (dir-files dir))
+        (du (dir-dirs dir)))]))
+
+(define (process-files lf)
+  (cond
+    [(empty? lf) 0]
+    [else
+     (add1 (+ (file-size (first lf))
+              (process-files (rest lf))))]))
            
     
                 
