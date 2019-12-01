@@ -44,11 +44,55 @@
    (lambda (x)
      (string=? (file-name x) f)) (dir-files d)))
 
+; Exercise 340
+
+; Dir -> List-of Strings
+; consumes a Dir dir and produces the names of all
+; files and directories in the given Dir                                
+
+(check-expect (andmap
+               (lambda (a)
+                 (member? a
+                          (list
+                           '/home/pc/code/test
+                           '/home/pc/code/test/first
+                           '/home/pc/code/test/second
+                           "happy.txt" "test.txt" "thisone.txt")))
+               (ls-empty? test)) #true)
 
 
+(define (fn-ls dir)
+  (... (dir-name dir)
+       (... (dir-files dir)
+            (map (lambda (d) (fn-ls d))
+                 (dir-dirs d)))))
+  
+(define (ls dir)
+  (cons (dir-name dir)
+        (append (map (lambda (f) (file-name f))
+                     (dir-files dir))
+                (map (lambda (d) (ls d))
+                     (dir-dirs dir)))))
+        
+(define (ls-empty? dir)
+  (cond
+    [(empty? dir) '()]
+    [else
+     (cons (dir-name dir)
+           (append
+            (map (lambda (f) (file-name f)) (dir-files dir))
+            (extract-dir (dir-dirs dir))))]))
+
+(define (extract-dir d)
+  (cond
+    [(empty? d) '()]
+    [else (append (ls-empty? (first d))
+                  (extract-dir (rest d)))]))
 
 
- 
+           
+    
+                
 
 
 
