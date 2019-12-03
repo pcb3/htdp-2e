@@ -127,7 +127,109 @@
      (add1 (+ (file-size (first lf))
               (process-files (rest lf))))]))
            
+; A Path is [List-of String].
+; interpretation directions into a directory tree
+
+(define PATH-TO-PART1 (list "TS" "Text" "part1"))
+
+; Exercise 342
+
+; Dir* File* -> Path
+; consumes a directory d and a file f and produces
+; the path to the file if find? f is #true or
+; false otherwise
+
+(check-expect (find test "thisone.txt")
+              (list
+               '/home/pc/code/test
+               '/home/pc/code/test/second
+               "thisone.txt"))
+
+(check-expect (find test "test.txt")
+              (list
+               '/home/pc/code/test
+               '/home/pc/code/test/first
+               "test.txt"))
+
+(check-expect (find test "umm.txt") #false)
+
+(define (fn-find d f)
+  (local
+    (; Dir* -> Dir*
+     ; consumes a Dir* d and produces the directory
+     ; containing the file or the next step in the
+     ; path
+     (define (fn-dl-process di)
+       (cond
+         [(empty? di) ...]
+         [(find? (first di) f)
+          (fn-d-process (first di))]
+         [else
+          (fn-dl-process (rest di))]))
+
+     ; Dir* -> Dir*
+     ; consumes a Dir* and produces the name of that
+     ; directory if it contains the file f
+     (define (fn-d-process di)
+       (cond
+         [(find? di f)
+          (cond
+            [(fn-contains-f? di)
+             (... (dir-name di))]
+            [else
+             (fn-find (dir-dirs di) f)])]))
+
+     ; Dir* -> Boolean
+     ; consumes a directory di and produces true if
+     ; it contains the file f
+     (define (fn-contains-f? d)
+       (member? f (dir-files d))))
+  
+    (cond
+      [(dir? d) (fn-d-process d)]
+      [else
+       (fn-dl-process d)])))
+
+(define (find d f)
+  (local
+    (; Dir* -> Dir*
+     ; consumes a Dir* d and produces the directory
+     ; containing the file or the next step in the
+     ; path
+     (define (dl-process di)
+       (cond
+         [(find? (first di) f)
+          (d-process (first di))]
+         [else
+          (dl-process (rest di))]))
+
+     ; Dir* -> Dir*
+     ; consumes a Dir* and produces the name of that
+     ; directory if it contains the file f
+     (define (d-process di)
+       (cond
+         [(find? di f)
+          (cond
+            [(contains-f? di)
+             (cons (dir-name di) (list f))]
+            [else
+             (cons (dir-name di)
+                   (dl-process (dir-dirs di)))])]))
+
+     ; Dir* -> Boolean
+     ; consumes a directory di and produces true if
+     ; it contains the file f
+     (define (contains-f? d)
+       (member? f
+                (map (lambda (t) (file-name t))
+                     (dir-files d)))))
     
+    (cond
+      [(find? d f)
+       (d-process d)]
+      [else #false])))
+       
+       
                 
 
 
