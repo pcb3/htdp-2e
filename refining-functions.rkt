@@ -214,7 +214,8 @@
              (cons (dir-name di) (list f))]
             [else
              (cons (dir-name di)
-                   (dl-process (dir-dirs di)))])]))
+                   (dl-process (dir-dirs di)))])]
+         [else #false]))
 
      ; Dir* -> Boolean
      ; consumes a directory di and produces true if
@@ -224,10 +225,7 @@
                 (map (lambda (t) (file-name t))
                      (dir-files d)))))
     
-    (cond
-      [(find? d f)
-       (d-process d)]
-      [else #false])))
+    (d-process d)))
        
        
                 
