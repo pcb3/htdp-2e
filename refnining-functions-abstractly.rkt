@@ -9,6 +9,22 @@
 (define test3 (create-dir "/home/pc/code/test3"))
 (define test4 (create-dir "/home/pc/code/test4"))
 
+; Dir String -> Boolean
+; consumes a Dir dir and a filename f and returns
+; true if the file occurs in the given dir
+
+(check-expect (find?-abstract test "hello.py") #false)
+(check-expect (find?-abstract test "thisone.txt") #true)
+
+(define (find?-abstract dir f)
+  (cond
+    [(dir? dir) (or (ormap (lambda (p) (string=? f (file-name p)))
+                           (dir-files dir))
+                    (find?-abstract (dir-dirs dir) f))]
+    [else
+     (ormap (lambda (q) (find?-abstract q f)) dir)]))
+           
+
 ; Dir -> Path
 ; consumes a Dir dir and produces the names
 ; of all files and directories
@@ -58,8 +74,26 @@
          (foldl + 1 (map (lambda (s) (file-size s)) (dir-files dir)))
          (dir-dirs dir)))
 
-    
-           
+; Dir* File* -> Path
+; consumes a directory d and a file f and produces
+; the path to the file if find? f is #true or
+; false otherwise
+
+;(check-expect (find-abstract test "thisone.txt")
+;              (list
+;               '/home/pc/code/test
+;               '/home/pc/code/test/second
+;               "thisone.txt"))
+;
+;(check-expect (find-abstract test "test.txt")
+;              (list
+;               '/home/pc/code/test
+;               '/home/pc/code/test/first
+;               "test.txt"))
+
+(check-expect (find-abstract test "umm.txt") #false)   
+
+(define (find-abstract dir f) #false)
     
 
 
