@@ -38,7 +38,63 @@
   (local
     ((define (dir-file-names1 d)
        (append 
-               (map (lambda (x) (file-name x)) (dir-files d))
-               (foldl (lambda (x y) (append (ls-abstraction1 x) y))
-                      '() (dir-dirs d)))))
+        (map (lambda (x) (file-name x)) (dir-files d))
+        (foldl (lambda (x y) (append (ls-abstraction1 x) y))
+               '() (dir-dirs d)))))
     (cons (dir-name dir) (dir-file-names1 dir))))
+
+; Dir* -> Number
+; consumes a Dir* dir and produces the total size of
+; all files, assuming cost 1 per directory
+
+; List-of File* -> Number
+; consumes a File* f and produces the total size
+; of all the files
+
+(define FILE-SIZE 29629947)
+(define SIZE-TEST2 (+ FILE-SIZE 3))
+
+(check-expect (du-abstract test2) SIZE-TEST2)
+
+(define (du-abstract dir)
+  (local
+    ((define (add-files d)
+       (+ 1
+          (foldl + 0 (map (lambda (s) (file-size s)) (dir-files d)))
+          (foldl (lambda (x y) (+ (du-abstract x) y))
+                 0 (dir-dirs d)))))
+
+    (add-files dir)))
+
+    
+           
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
