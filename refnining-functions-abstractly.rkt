@@ -54,10 +54,9 @@
 (check-expect (du-abstract test2) SIZE-TEST2)
 
 (define (du-abstract dir)
-  (+ 1
-     (foldl + 0 (map (lambda (s) (file-size s)) (dir-files dir)))
-     (foldl (lambda (x y) (+ (du-abstract x) y))
-            0 (dir-dirs dir))))
+  (foldl (lambda (x y) (+ (du-abstract x) y))
+         (foldl + 1 (map (lambda (s) (file-size s)) (dir-files dir)))
+         (dir-dirs dir)))
 
     
            
