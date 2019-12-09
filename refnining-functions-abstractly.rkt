@@ -24,13 +24,10 @@
                (ls-abstraction test)) #true)
                
 (define (ls-abstraction dir)
-  (local
-    ((define (dir-file-names d)
-       (append (list (dir-name d))
-               (map (lambda (x) (file-name x)) (dir-files d))
-               (foldl (lambda (x y) (append (dir-file-names x) y))
-                      '() (dir-dirs d)))))
-    (dir-file-names dir)))
+  (append (list (dir-name dir))
+          (map (lambda (x) (file-name x)) (dir-files dir))
+          (foldl (lambda (x y) (append (ls-abstraction x) y))
+                 '() (dir-dirs dir))))
 
 ;; aleternate method
 
