@@ -24,7 +24,6 @@
     [else
      (ormap (lambda (q) (find?-abstract q f)) dir)]))
            
-
 ; Dir -> Path
 ; consumes a Dir dir and produces the names
 ; of all files and directories
@@ -79,24 +78,97 @@
 ; the path to the file if find? f is #true or
 ; false otherwise
 
-;(check-expect (find-abstract test "thisone.txt")
-;              (list
-;               '/home/pc/code/test
-;               '/home/pc/code/test/second
-;               "thisone.txt"))
-;
-;(check-expect (find-abstract test "test.txt")
-;              (list
-;               '/home/pc/code/test
-;               '/home/pc/code/test/first
-;               "test.txt"))
+(check-expect (find-abstract test "thisone.txt")
+              (list
+               '/home/pc/code/test
+               '/home/pc/code/test/second
+               "thisone.txt"))
+
+(check-expect (find-abstract test "test.txt")
+              (list
+               '/home/pc/code/test
+               '/home/pc/code/test/first
+               "test.txt"))
 
 (check-expect (find-abstract test "umm.txt") #false)   
 
-(define (find-abstract dir f) #false)
+(define (fn-find-abstract dir f)
+  (local
+    (; Dir -> Path
+     ; consumes a list of Dir lod and produces the path
+     (define (fn-dl-process lod)
+       (cond
+         [(in-file? (first lod)) (... (dir-name (first lod))
+                                      (... f))]
+         [else (if (find?-abstract (first lod) f)
+                   (... (dir-name (first lod))
+                        (fn-dl-process (dir-dirs (first lod))))
+                   (fn-dl-process (rest lod)))]))
+
+     ; Dir -> Boolean
+     ; consumes a direectory d and produces true if
+     ; it contains the file f
+     (define (in-file? d)
+       (ormap (lambda (x) (string=? f (file-name x)))
+              (dir-files d))))
+
+    (cond
+      [(in-file? dir) (... (dir-name dir) f)]
+      [else (if (find?-abstract dir f)
+                (... (dir-name dir)
+                     (fn-dl-process (dir-dirs dir)))
+                ...)])))
+
+(define (find-abstract dir f)
+  (local
+    (; Dir -> Path
+     ; consumes a list of Dir lod and produces the path
+     (define (dl-process lod)
+       (cond
+         [(in-file? (first lod)) (cons (dir-name (first lod))
+                                       (list f))]
+         [else (if (find?-abstract (first lod) f)
+                   (cons (dir-name (first lod))
+                         (dl-process (dir-dirs (first lod))))
+                   (dl-process (rest lod)))]))
+
+     ; Dir -> Boolean
+     ; consumes a direectory d and produces true if
+     ; it contains the file f
+     (define (in-file? d)
+       (ormap (lambda (x) (string=? f (file-name x)))
+              (dir-files d))))
+
+    (cond
+      [(in-file? dir) (cons (dir-name dir) f)]
+      [else (if (find?-abstract dir f)
+                (cons (dir-name dir)
+                      (dl-process (dir-dirs dir)))
+                #false)])))
+
+; https://github.com/adaliu-gh/htdp/blob/master/19-24%20Intertwined%20Data/338-344.rkt
+; find? and find implementations
+
+(define (find? d f)
+  (or (ormap (lambda (x) (string=? f (file-name x))) (dir-files d))
+      (ormap (lambda (x) (find? x f)) (dir-dirs d))))
+
+(define (in-files? d f)
+  (ormap (lambda (x) (string=? f (file-name x))) (dir-files d)))
     
-
-
+; Dir String -> [Maybe [Path]]
+(define (find d f)
+  (local (
+          ;; [List-of Dir] -> Dir
+          ;; gets the subdirectory where is the f is
+          (define (get-sub l)
+            (cond
+             [(empty? (rest l)) (rest l) ]
+             [else (if (find? (first l) f) (first l) (get-sub (rest l)))])))
+    (cond
+     [(in-files? d f) (list (dir-name d) f)]
+     [(find? d f) (cons (dir-name d) (find (get-sub (dir-dirs d)) f))]
+     [else #false])))
 
 
 
