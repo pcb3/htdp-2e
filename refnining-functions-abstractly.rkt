@@ -180,9 +180,9 @@
 (check-expect (find-all test "thisone.txt")
               (list
                (list
-               '/home/pc/code/test
-               '/home/pc/code/test/second
-               "thisone.txt")))
+                '/home/pc/code/test
+                '/home/pc/code/test/second
+                "thisone.txt")))
 
 (check-expect (find-all test5 "thisone.txt")
               (list
@@ -255,7 +255,8 @@
     (cond
       [(find?-abstract dir f)
        (map (lambda (q) (cons (dir-name dir) q))
-            (dl-process (dir-dirs dir)))])))
+            (dl-process (dir-dirs dir)))]
+      [else #false])))
 
 
 
