@@ -8,6 +8,7 @@
 (define test2 (create-dir "/home/pc/code/test2"))
 (define test3 (create-dir "/home/pc/code/test3"))
 (define test4 (create-dir "/home/pc/code/test4"))
+(define test5 (create-dir "/home/pc/code/test5"))
 
 ; Dir String -> Boolean
 ; consumes a Dir dir and a filename f and returns
@@ -163,14 +164,98 @@
           ;; gets the subdirectory where is the f is
           (define (get-sub l)
             (cond
-             [(empty? (rest l)) (rest l) ]
-             [else (if (find? (first l) f) (first l) (get-sub (rest l)))])))
+              [(empty? (rest l)) (rest l) ]
+              [else (if (find? (first l) f) (first l) (get-sub (rest l)))])))
     (cond
-     [(in-files? d f) (list (dir-name d) f)]
-     [(find? d f) (cons (dir-name d) (find (get-sub (dir-dirs d)) f))]
-     [else #false])))
+      [(in-files? d f) (list (dir-name d) f)]
+      [(find? d f) (cons (dir-name d) (find (get-sub (dir-dirs d)) f))]
+      [else #false])))
 
+;; challenge
 
+; Dir -> [Maybe [List-of Path]] or Boolean
+; consumes a Dir dir and produces all paths to f or
+; false otherwise
+
+(check-expect (find-all test "thisone.txt")
+              (list
+               (list
+               '/home/pc/code/test
+               '/home/pc/code/test/second
+               "thisone.txt")))
+
+(check-expect (find-all test5 "thisone.txt")
+              (list
+               (list
+                '/home/pc/code/test5
+                '/home/pc/code/test5/first
+                "thisone.txt")
+               (list
+                '/home/pc/code/test5
+                '/home/pc/code/test5/second
+                "thisone.txt")))
+
+(define (fn-find-all dir f)
+  (local
+    (; Dir -> Dir
+     ; consumes a Dir d and produces a Dir for processing
+     (define (fn-dl-process d)
+       (cond
+         [(empty? d) ...]
+         [(find?-abstract (first d))
+          (... (fn-sub-path (first d))
+               (fn-dl-process (rest d)))]
+         [else (fn-dl-process (rest d))]))
+
+     ; Dir -> Path
+     ; consumes a Dir d and produces the sub-path
+     (define (fn-sub-path d)
+       (cond
+         [(fn-in-file? d) (... (dir-name d) (list f))]
+         [else
+          (... (dir-name d) (fn-dl-process (dir-dirs d) f))]))
+
+     ; Dir -> Boolean
+     ; consumes a Dir d and produces true if it contains f
+     (define (fn-in-file? d)
+       (ormap (lambda (p) (string=? f (file-name p)))
+              (dir-files d))))
+
+    (cond
+      [(find?-abstract dir f)
+       (map (lambda (q) (... (dir-name dir) q))
+            (fn-dl-process (dir-dirs dir)))])))
+       
+(define (find-all dir f)
+  (local
+    (; Dir -> Dir
+     ; consumes a Dir d and produces a Dir for processing
+     (define (dl-process d)
+       (cond
+         [(empty? d) '()]
+         [(find?-abstract (first d) f)
+          (cons (sub-path (first d))
+                (dl-process (rest d)))]
+         [else (dl-process (rest d))]))
+
+     ; Dir -> Path
+     ; consumes a Dir d and produces the sub-path
+     (define (sub-path d)
+       (cond
+         [(in-file? d) (cons (dir-name d) (list f))]
+         [else
+          (cons (dir-name d) (dl-process (dir-dirs d) f))]))
+
+     ; Dir -> Boolean
+     ; consumes a Dir d and produces true if it contains f
+     (define (in-file? d)
+       (ormap (lambda (p) (string=? f (file-name p)))
+              (dir-files d))))
+
+    (cond
+      [(find?-abstract dir f)
+       (map (lambda (q) (cons (dir-name dir) q))
+            (dl-process (dir-dirs dir)))])))
 
 
 
