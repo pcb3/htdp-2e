@@ -327,18 +327,12 @@
      (define (dir-file-path p)
        (map (lambda (q) (foldr (lambda (x y) (cons x y))
                                (list q) (list (dir-name p))))
-            (list-files (dir-files p))))
-         
-     ; File -> List-of Strings
-     ; consumes a File f and produces a list of the
-     ; names of each file in f
-     (define (list-files f)
-       (map (lambda (x) (file-name x)) f)))
+            (map (lambda (x) (file-name x)) (dir-files p)))))
 
     (append (map (lambda (y) (cons (dir-name dir) (list (file-name y))))
-               (dir-files dir))
-          (map (lambda (x) (cons (dir-name dir) x))
-               (sub-path (dir-dirs dir))))))
+                 (dir-files dir))
+            (map (lambda (x) (cons (dir-name dir) x))
+                 (sub-path (dir-dirs dir))))))
 
 
 
