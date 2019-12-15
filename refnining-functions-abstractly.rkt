@@ -9,6 +9,7 @@
 (define test3 (create-dir "/home/pc/code/test3"))
 (define test4 (create-dir "/home/pc/code/test4"))
 (define test5 (create-dir "/home/pc/code/test5"))
+(define test6 (create-dir "/home/pc/code/test6"))
 
 ; Dir String -> Boolean
 ; consumes a Dir dir and a filename f and returns
@@ -257,6 +258,91 @@
        (map (lambda (q) (cons (dir-name dir) q))
             (dl-process (dir-dirs dir)))]
       [else #false])))
+
+; Exercise 343
+
+; Dir -> List-of Path
+; consumes a directory dir and produces the path to
+; all files
+
+(check-expect
+ (ls-r test3)
+ (list
+  (list '/home/pc/code/test3 '/home/pc/code/test3/first "happy.txt")
+  (list '/home/pc/code/test3 '/home/pc/code/test3/first "test.txt")
+  (list '/home/pc/code/test3 '/home/pc/code/test3/first "thisone.txt")
+  (list
+   '/home/pc/code/test3
+   '/home/pc/code/test3/second
+   "thisone.txt")))
+
+(check-expect
+ (ls-r test4) (list (list '/home/pc/code/test4 "test.txt")))
+
+(define (fn-ls-r dir)
+  (local
+    (; Dir -> Dir
+     ; consumes a Dir d and produces the sub-path
+     (define (fn-sub-path d)
+       (... 
+        (... (dir-name d) (fn-list-files (dir-files d)))
+        (... (dir-name d) (fn-dl-process (dir-dirs d)))))
+
+     ; Dir -> Dir
+     ; consumes a list of sub-directories dl and produces
+     ; a single Dir
+     (define (fn-dl-process dl)
+       (cond
+         [(empty? '()) ...]
+         [else
+          (... (fn-sub-path (first dl))
+               (fn-dl-process (rest dl)))]))
+         
+     ; File -> List-of Strings
+     ; consumes a File f and produces a list of the
+     ; names of each file in f
+     (define (fn-list-files f)
+       (map (lambda (x) (file-name x)) f)))
+
+    (fn-sub-path dir)))
+
+(define (ls-r dir)
+  (local
+    (; Dir -> Dir
+     ; consumes a Dir d and produces the sub-path
+     (define (sub-path d)
+       (append 
+        (cond
+          [(empty? d) '()]
+          [else
+           (append
+            (dir-file-path (first d))
+            (map (lambda (x) (cons (dir-name (first d)) x))
+                 (sub-path (dir-dirs (first d))))
+            (sub-path (rest d)))])))
+
+     ; Path -> Path
+     ; consumes a Path p and produces a new Path with
+     ; the appropriate file at the terminus
+     (define (dir-file-path p)
+       (map (lambda (q) (foldr (lambda (x y) (cons x y))
+                               (list q) (list (dir-name p))))
+            (list-files (dir-files p))))
+         
+     ; File -> List-of Strings
+     ; consumes a File f and produces a list of the
+     ; names of each file in f
+     (define (list-files f)
+       (map (lambda (x) (file-name x)) f)))
+
+    (append (map (lambda (y) (cons (dir-name dir) (list (file-name y))))
+               (dir-files dir))
+          (map (lambda (x) (cons (dir-name dir) x))
+               (sub-path (dir-dirs dir))))))
+
+
+
+  
 
 
 
