@@ -334,6 +334,22 @@
             (map (lambda (x) (cons (dir-name dir) x))
                  (sub-path (dir-dirs dir))))))
 
+; Exercise 344
+
+; Dir File -> List-of Path
+; consumes a Directory d and a File f and produces
+; the paths to f
+
+(check-expect
+ (find-all-ls-r test5 "thisone.txt")
+ (list (list '/home/pc/code/test5 '/home/pc/code/test5/first "thisone.txt")
+       (list '/home/pc/code/test5 '/home/pc/code/test5/second "thisone.txt")))
+
+(define (find-all-ls-r d f)
+  (filter (lambda (z) (string=? f (first (reverse z)))) (ls-r d)))
+
+
+
 
 
   
