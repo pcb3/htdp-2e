@@ -168,7 +168,17 @@
     [(string? s) (error WRONG)]
     [(symbol? s) (error WRONG)]))
 
+; S-expr -> Number
+; consumes an S-expr and produces its value if it
+; is recognised by parse as a BSL-eval expression
+; otherwise an error is signaled
 
+(check-expect (interpreter-expr 0) 0)
+(check-expect (interpreter-expr '(+ 1 1)) 2)
+(check-expect (interpreter-expr '(* 2 3)) 6)
+
+(define (interpreter-expr s)
+  (eval-expression (parse s)))
 
 
 
