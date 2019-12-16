@@ -33,8 +33,8 @@
 
 ; an BSL-eval is one of:
 ; - Number
-; - a structure (make-add [BSL-expr BSL-expr])
-; - a structure (make-mul [BSL-expr BSL-expr])
+; - (make-add [BSL-expr BSL-expr])
+; - (make-mul [BSL-expr BSL-expr])
 
 (define BSL-EVAL1 (make-add 1 1))
 (define BSL-EVAL2 (make-mul 2 3))
@@ -109,7 +109,7 @@
 (check-expect (eval-bool-expression (make-or-expr #false #false)) (or #false #false))
 (check-expect (eval-bool-expression (make-not-expr #true)) (not #true))
 (check-expect (eval-bool-expression (make-not-expr #false)) (not #false))
-;(check-expect (eval-bool-expression (make-and-expr #true (make-not-expr #true))) #false)
+(check-expect (eval-bool-expression (make-and-expr #true (make-not-expr #true))) #false)
 
 (define (eval-bool-expression bbsl)
   (cond
@@ -120,6 +120,53 @@
                          (eval-bool-expression (or-expr-right bbsl)))]
     [(not-expr? bbsl) (not (eval-bool-expression (not-expr-bool bbsl)))]
     [else "not a BBSL expression"]))
+
+; Exercise 349
+
+; An Atom is one of:
+; - Number
+; - String
+; - Symbol
+
+(define (atom? x)
+  (cond
+    [(number? x) #true]
+    [(string? x) #true]
+    [(symbol? x) #true]
+    [else #false]))
+
+(define WRONG "wrong expression")
+
+(check-expect (parse 0) 0)
+(check-expect (parse '(+ 0 0)) (make-add 0 0))
+(check-expect (parse '(* 0 0)) (make-mul 0 0))
+
+; S-expr -> BSL-expr
+(define (parse s)
+  (cond
+    [(atom? s) (parse-atom s)]
+    [else (parse-sl s)]))
+ 
+; SL -> BSL-expr 
+(define (parse-sl s)
+  (local ((define L (length s)))
+    (cond
+      [(< L 3) (error WRONG)]
+      [(and (= L 3) (symbol? (first s)))
+       (cond
+         [(symbol=? (first s) '+)
+          (make-add (parse (second s)) (parse (third s)))]
+         [(symbol=? (first s) '*)
+          (make-mul (parse (second s)) (parse (third s)))]
+         [else (error WRONG)])]
+      [else (error WRONG)])))
+ 
+; Atom -> BSL-expr 
+(define (parse-atom s)
+  (cond
+    [(number? s) s]
+    [(string? s) (error WRONG)]
+    [(symbol? s) (error WRONG)]))
 
 
 
