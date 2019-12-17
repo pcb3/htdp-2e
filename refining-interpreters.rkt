@@ -206,7 +206,38 @@
                (subst (mul-right ex) x v))]
     [else ex]))
 
+; Exercise 353
 
+; BSL-var-expr -> Boolean
+; consumes a BSL-var-expr and produces true if
+; it is also a BSL-expr
+
+(check-expect (numeric? 0) #true)
+(check-expect (numeric? 'p) #false)
+(check-expect (numeric? (make-add (make-mul 2 3)
+                                  3))
+              #true)
+(check-expect (numeric? (make-add (make-add 1 'p)
+                                  2))
+              #false)
+
+(define (fn-numeric? ex)
+  (cond
+    [(number? ex) ...]
+    [(add? ex) (and (fn-numeric? (add-left ex))
+                    (fn-numeric? (add-right ex)))]
+    [(mul? ex) (and (fn-numeric? (mul-left ex))
+                    (fn-numeric? (mul-left ex)))]
+    [else ...]))
+
+(define (numeric? ex)
+  (cond
+    [(number? ex) #true]
+    [(add? ex) (and (numeric? (add-left ex))
+                    (numeric? (add-right ex)))]
+    [(mul? ex) (and (numeric? (mul-left ex))
+                    (numeric? (mul-left ex)))]
+    [else #false]))
 
 
 
