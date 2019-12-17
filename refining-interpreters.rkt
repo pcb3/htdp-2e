@@ -217,8 +217,7 @@
 (check-expect (numeric? (make-add (make-mul 2 3)
                                   3))
               #true)
-(check-expect (numeric? (make-add (make-add 1 'p)
-                                  2))
+(check-expect (numeric? (make-mul 1 'p))
               #false)
 
 (define (fn-numeric? ex)
@@ -236,8 +235,28 @@
     [(add? ex) (and (numeric? (add-left ex))
                     (numeric? (add-right ex)))]
     [(mul? ex) (and (numeric? (mul-left ex))
-                    (numeric? (mul-left ex)))]
+                    (numeric? (mul-right ex)))]
     [else #false]))
+
+; Exercise 354
+
+; BSL-var-expr -> Number or error
+; consumes a BSL-var-expr ex and produces the
+; value if its numeric else signals an error
+
+(check-expect (eval-variable 0) 0)
+(check-expect
+ (eval-variable (make-add 1 1)) 2)
+(check-expect
+ (eval-variable (make-mul 2 3)) 6)
+
+(define (eval-variable ex)
+  (cond
+    [(number? ex) ex]
+    [else (if (numeric? ex)
+              (eval-expression ex)
+              (error WRONG))]))
+
 
 
 
