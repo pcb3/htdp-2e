@@ -12,7 +12,7 @@
 
 ; exercise 345
 
-; A BSL-expr is one of:
+; A BSL-var-expr is one of:
 ; - Number
 ; - Symbol
 ; - (make-add BSL-expr BSL-expr)
@@ -31,7 +31,7 @@
 
 ; Exercise 346
 
-; an BSL-eval is one of:
+; an BSL-expr is one of:
 ; - Number
 ; - (make-add [BSL-expr BSL-expr])
 ; - (make-mul [BSL-expr BSL-expr])
@@ -170,7 +170,7 @@
 
 ; S-expr -> Number
 ; consumes an S-expr and produces its value if it
-; is recognised by parse as a BSL-eval expression
+; is recognised by parse as a BSL-expr expression
 ; otherwise an error is signaled
 
 (check-expect (interpreter-expr 0) 0)
@@ -180,9 +180,31 @@
 (define (interpreter-expr s)
   (eval-expression (parse s)))
 
+; 21.2 Interpreting Variables
 
+; Exercise 352
 
+; BSL-var-expr Symbol Number -> BSL-var-expr
+; consumes a BSL-var-expr ex, a Symbol x, a Number
+; v and produces a BSL-var-expr with all
+; occurences of x replaced by v
 
+(check-expect (subst 'x 'x 0) 0)
+(check-expect (subst (make-add 'x 1) 'x 2)
+              (make-add 2 1))
+(check-expect (subst (make-mul 'x 2) 'x 3)
+              (make-mul 3 2))
+  
+(define (subst ex x v)
+  (cond
+    [(equal? ex x) v]
+    [(add? ex)
+     (make-add (subst (add-left ex) x v)
+               (subst (add-right ex) x v))]
+    [(mul? ex)
+     (make-mul (subst (mul-left ex) x v)
+               (subst (mul-right ex) x v))]
+    [else ex]))
 
 
 
