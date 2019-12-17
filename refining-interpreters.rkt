@@ -194,10 +194,17 @@
               (make-add 2 1))
 (check-expect (subst (make-mul 'x 2) 'x 3)
               (make-mul 3 2))
+(check-expect (subst
+               (cons '@ (cons 11 '())) '@ 11)
+              (cons 11 (cons 11 '())))
   
 (define (subst ex x v)
   (cond
     [(equal? ex x) v]
+    [(list? ex)
+     (cons (subst (first ex)
+                  (first ex) (first (rest ex)))
+           (rest ex))]
     [(add? ex)
      (make-add (subst (add-left ex) x v)
                (subst (add-right ex) x v))]
@@ -251,11 +258,50 @@
  (eval-variable (make-mul 2 3)) 6)
 
 (define (eval-variable ex)
-  (cond
-    [(number? ex) ex]
-    [else (if (numeric? ex)
-              (eval-expression ex)
-              (error WRONG))]))
+  (if (numeric? ex)
+      (eval-expression ex)
+      (error WRONG)))
+
+; An AL (short for association list) is
+; [List-of Association].
+
+; An Association is a list of two items:
+;   (cons Symbol (cons Number '()))
+
+(define A1 (cons '@ (cons 0 '())))
+(define A2 (cons 'p (cons 11 '())))
+(define A3 (cons 'vEGA (cons 0 '())))
+
+(define AL1 (list A1))
+(define AL2 (list A1 A2 A3))
+
+; Exercicse 354
+
+; BSL-var-expr AL -> Number or error
+; coonsumes a BSL-var-expr ex and an AL da and
+; iteratively applies subst to all Associations
+
+(check-expect
+ (eval-variable* 1 AL1) 0)
+
+(define (eval-variable* ex da) 0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
