@@ -256,6 +256,8 @@
  (eval-variable (make-add 1 1)) 2)
 (check-expect
  (eval-variable (make-mul 2 3)) 6)
+(check-error
+ (eval-variable (make-mul 'x 1) (error WRONG)))
 
 (define (eval-variable ex)
   (if (numeric? ex)
@@ -302,7 +304,55 @@
    (foldl (lambda (a b)
             (subst b (first a) (second a)))
           ex da)))
-                               
+
+; Exercise 355
+
+; BSL-var-expr AL -> Number
+; consumes a BSL-var-expr e and an AL da and
+; produces the value of the expression or signals
+; an error if there is no substitution
+
+(check-expect (eval-var-lookup 1 AL1) 1)
+(check-expect (eval-var-lookup 'a AL1) 1)
+(check-expect
+ (eval-var-lookup (make-add 'a 'b) AL1) 3)
+(check-expect
+ (eval-var-lookup (make-mul 'b 'c) AL1) 6)
+
+(define (fn-eval-var-lookup e da)
+  (cond
+    [(number? e) e]
+    [(symbol? e)
+     (cond [... (... (boolean? (assq e da))
+                     (... ...)
+                     (... (assq e da)))])]
+    [(add? e)
+     (...
+      (fn-eval-var-lookup (add-left e) da)
+      (fn-eval-var-lookup (add-right e) da))]
+    [(mul? e)
+     (...
+      (fn-eval-var-lookup (add-left e) da)
+      (fn-eval-var-lookup (add-right e) da))]
+    [else (... ...)]))   
+
+(define (eval-var-lookup e da)
+  (cond
+    [(number? e) e]
+    [(symbol? e)
+     (cond [else (if (boolean? (assq e da))
+                     (error WRONG)
+                     (second (assq e da)))])]
+    [(add? e)
+     (+
+      (eval-var-lookup (add-left e) da)
+      (eval-var-lookup (add-right e) da))]
+    [(mul? e)
+     (*
+      (eval-var-lookup (mul-left e) da)
+      (eval-var-lookup (mul-right e) da))]
+    [else (error WRONG)]))
+
             
             
   
