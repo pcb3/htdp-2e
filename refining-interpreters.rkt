@@ -264,16 +264,10 @@
 
 ; An AL (short for association list) is
 ; [List-of Association].
-
 ; An Association is a list of two items:
-;   (cons Symbol (cons Number '()))
+; (cons Symbol (cons Number '()))
 
-(define A1 (cons '@ (cons 0 '())))
-(define A2 (cons 'p (cons 11 '())))
-(define A3 (cons 'vEGA (cons 0 '())))
-
-(define AL1 (list A1))
-(define AL2 (list A1 A2 A3))
+(define AL1 '((a 1) (b 2) (c 3)))
 
 ; Exercicse 354
 
@@ -281,10 +275,32 @@
 ; coonsumes a BSL-var-expr ex and an AL da and
 ; iteratively applies subst to all Associations
 
-(check-expect
- (eval-variable* 1 AL1) 0)
+(check-expect (eval-variable* 1 AL1) 1)
+(check-expect (eval-variable*
+               (make-add 'a 'b) AL1) 3)
+(check-expect (eval-variable*
+               (make-mul 'b 'c) AL1) 6)
+(check-expect (eval-variable*
+               (make-add x y) AL1) (error WRONG))
 
-(define (eval-variable* ex da) 0)
+(define (eval-variable* ex da)
+  (local
+    ((define subst-iter
+       (cond
+         [(empty? (rest da))
+          (subst ex (first (first da))
+                 (first (rest (first da))))]
+         [else
+          (eval-variable*
+           (subst ex (first (first da))
+                  (first (rest (first da))))
+           (rest da))])))
+    (eval-variable subst-iter)))
+
+
+            
+            
+  
 
 
 
