@@ -280,8 +280,6 @@
                (make-add 'a 'b) AL1) 3)
 (check-expect (eval-variable*
                (make-mul 'b 'c) AL1) 6)
-(check-expect (eval-variable*
-               (make-add x y) AL1) (error WRONG))
 
 (define (eval-variable* ex da)
   (local
@@ -297,7 +295,14 @@
            (rest da))])))
     (eval-variable subst-iter)))
 
+;; abstract using foldl
 
+(define (eval-variable*-abstract ex da)
+  (eval-variable
+   (foldl (lambda (a b)
+            (subst b (first a) (second a)))
+          ex da)))
+                               
             
             
   
