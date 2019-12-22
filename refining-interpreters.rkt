@@ -397,7 +397,15 @@
 (check-expect
  (eval-definition2
   (make-fun-expr 'l (make-fun-expr 'm (make-add 2 3)))
-  'k 'x (make-fun-expr 'o 'x)) 5)
+  'k 'x (make-fun-expr 'o 1)) 1)
+(check-expect
+ (eval-definition2
+  (make-fun-expr 'l (make-fun-expr 'm (make-add 2 3)))
+  'k 'x (make-fun-expr 'o (make-add 'x 'x))) 10)
+(check-expect
+ (eval-definition2
+  (make-fun-expr 'l 'p)
+  'k 'x (make-fun-expr 'o 1)) (error WRONG))
 
 (define (fn-eval-definition1 ex f x b)
   (cond
@@ -453,7 +461,9 @@
          [else (error WRONG)]))
      ;(define arg (eval-arg ex))
      (define value (eval-arg ex))
-     (define plugd (subst b x value)))
+     (define plugd (subst (if (fun-expr? b)
+                              (fun-expr-arg b)
+                              b) x value)))
     (eval-expression plugd)))
 
 ; Exercise 358
