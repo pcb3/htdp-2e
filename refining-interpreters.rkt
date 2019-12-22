@@ -392,20 +392,23 @@
                    'k 'x (make-add 'x 'x)) 10)
 (check-expect
  (eval-definition2
-  (make-fun-expr 'l (make-fun-expr 'm (make-add 2 3)))
-  'k 'x (make-add 'x 'x)) 10)
+  (make-fun-expr 'f(make-fun-expr 'f (make-add 2 3)))
+  'f 'x (make-add 'x 'x)) 10)
 (check-expect
  (eval-definition2
-  (make-fun-expr 'l (make-fun-expr 'm (make-add 2 3)))
-  'k 'x (make-fun-expr 'o 1)) 1)
+  (make-fun-expr 'g (make-fun-expr 'g (make-add 2 3)))
+  'g 'x (make-fun-expr 'o 1)) 1)
 (check-expect
  (eval-definition2
-  (make-fun-expr 'l (make-fun-expr 'm (make-add 2 3)))
-  'k 'x (make-fun-expr 'o (make-add 'x 'x))) 10)
+  (make-fun-expr 'h (make-fun-expr 'h (make-add 2 3)))
+  'h 'x (make-fun-expr 'o (make-add 'x 'x))) 10)
 (check-expect
  (eval-definition2
-  (make-fun-expr 'l 'p)
-  'k 'x (make-fun-expr 'o 1)) (error WRONG))
+  (make-fun-expr 'z 1) 'h 'x 'x) (error WRONG))
+(check-expect
+ (eval-definition2
+  (make-fun-expr 'l 'p) 'k 'x (make-fun-expr 'o 1))
+ (error WRONG))
 
 (define (fn-eval-definition1 ex f x b)
   (cond
@@ -457,9 +460,10 @@
           (* (eval-arg (mul-left ag))
              (eval-arg (mul-right ag)))]
          [(fun-expr? ag)
-          (eval-arg (fun-expr-arg ag))]
+          (if (equal? (fun-expr-name ag) f)
+              (eval-arg (fun-expr-arg ag))
+              (error WRONG))]
          [else (error WRONG)]))
-     ;(define arg (eval-arg ex))
      (define value (eval-arg ex))
      (define plugd (subst (if (fun-expr? b)
                               (fun-expr-arg b)
