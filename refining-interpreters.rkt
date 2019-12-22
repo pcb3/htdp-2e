@@ -353,9 +353,136 @@
       (eval-var-lookup (mul-right e) da))]
     [else (error WRONG)]))
 
-            
-            
-  
+; 21.3 Interpretig Functions
+
+; Exercise 356
+
+(define-struct fun-expr [name arg])
+
+; A BSL-fun-expr is one of:
+; - Number
+; - Symbol
+; - (make-add BSL-expr BSL-expr)
+; - (make-mul BSL-expr BSL-expr)
+; - (make-fun Symbol BSL-fun-expr)
+
+(define FUN1 (make-fun-expr 'k (make-add 1 1)))
+(define FUN2 (make-mul 5 (make-fun-expr 'k (make-add 1 1))))
+(define FUN3 (make-mul (make-fun-expr 'i 5)
+                       (make-fun-expr 'k (make-add 1 1))))
+
+; Exercise 357
+
+; BSL-fun-expr Symbol Symbol BSL-fun-expr -> Number or error
+; consumes a BSL-fun-expr ex, a symbol f representing
+; the funcitons name,
+; a symbol x; the functions parameter. And a BSL-fun-expr b
+; that represents the function's body
+
+(check-expect (eval-definition2 1 'k 'x 'x) 1)
+(check-expect
+ (eval-definition2 1 'k 'x (make-add 'x 'x)) 2)
+(check-expect
+ (eval-definition2 1 'k 'x (make-mul 'x 'x)) 1)
+(check-expect
+ (eval-definition2 (make-add 1 2)
+                   'k 'x (make-add 'x 'x)) 6)
+(check-expect
+ (eval-definition2 (make-fun-expr 'k (make-add 2 3))
+                   'k 'x (make-add 'x 'x)) 10)
+(check-expect
+ (eval-definition2
+  (make-fun-expr 'l (make-fun-expr 'm (make-add 2 3)))
+  'k 'x (make-add 'x 'x)) 10)
+(check-expect
+ (eval-definition2
+  (make-fun-expr 'l (make-fun-expr 'm (make-add 2 3)))
+  'k 'x (make-fun-expr 'o 'x)) 5)
+
+(define (fn-eval-definition1 ex f x b)
+  (cond
+    [(number? ex) ex]
+    [(add? ex)
+     (... (fn-eval-definition1 (add-left ex) f x b)
+          (fn-eval-definition1 (add-right ex) f x b))]
+    [(mul? ex)
+     (... (fn-eval-definition1 (mul-left ex) f x b)
+          (fn-eval-definition1 (mul-right ex) f x b))]
+    [(fun-expr? ex)
+     (... (... (fun-expr-name ex) f)
+          (fn-eval-definition1
+           (subst b x
+                  (fn-eval-definition1 (fun-expr-arg ex)))
+           f x b)
+          ...)]
+    [else ...]))
+
+(define (eval-definition1 ex f x b)
+  (local
+    ((define (eval-arg ag)
+       (cond
+         [(number? ag) ag]
+         [(add? ag)
+          (+ (eval-definition1 (add-left ag) f x b)
+             (eval-definition1 (add-right ag) f x b))]
+         [(mul? ag)
+          (* (eval-definition1 (mul-left ag) f x b)
+             (eval-definition1 (mul-right ag) f x b))]
+         [(fun-expr? ag)
+          (eval-definition1
+           (subst b x
+                  (eval-definition1
+                   (fun-expr-arg ag) f x b))
+           f x b)]
+         [else (error WRONG)])))
+    (eval-expression (subst b x (eval-arg ex)))))
+
+(define (eval-definition2 ex f x b)
+  (local
+    ((define (eval-arg ag)
+       (cond
+         [(number? ag) ag]
+         [(add? ag)
+          (+ (eval-arg (add-left ag))
+             (eval-arg (add-right ag)))]
+         [(mul? ag)
+          (* (eval-arg (mul-left ag))
+             (eval-arg (mul-right ag)))]
+         [(fun-expr? ag)
+          (eval-arg (fun-expr-arg ag))]
+         [else (error WRONG)]))
+     ;(define arg (eval-arg ex))
+     (define value (eval-arg ex))
+     (define plugd (subst b x value)))
+    (eval-expression plugd)))
+
+; Exercise 358
+
+(define-struct fun-def [name param expr])
+
+; A BSL-fun-def is a structure:
+; - (make-fun-def Symbol Symbol BSL-fun-expr
+; Interpretation: A BSL-fun-def is a representation
+; for function definitions
+
+(define FUN-DEF1 (make-fun-def 'f 'x (make-add 3 'x)))
+(define FUN-DEF2
+  (make-fun-def 'g 'y
+                (make-fun-expr 'f (make-mul 2 'y))))
+(define FUN-DEF3
+  (make-fun-def 'h 'v
+                (make-add (make-fun-expr 'f 'v)
+                          (make-fun-expr 'g 'v))))
+
+; a BSL-fun-def* is one of:
+; - '()
+; - (cons BSL-fun-def (cons BSL-fun-def* '()))
+
+(define da-fgh (list FUN-DEF1 FUN-DEF2 FUN-DEF3))
+
+
+
+
 
 
 
