@@ -428,26 +428,6 @@
           ...)]
     [else ...]))
 
-(define (eval-definition1 ex f x b)
-  (local
-    ((define (eval-arg ag)
-       (cond
-         [(number? ag) ag]
-         [(add? ag)
-          (+ (eval-definition1 (add-left ag) f x b)
-             (eval-definition1 (add-right ag) f x b))]
-         [(mul? ag)
-          (* (eval-definition1 (mul-left ag) f x b)
-             (eval-definition1 (mul-right ag) f x b))]
-         [(fun-expr? ag)
-          (eval-definition1
-           (subst b x
-                  (eval-definition1
-                   (fun-expr-arg ag) f x b))
-           f x b)]
-         [else (error WRONG)])))
-    (eval-expression (subst b x (eval-arg ex)))))
-
 (define (eval-definition2 ex f x b)
   (local
     ((define (eval-arg ag)
