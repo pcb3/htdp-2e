@@ -402,13 +402,6 @@
  (eval-definition2
   (make-fun-expr 'h (make-fun-expr 'h (make-add 2 3)))
   'h 'x (make-fun-expr 'o (make-add 'x 'x))) 10)
-(check-expect
- (eval-definition2
-  (make-fun-expr 'z 1) 'h 'x 'x) (error WRONG))
-(check-expect
- (eval-definition2
-  (make-fun-expr 'l 'p) 'k 'x (make-fun-expr 'o 1))
- (error WRONG))
 
 (define (fn-eval-definition1 ex f x b)
   (cond
@@ -455,15 +448,15 @@
 (define-struct fun-def [name param expr])
 
 ; A BSL-fun-def is a structure:
-; - (make-fun-def Symbol Symbol BSL-fun-expr
+; - (make-fun-def Symbol Symbol BSL-fun-expr)
 ; Interpretation: A BSL-fun-def is a representation
 ; for function definitions
 
-(define FUN-DEF1 (make-fun-def 'f 'x (make-add 3 'x)))
-(define FUN-DEF2
+(define f (make-fun-def 'f 'x (make-add 3 'x)))
+(define g
   (make-fun-def 'g 'y
                 (make-fun-expr 'f (make-mul 2 'y))))
-(define FUN-DEF3
+(define h
   (make-fun-def 'h 'v
                 (make-add (make-fun-expr 'f 'v)
                           (make-fun-expr 'g 'v))))
@@ -472,9 +465,18 @@
 ; - '()
 ; - (cons BSL-fun-def (cons BSL-fun-def* '()))
 
-(define da-fgh (list FUN-DEF1 FUN-DEF2 FUN-DEF3))
+(define da-fgh (list f g h))
 
+; BSL-fun-def* Symbol -> BSL-fun-def
+; retrieves the definition of f in da
+; signals an error if there is none
+(check-expect (lookup-def da-fgh 'g) g)
 
+(define (lookup-def da f)
+  (cond
+    [(empty? da) error]
+    [(symbol=? f (fun-def-name (first da))) (first da)]
+    [else (lookup-def (rest da) f)]))
 
 
 
