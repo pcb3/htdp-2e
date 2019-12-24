@@ -392,7 +392,7 @@
                    'k 'x (make-add 'x 'x)) 10)
 (check-expect
  (eval-definition2
-  (make-fun-expr 'f(make-fun-expr 'f (make-add 2 3)))
+  (make-fun-expr 'f (make-fun-expr 'f (make-add 2 3)))
   'f 'x (make-add 'x 'x)) 10)
 (check-expect
  (eval-definition2
@@ -426,6 +426,7 @@
     ((define (eval-arg ag)
        (cond
          [(number? ag) ag]
+         [(symbol? ag) ag]
          [(add? ag)
           (+ (eval-arg (add-left ag))
              (eval-arg (add-right ag)))]
@@ -478,6 +479,51 @@
     [(symbol=? f (fun-def-name (first da))) (first da)]
     [else (lookup-def (rest da) f)]))
 
+; Exercise 359
+
+; BSL-fun-expr BSL-fun-def* -> Number
+; consumes a BSL-fun-expr ex and a BSL-fun-def* da.
+; produces the result of the evalution of ex
+
+(check-expect (eval-function* 1 da-fgh) 1)
+(check-expect (eval-function* 's da-fgh)
+              "this variable is not defined")
+(check-expect (eval-function* (make-add 1 1) da-fgh) 2)
+(check-expect (eval-function* (make-mul 2 3) da-fgh) 6)
+(check-expect
+ (eval-function* (make-fun-expr 'f 1) da-fgh) 4)
+(check-expect
+ (eval-function*
+  (make-fun-expr 'g (make-fun-expr 'i 1)) da-fgh) (error WRONG))
+
+(define (fn-eval-function* ex da)
+  (cond
+    [(fun-expr? ex)
+     (cond
+       [(empty? da) ...]
+       [(symbol=? (fun-def-name (... da)) ex)
+        (eval-definition2 ex (fun-def-name (... da))
+                          (fun-def-param (... da))
+                          (fun-def-expr (... da)))]
+       [else (fn-eval-function* ex (... da))])]
+    [else (eval-definition2 ex (fun-def-name (... da))
+                            (fun-def-param (... da))
+                            (fun-def-expr (... da)))]))
+
+(define (eval-function* ex da)
+  (cond
+    [(symbol? ex) "this variable is not defined"]
+    [(fun-expr? ex)
+     (cond
+       [(empty? da) (error "this varibale is not defined")]
+       [(symbol=? (fun-def-name (first da))
+                  (fun-expr-name ex))
+        (eval-definition2 (fun-expr-arg ex)
+                          (fun-def-name (first da))
+                          (fun-def-param (first da))
+                          (fun-def-expr (first da)))]
+       [else (eval-function* ex (rest da))])]
+    [else (eval-expression ex)]))
 
 
 
