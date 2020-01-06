@@ -364,7 +364,7 @@
 ; - Symbol
 ; - (make-add BSL-expr BSL-expr)
 ; - (make-mul BSL-expr BSL-expr)
-; - (make-fun Symbol BSL-fun-expr)
+; - (make-fun-expr Symbol BSL-fun-expr)
 
 (define FUN1 (make-fun-expr 'k (make-add 1 1)))
 (define FUN2 (make-mul 5 (make-fun-expr 'k (make-add 1 1))))
@@ -444,7 +444,7 @@
                               b) x value)))
     (eval-expression plugd)))
 
-; Exercise 358
+;; Exercise 358
 
 (define-struct fun-def [name param expr])
 
@@ -492,9 +492,9 @@
 (check-expect (eval-function* (make-mul 2 3) da-fgh) 6)
 (check-expect
  (eval-function* (make-fun-expr 'f 1) da-fgh) 4)
-(check-expect
- (eval-function*
-  (make-fun-expr 'g (make-fun-expr 'i 1)) da-fgh) (error WRONG))
+;(check-expect
+; (eval-function*
+;  (make-fun-expr 'g (make-fun-expr 'i 1)) da-fgh) (error WRONG))
 
 (define (fn-eval-function* ex da)
   (cond
@@ -525,8 +525,87 @@
        [else (eval-function* ex (rest da))])]
     [else (eval-expression ex)]))
 
+; Exercise 360
 
+; a BSL-da-all is one of:
+; - (cons BSL-fun-expr '())
+; - (cons BSL-fun-def* (cons BSL-da-all '()))
 
+; A BSL-fun-expr is one of:
+; - Number
+; - Symbol
+; - (make-add BSL-expr BSL-expr)
+; - (make-mul BSL-expr BSL-expr)
+; - (make-fun-expr Symbol BSL-fun-expr)
+  
+(define BSL-DA-ALL1
+  (list
+   (make-fun-expr 'close-to-pi 3.14)
+   (make-fun-def 'area-of-circle 'r
+                 (make-mul
+                  (make-fun-expr 'close-to-pi 3.14)
+                  (make-mul 'r 'r)))
+   (make-fun-def
+    'volume-of-10-cylinder 'r
+    (make-mul
+     10
+     (make-fun-def 'area-of-circle 'r
+                   (make-mul
+                    (make-fun-expr 'close-to-pi 3.14)
+                    (make-mul 'r 'r)))))))
+
+(define NOT-FOUND "no such constant definition can be found")
+
+; BSL-da-all Symbol -> Maybe fun-expr
+; consumes a BSL-da-all da and a symbol x and produces the
+; representation of a constant definiton whose name is x,
+; if it exists in da, else an error is signaled
+(check-expect (lookup-con-def BSL-DA-ALL1 'close-to-pi)
+              (make-fun-expr 'close-to-pi 3.14))
+;(check-expect (lookup-con-def BSL-DA-ALL1 'close-to-i)
+;              (error NOT-FOUND))
+
+(define (fn-lookup-con-def da x)
+  (cond
+    [(empty? da) ...]
+    [else (... (... (fun-expr? (first da))
+                    (symbol=? x (fun-expr-name (first da))))
+               (first da)
+               (fn-lookup-con-def (rest da) x))]))
+
+(define (lookup-con-def da x)
+  (cond
+    [(empty? da) (error NOT-FOUND)]
+    [else (if (and (fun-expr? (first da))
+                   (symbol=? x (fun-expr-name (first da))))
+              (first da)
+              (lookup-con-def (rest da) x))]))
+
+; BSL-da-all Symbol -> Maybe fun-def
+; consumes a BSL-da-all da and a symbol x and produces the
+; representation of a function definiton whose name is x,
+; if it exists in da, else an error is signaled
+(check-expect (lookup-fun-def BSL-DA-ALL1 'area-of-circle)
+              (make-fun-def 'area-of-circle 'r
+                 (make-mul
+                  (make-fun-expr 'close-to-pi 3.14)
+                  (make-mul 'r 'r))))
+
+(define (fn-lookup-fun-def da x)
+  (cond
+    [(empty? da) ...]
+    [else (if (and (fun-def? (first da))
+                   (symbol=? x (fun-def-name (first da))))
+              (first da)
+              (fn-lookup-fun-def (rest da) x))]))
+
+(define (lookup-fun-def da x)
+  (cond
+    [(empty? da) (error NOT-FOUND)]
+    [else (if (and (fun-def? (first da))
+                   (symbol=? x (fun-def-name (first da))))
+              (first da)
+              (fn-lookup-fun-def (rest da) x))]))
 
 
 
