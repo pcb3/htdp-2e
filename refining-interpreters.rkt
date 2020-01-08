@@ -353,7 +353,7 @@
       (eval-var-lookup (mul-right e) da))]
     [else (error WRONG)]))
 
-; 21.3 Interpretig Functions
+; 21.3 Interpreting Functions
 
 ; Exercise 356
 
@@ -375,9 +375,9 @@
 
 ; BSL-fun-expr Symbol Symbol BSL-fun-expr -> Number or error
 ; consumes a BSL-fun-expr ex, a symbol f representing
-; the funcitons name,
-; a symbol x; the functions parameter. And a BSL-fun-expr b
-; that represents the function's body
+; the functions name, a symbol x; the functions parameter,
+; and a BSL-fun-expr b that represents the function's body
+; and produces the value of ex
 
 (check-expect (eval-definition2 1 'k 'x 'x) 1)
 (check-expect
@@ -470,7 +470,7 @@
 
 ; BSL-fun-def* Symbol -> BSL-fun-def
 ; retrieves the definition of f in da
-; signals an error if there is none
+; and signals an error if there is none
 (check-expect (lookup-def da-fgh 'g) g)
 
 (define (lookup-def da f)
@@ -528,31 +528,25 @@
 ; Exercise 360
 
 ; a BSL-da-all is one of:
-; - (cons BSL-fun-expr '())
+; - '()
+; - (cons BSL-fun-expr (cons BSL-da-all '()))
 ; - (cons BSL-fun-def* (cons BSL-da-all '()))
 
-; A BSL-fun-expr is one of:
-; - Number
-; - Symbol
-; - (make-add BSL-expr BSL-expr)
-; - (make-mul BSL-expr BSL-expr)
-; - (make-fun-expr Symbol BSL-fun-expr)
-  
-(define BSL-DA-ALL1
-  (list
-   (make-fun-expr 'close-to-pi 3.14)
-   (make-fun-def 'area-of-circle 'r
+(define CLOSE-TO-PI (make-fun-expr 'close-to-pi 3.14))
+(define AREA-OF-CIRCLE
+  (make-fun-def 'area-of-circle 'r
                  (make-mul
-                  (make-fun-expr 'close-to-pi 3.14)
-                  (make-mul 'r 'r)))
-   (make-fun-def
-    'volume-of-10-cylinder 'r
+                  CLOSE-TO-PI
+                  (make-mul 'r 'r))))
+(define VOLUME-OF-10-CYLINDER
+  (make-fun-def 'volume-of-10-cylinder 'r
     (make-mul
      10
-     (make-fun-def 'area-of-circle 'r
-                   (make-mul
-                    (make-fun-expr 'close-to-pi 3.14)
-                    (make-mul 'r 'r)))))))
+     AREA-OF-CIRCLE)))
+
+(define BSL-DA-ALL1
+  (list
+   CLOSE-TO-PI AREA-OF-CIRCLE VOLUME-OF-10-CYLINDER))
 
 (define NOT-FOUND "no such constant definition can be found")
 
@@ -560,8 +554,9 @@
 ; consumes a BSL-da-all da and a symbol x and produces the
 ; representation of a constant definiton whose name is x,
 ; if it exists in da, else an error is signaled
+
 (check-expect (lookup-con-def BSL-DA-ALL1 'close-to-pi)
-              (make-fun-expr 'close-to-pi 3.14))
+              CLOSE-TO-PI)
 ;(check-expect (lookup-con-def BSL-DA-ALL1 'close-to-i)
 ;              (error NOT-FOUND))
 
@@ -586,10 +581,7 @@
 ; representation of a function definiton whose name is x,
 ; if it exists in da, else an error is signaled
 (check-expect (lookup-fun-def BSL-DA-ALL1 'area-of-circle)
-              (make-fun-def 'area-of-circle 'r
-                 (make-mul
-                  (make-fun-expr 'close-to-pi 3.14)
-                  (make-mul 'r 'r))))
+              AREA-OF-CIRCLE)
 
 (define (fn-lookup-fun-def da x)
   (cond
@@ -606,6 +598,15 @@
                    (symbol=? x (fun-def-name (first da))))
               (first da)
               (fn-lookup-fun-def (rest da) x))]))
+
+; Exercise 361
+
+; BSL-da-all Symbol -> Number
+; consumes an Symbol x and a defintions area da
+; and produces the value of the expression if it is contained
+; in da
+
+
 
 
 
