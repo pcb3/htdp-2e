@@ -313,19 +313,29 @@
 ; BSL-fun-expr BSL-fun-def* -> BSL-fun-def or Number
 ; consumes a fun-expr fex (make-fun-expr name arg)
 ; and a definitions area da and produces the value of fex
-;(check-expect
-; (eval-function*
-;  (make-fun-expr 'area-of-circle 1) BSL-FUN-DEF*1)
-; (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
-;
-;(define (eval-function* fex da)
-;  (local
-;      (; BSL-fun-def -> BSL-expr
-;      ; consumes a function definition fundef and produces
-;      ; an expression with the parameter replaced by the
-;      ; the argument in fex
-;      (define (fn-lookup-subst fundef)
-;        (cond
+(check-expect
+ (eval-function*
+  (make-fun-expr 'area-of-circle 1) BSL-FUN-DEF*1)
+ (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
+(check-expect
+ (eval-function*
+  (make-fun-expr 'volume-of-10-cylinder 2) BSL-FUN-DEF*1)
+ (* 10
+    (
+ 
+               
+
+(define (eval-function* fex da)
+  (eval-expression
+   (subst
+    (fun-def-expr
+     (lookup-def da
+                 (fun-expr-name fex)))
+    (fun-def-param
+     (lookup-def da
+                 (fun-expr-name fex)))
+    (fun-expr-arg fex))))
+  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           
