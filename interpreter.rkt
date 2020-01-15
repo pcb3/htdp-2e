@@ -50,6 +50,8 @@
     [(mul? ex)
      (* (eval-expression (mul-left ex))
         (eval-expression (mul-right ex)))]
+    [(fun-expr? ex)
+     (eval-expression (fun-expr-arg ex))]
     [else (error "not a BSL expression")]))
 
 ;;;;;;;;
@@ -170,8 +172,8 @@
 (define (eval-variable ex)
   (if (numeric? ex) (eval-expression ex) "error"))
 
-;;;;;;;;;;;;;;;;;
-;; eval-variable*
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; eval-variable* and eval-var lookup combo
 
 ; BSL-expr AL -> Number
 ; consumes an expression ex and an association list da
@@ -232,6 +234,41 @@
 
     (eval-variable (sub-all ex))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Interpreting functions
+
+;;;;;;;;;;;;;;;;;;;
+;; eval-definition1
+
+; BSL-fun-expr Symbol Symbol BSL-fun-expr -> Number
+; consumes a BSL-fun-expr ex, the name of the applied
+; function and its argument.
+; A Symbol f; the functions name, parameter x, and body b
+; and produces the value of an application of f to some
+; argument
+(check-expect
+ (eval-definition1 (make-fun-expr 'f 1) 'f 'x 'x) 1)
+(check-expect
+ (eval-definition1
+  (make-fun-expr
+   'f (make-add 1 1)) 'f 'x (make-mul 'x 'x)) 4)
+(check-expect
+ (eval-definition1
+  CLOSE-TO-PI 'f 'x (make-add 'x (make-mul 'x 'x)))
+ (+ (fun-expr-arg CLOSE-TO-PI)
+    (* (fun-expr-arg CLOSE-TO-PI)
+       (fun-expr-arg CLOSE-TO-PI))))
+
+;  (local ((define value (eval-definition1 ex f x b))
+;          (define plugd (subst b x value)))
+;       (eval-definition1 plugd f x b)))
+
+(define (eval-definition1 fexpr f x b)
+  (eval-expression (subst b x (eval-expression fexpr))))
+    
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ; A BSL-fun-def is a structure:
 ; - (make-fun-def Symbol Symbol BSL-fun-expr)
 ; Interpretation: A BSL-fun-def is a representation
@@ -250,6 +287,48 @@
                               10
                               AREA-OF-CIRCLE)))
 
+; A BSL-fun-def* is one of:
+; - '()
+; - (cons BSL-fun-def BSL-fun-def*)
+
+(define BSL-FUN-DEF*1 (list AREA-OF-CIRCLE
+                            VOLUME-OF-10-CYLINDER))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+
+; BSL-fun-def* Symbol -> BSL-fun-def
+; retrieves the definition of f in da
+; signals an error if there is none
+(check-expect (lookup-def BSL-FUN-DEF*1 'area-of-circle)
+              AREA-OF-CIRCLE)
+
+(define (lookup-def da f)
+  (first (filter
+          (lambda (x) (symbol=? (fun-def-name x) f)) da)))
+
+;;;;;;;;;;;;;;;;;
+;; eval-function*
+
+; BSL-fun-expr BSL-fun-def* -> BSL-fun-def or Number
+; consumes a fun-expr fex (make-fun-expr name arg)
+; and a definitions area da and produces the value of fex
+;(check-expect
+; (eval-function*
+;  (make-fun-expr 'area-of-circle 1) BSL-FUN-DEF*1)
+; (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
+;
+;(define (eval-function* fex da)
+;  (local
+;      (; BSL-fun-def -> BSL-expr
+;      ; consumes a function definition fundef and produces
+;      ; an expression with the parameter replaced by the
+;      ; the argument in fex
+;      (define (fn-lookup-subst fundef)
+;        (cond
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+          
 ; a BSL-da-all is one of:
 ; - '()
 ; - (cons BSL-fun-expr (cons BSL-da-all '()))
