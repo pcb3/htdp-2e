@@ -295,7 +295,6 @@
                             VOLUME-OF-10-CYLINDER))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
 
 ; BSL-fun-def* Symbol -> BSL-fun-def
 ; retrieves the definition of f in da
@@ -317,28 +316,19 @@
  (eval-function*
   (make-fun-expr 'area-of-circle 1) BSL-FUN-DEF*1)
  (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
-(check-expect
- (eval-function*
-  (make-fun-expr 'volume-of-10-cylinder 2) BSL-FUN-DEF*1)
- (* 10
-    (
- 
                
-
 (define (eval-function* fex da)
   (eval-expression
    (subst
     (fun-def-expr
-     (lookup-def da
-                 (fun-expr-name fex)))
+     (lookup-def da (fun-expr-name fex)))
     (fun-def-param
-     (lookup-def da
-                 (fun-expr-name fex)))
+     (lookup-def da (fun-expr-name fex)))
     (fun-expr-arg fex))))
-  
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-          
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Interpreting everything
+
 ; a BSL-da-all is one of:
 ; - '()
 ; - (cons BSL-fun-expr (cons BSL-da-all '()))
@@ -351,6 +341,10 @@
 ;; lookup-con-def
 
 ; BSL-da-all Symbol -> BSL-expr
+; consumes a definitions area and a constant defintion name
+; and produces the value or an error if not found
+(check-expect (lookup-con-def BSL-DA-ALL1 'close-to-pi)
+              CLOSE-TO-PI)
 
 (define (lookup-con-def da x)
   (cond
@@ -364,6 +358,10 @@
 ;; lookup-fun-def
 
 ; BSL-da-all Symbol -> BSL-expr
+; consumes a definitions area and a function defintion name
+; and produces the definition or an error if not found
+(check-expect (lookup-fun-def BSL-DA-ALL1 'area-of-circle)
+              AREA-OF-CIRCLE)
 
 (define (lookup-fun-def da x)
   (cond
@@ -376,24 +374,113 @@
 ;;;;;;;;;;;
 ;; eval-all
 
-; BSL-expr BSL-da-all -> Number
+; BSL-fun-expr BSL-da-all -> Number
 ; consumes an expression ex and a BSL-da-all da and
-; produces the value of ex if it is contained within da
-;(check-expect (eval-all (make-fun-expr 'close-to-pi 3.145)
-;                        BSL-DA-ALL1)
-;              (fun-expr-arg CLOSE-TO-PI))
-;
-;(check-expect (eval-all (make-fun-expr 'area-of-cirlce 1)
-;                        BSL-DA-ALL1)
-;              (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
-;
-;(check-expect (eval-all (make-fun-expr
-;                         'volume-of-10-cylinder 1)
-;                        BSL-DA-ALL1)
-;              (* 10
-;                 (* (fun-expr-arg CLOSE-TO-PI) (* 1 1))))
+; produces the value of ex if its contained within da
+(check-expect (eval-all (make-fun-expr 'close-to-pi 3.145)
+                        BSL-DA-ALL1)
+              (fun-expr-arg CLOSE-TO-PI))
 
-(define (eval-all ex da) 0)
+(check-expect (eval-all (make-fun-expr 'area-of-cirlce 1)
+                        BSL-DA-ALL1)
+              (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
+
+(check-expect (eval-all (make-fun-expr
+                         'volume-of-10-cylinder 1)
+                        BSL-DA-ALL1)
+              (* 10
+                 (* (fun-expr-arg CLOSE-TO-PI) (* 1 1))))
+
+(define (fn-eval-all ex da)
+  (local
+    (; BSL-fun-expr -> BSL-expr
+     ; consumes a fun-expr funx and a definitions area d
+     ; and produces the definition of the expresison if its
+     ; contained in the definitions area or signals error
+     (define (fn-lookup funx d)
+       (cond
+         [(empty? da) ...]
+         [(and (fun-expr? (first d))
+               (symbol=? (fun-expr-name funx)
+                         (fun-expr-name (first d))))
+          (first d)]
+         [(and (fun-def? (first d))
+               (symbol=? (fun-expr-name funx)
+                         (fun-def-name (first d))))
+          (first d)]
+         [else (fn-lookup funx (rest d))]))
+
+     ; BSL-expr -> BSL-expr
+     ; consumes an expression x and produces the expression
+     ; with all variables replaced by the function
+     ; expressions argument
+     (define (fn-lookup-replace x)
+       (cond
+         [(number? x) ...]
+         [(and
+           (symbol? x)
+           (symbol=? x (fun-def-param (fn-lookup ex da))))
+          (fun-expr-arg ex)]
+         [(add? x)
+          (make-add (fn-lookup-replace (add-left x))
+                    (fn-lookup-replace (add-right x)))]
+         [(mul? x)
+          (make-mul (fn-lookup-replace (mul-left x))
+                    (fn-lookup-replace (mul-right x)))]
+         [(fun-expr? x) (fun-expr-arg x)]
+         [(fun-def? x) (fn-lookup-replace (fn-lookup x da))]
+         [else ...])))
+    
+    (eval-expression (fn-lookup-replace ex))))
+          
+(define (eval-all ex da)
+  (local
+    (; BSL-fun-expr -> BSL-expr
+     ; consumes a fun-expr funx and a definitions area d
+     ; and produces the definition of the expresison if its
+     ; contained in the definitions area or signals error
+     (define (lookup funx d)
+       (cond
+         [(empty? da) (error NOT-FOUND)]
+         [(and (fun-expr? (first d))
+               (symbol=? (fun-expr-name funx)
+                         (fun-expr-name (first d))))
+          (first d)]
+         [(and (fun-def? (first d))
+               (symbol=? (fun-expr-name funx)
+                         (fun-def-name (first d))))
+          (first d)]
+         [else (lookup funx (rest d))]))
+
+     ; BSL-expr -> BSL-expr
+     ; consumes an expression x and produces the expression
+     ; with all variables replaced by the function
+     ; expressions argument
+     (define (lookup-replace x)
+       (cond
+         [(number? x) x]
+         [(and
+           (symbol? x)
+           (symbol=? x (fun-def-param (lookup ex da))))
+          (fun-expr-arg ex)]
+         [(add? x)
+          (make-add (lookup-replace (add-left x))
+                    (lookup-replace (add-right x)))]
+         [(mul? x)
+          (make-mul (lookup-replace (mul-left x))
+                    (lookup-replace (mul-right x)))]
+         [(fun-expr? x) (fun-expr-arg x)]
+         [(fun-def? x) (lookup-replace (lookup x da))]
+         [else (error NOT-FOUND)])))
+    
+    (eval-expression (lookup-replace (lookup ex da)))))
+     
+    
+
+     
+
+     
+       
 
 
 
