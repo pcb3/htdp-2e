@@ -381,7 +381,7 @@
                         BSL-DA-ALL1)
               (fun-expr-arg CLOSE-TO-PI))
 
-(check-expect (eval-all (make-fun-expr 'area-of-cirlce 1)
+(check-expect (eval-all (make-fun-expr 'area-of-circle 1)
                         BSL-DA-ALL1)
               (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
 
@@ -390,6 +390,9 @@
                         BSL-DA-ALL1)
               (* 10
                  (* (fun-expr-arg CLOSE-TO-PI) (* 1 1))))
+;(check-expect (eval-all (make-fun-expr 'close-to-nothing 99)
+;                        BSL-DA-ALL1)
+;              (error NOT-FOUND))
 
 (define (fn-eval-all ex da)
   (local
@@ -441,7 +444,7 @@
      ; contained in the definitions area or signals error
      (define (lookup funx d)
        (cond
-         [(empty? da) (error NOT-FOUND)]
+         [(empty? d) (error NOT-FOUND)]
          [(and (fun-expr? (first d))
                (symbol=? (fun-expr-name funx)
                          (fun-expr-name (first d))))
@@ -470,7 +473,7 @@
           (make-mul (lookup-replace (mul-left x))
                     (lookup-replace (mul-right x)))]
          [(fun-expr? x) (fun-expr-arg x)]
-         [(fun-def? x) (lookup-replace (lookup x da))]
+         [(fun-def? x) (lookup-replace (fun-def-expr x))]
          [else (error NOT-FOUND)])))
     
     (eval-expression (lookup-replace (lookup ex da)))))
