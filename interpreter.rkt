@@ -72,13 +72,19 @@
 (define (parse-sl s)
   (local ((define L (length s)))
     (cond
-      [(< L 3) (error WRONG)]
-      [(and (= L 3) (symbol? (first s)))
+      [(and (< L 3) (symbol? (first s)))
+       (make-fun-expr (parse (first s))
+                      (parse (second s)))]
+      [(= L 3)
        (cond
          [(symbol=? (first s) '+)
           (make-add (parse (second s)) (parse (third s)))]
          [(symbol=? (first s) '*)
           (make-mul (parse (second s)) (parse (third s)))]
+         [(and (symbol? (first s)) (symbol? (second s)))
+          (make-fun-def (parse (first s))
+                        (parse (second s))
+                        (parse (third s)))]
          [else (error WRONG)])]
       [else (error WRONG)])))
  
@@ -87,7 +93,7 @@
   (cond
     [(number? s) s]
     [(string? s) (error WRONG)]
-    [(symbol? s) (error WRONG)]))
+    [(symbol? s) s]))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; interpreter-expr
@@ -477,8 +483,48 @@
          [else (error NOT-FOUND)])))
     
     (eval-expression (lookup-replace (lookup ex da)))))
-     
-    
+
+;;;;;;;;;;;;;;
+;; interpreter
+
+; An S-expr is one of: 
+; – Atom
+; – SL
+	
+; An Atom is one of: 
+; – Number
+; – String
+; – Symbol 
+
+; An SL is one of: 
+; – '()
+; – (cons S-expr SL)
+
+; S-expr Sl -> Number
+; consumes an S-expression sexpr and a list of definitions
+; sl and produces the value of the expression
+(check-expect (interpreter '(lemon 42)
+                           '((lemon 99)
+                             (orange x (+ x lemon))))
+              99)
+(check-expect (interpreter '(orange 1)
+                           '((lemon 2)
+                             (orange x (+ x (lemon 2)))
+                             (grapefruit x
+                                         (orange x
+                                                 (+ x (lemon 2))))))
+              (+ 1 2))
+(check-expect (interpreter '(grapefruit 10)
+                           '((lemon 2)
+                             (orange x (+ x (lemon 2)))
+                             (grapefruit x
+                                         (* (orange x (+ x (lemon 2)))
+                                            (lemon 2)))))
+              (* (+ 10 2) 2))
+
+(define (interpreter sexpr sl)
+  (eval-all (parse sexpr) (map (lambda (x) (parse x)) sl)))
+
 
      
 
