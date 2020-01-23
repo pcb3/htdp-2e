@@ -121,8 +121,34 @@
 (check-expect (xexpr-content XEXPR1) '())
 (check-expect (xexpr-content XEXPR2)
               '((li (word)(word)) (li (word))))
-               
-(define (xexpr-content xe) '())
+
+(define (fn-xexpr-content xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) ...]
+      [else (... (first optional-loa+content)
+                 ... (rest optional-loa+content) ...)])))
+
+(define (xexpr-content xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else
+       (if (list-of-content?
+            (first optional-loa+content))
+           (cons (first optional-loa+content)
+                 (xexpr-content optional-loa+content))
+           (xexpr-content optional-loa+content))])))
+
+; Xexpr.v2 -> Boolean
+; consumes an xexpr.v2 x and produces true if it
+; is a content element else false
+
+(define (list-of-content? x)
+  (cond
+    [(empty? x) #false]
+    [else (symbol? (first x))]))
+  
 
 
 
