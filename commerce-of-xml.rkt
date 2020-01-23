@@ -149,18 +149,36 @@
     [(empty? x) #false]
     [else (symbol? (first x))]))
   
+;;========
+;; 367
 
+; xexpr-attr does not contain a self-reference
+; because we choose a data definition to mimick the
+; effect of a structure.
+; Structures are not accessed through self-reference
+; but through a selector.
 
+;;===============
+;; 369
 
+; AL Symbol -> String
+; consumes a list of attributes loa and a symbol s
+; and produces the value of the attribute s if it is
+; associated with the list.
 
+(check-expect
+ (find-attr XEXPR1 'to) "seen-f")
+(check-expect
+ (find-attr XEXPR1 'from) "seen-e")
+(check-expect
+ (find-attr XEXPR1 'not-in-here) #false)
+(check-expect
+ (find-attr '() 'not-in-here) #false)
 
-
-
-
-
-
-
-
-
-
-
+(define (find-attr loa s)
+  (cond
+    [(empty? loa) #false]
+    [else
+     (if (list? (assq s (xexpr-attr loa)))
+         (second (assq s (xexpr-attr loa)))
+         #false)]))
