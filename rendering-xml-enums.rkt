@@ -17,7 +17,6 @@
 ; String XWord -> Boolean
 ; consumes a String s and an XWord xw and produces
 ; true if xw contains s
-(define (word? s xw) #false)
 
 (check-expect (word? "hello" XWORD0) #true)
 (check-expect (word? "yolo" XWORD0) #false)
@@ -32,6 +31,17 @@
          ((define fn-list-of-words
             (first fn-extract-content)))
          (contains-word? s fn-list-of-words))])))
+
+(define (word? s xw)
+  (local
+    ((define extract-content (rest xw)))
+    (cond
+      [(empty? extract-content) #false]
+      [else
+       (local
+         ((define list-of-words
+            (first extract-content)))
+         (contains-word? s list-of-words))])))
 
 ; List-of XWord 
 (define (contains-word? str low)
