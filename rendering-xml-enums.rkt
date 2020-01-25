@@ -60,8 +60,29 @@
 
 (check-expect (word-text XWORD0) "hello")
 
+(define (fn-word-text xw)
+  (local
+    ((define fn-extract-element  (rest xw))
+     (define
+       fn-extract-xwords       
+       (first fn-extract-element)))
+    (cond
+      [else (if (symbol=? 'word (first xw))
+                (second (first fn-extract-xwords))
+                (error "not a word element"))])))
+  
 (define (word-text xw)
-  (second (first (first (rest xw)))))
+  (local
+    ((define extract-element  (rest xw))
+     (define
+       extract-xwords       
+       (first extract-element)))
+    (cond
+      [else (if (symbol=? 'word (first xw))
+                (second (first extract-xwords))
+                (error "not a word element"))])))
+         
+              
 
 ;;=============================
 
