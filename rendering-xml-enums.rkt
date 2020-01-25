@@ -43,7 +43,7 @@
             (first extract-content)))
          (contains-word? s list-of-words))])))
 
-; List-of XWord 
+; List-of XWord -> Boolean
 (define (contains-word? str low)
   (cond
     [(empty? low) #false]
@@ -53,4 +53,40 @@
                              str))
               #true
               (contains-word? str (rest low)))]))
+
+; XWord -> String
+; consumes an XWord xw and produces the value of
+; the only attribute of an instance of XWord
+
+(check-expect (word-text XWORD0) "hello")
+
+(define (word-text xw)
+  (second (first (first (rest xw)))))
+
+;;=============================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
              
