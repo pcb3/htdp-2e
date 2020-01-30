@@ -5,6 +5,61 @@
 ;; 22.2 Rendering XML Enumerations
 
 (require 2htdp/abstraction)
+(require 2htdp/image)
+
+
+;;==========================
+;;
+
+(define a0 '((initial "X")))
+ 
+(define e0 '(machine))
+(define e1 `(machine ,a0))
+(define e2 '(machine (action)))
+(define e3 '(machine () (action)))
+(define e4 `(machine ,a0 (action) (action)))
+
+; [List-of Attribute] or Xexpr.v2 -> Boolean
+; is x a list of attributes
+(define (list-of-attributes? x)
+  (cond
+    [(empty? x) #true]
+    [else
+     (local ((define possible-attribute (first x)))
+       (cons? possible-attribute))]))
+
+(define (xexpr-attr xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else
+       (local ((define loa-or-x
+                 (first optional-loa+content)))
+         (if (list-of-attributes? loa-or-x)
+             loa-or-x
+             '()))])))
+
+;;=======================
+;; xexpr-content
+
+; Xexpr.v2 -> List-of Xexpr.v2
+; consumes an Xexpr.v2 xe and produces a list of content
+; elements
+(check-expect
+ (xexpr-content '(li ((attr "foo")))) '())
+
+(check-expect
+ (xexpr-content '(li ((attr "foo"))
+                      (word (text "mamba"))))
+   '((word (text "mamba"))))
+
+(define (xexpr-content x)
+  (local ((define optional-loa+content (rest x)))
+    (cond
+      [(empty? x) '()]
+      [else (if (list-of-attributes? optional-loa+content)
+                (rest optional-loa+content)
+                optional-loa+content)])))
 
 ;;==============
 ;; 370
@@ -82,28 +137,61 @@
                 (second (first extract-xwords))
                 (error "not a word element"))])))
          
-              
-
 ;;=============================
+;; 371
 
+;; an Xexpr is:
+;; (cons Symbol XL)
 
+;; an XL is one of:
+;; - [List-of Xexpr]
+;; - (cons [List-of Attribute] [List-of Xexpr])
 
+;; an Attribute is one of:
+;; - (cons Symbol Value)
+;; - (cons 'text String)
 
+; An XWord is '(word ((text String)))
 
+; An XEnum.v1 is one of: 
+; – (cons 'ul [List-of XItem.v1])
+; – (cons 'ul (cons Attribute [List-of XItem.v1]))
 
+; An XItem.v1 is one of:
+; – (cons 'li (cons XWord '()))
+; – (cons 'li (cons Attribute (cons XWord '())))
 
+(define ENUM0
+  '(ul
+    (li (word ((text "one"))))
+    (li (word ((text "two"))))))
 
+(define ENUM1
+  '(ul
+    ((attribute "value")
+     (li (word ((text "one"))))
+     (li (word ((text "two")))))))
 
+(define ENUM2
+  '(ul
+    ((attribute "value")
+     (li ((attribute1 "fizz") (word ((text "one")))))
+     (li (word ((text "two")))))))
 
+(define XITEM0
+  '(li (word ((text "happy")))))
 
+(define XITEM1
+  '(li ((another-attr "value1")
+        (word ((text "tranquil"))))))
+  
 
+(define BT (circle 10 'solid 'black))
 
-
-
-
-
-
-
+; XItem.v1 -> Image
+; renders an item as a "word" prefixed by a bullet
+(define (render-item1 i)
+  (... (xexpr-content i) ...))
 
 
 
@@ -111,3 +199,15 @@
 
 
              
+
+
+
+
+
+
+
+
+
+
+
+
