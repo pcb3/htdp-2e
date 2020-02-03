@@ -50,14 +50,19 @@
 
 (check-expect
  (xexpr-content '(li ((attr "foo"))
-                      (word (text "mamba"))))
-   '((word (text "mamba"))))
+                     (word ((text "mamba")))))
+ '((word ((text "mamba")))))
+
+(check-expect
+ (xexpr-content '(li (word ((text "mamba")))))
+ '((word ((text "mamba")))))
 
 (define (xexpr-content x)
   (local ((define optional-loa+content (rest x)))
     (cond
       [(empty? x) '()]
-      [else (if (list-of-attributes? optional-loa+content)
+      [else (if (list-of-attributes?
+                 (first optional-loa+content))
                 (rest optional-loa+content)
                 optional-loa+content)])))
 
@@ -168,22 +173,22 @@
 
 (define ENUM1
   '(ul
-    ((attribute "value")
-     (li (word ((text "one"))))
+    ((attribute "value"))
+    ((li (word ((text "one"))))
      (li (word ((text "two")))))))
 
 (define ENUM2
   '(ul
-    ((attribute "value")
-     (li ((attribute1 "fizz") (word ((text "one")))))
+    ((attribute "value"))
+    (((li ((attribute1 "fizz")) (word ((text "one")))))
      (li (word ((text "two")))))))
 
 (define XITEM0
   '(li (word ((text "happy")))))
 
 (define XITEM1
-  '(li ((another-attr "value1")
-        (word ((text "tranquil"))))))
+  '(li ((another-attr "value1"))
+       (word ((text "tranquil")))))
   
 
 (define BT (circle 10 'solid 'black))
