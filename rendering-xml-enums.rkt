@@ -193,17 +193,130 @@
 
 (define BT (circle 10 'solid 'black))
 
+;;=====================
+;; 372
+
 ; XItem.v1 -> Image
 ; renders an item as a "word" prefixed by a bullet
+(check-expect (render-item1 XITEM0)
+              (beside/align 'center BT
+                            (text "happy" 12 'black)))
+(check-expect (render-item1 XITEM1)
+              (beside/align 'center BT
+                            (text "tranquil" 12 'black)))
+
 (define (render-item1 i)
-  (... (xexpr-content i) ...))
+  (local ((define content (xexpr-content i))
+          (define element (first content))
+          (define a-word (word-text element))
+          (define item (text a-word 12 'black)))
+    (beside/align 'center BT item)))
+
+; the function works by first extracting the content of
+; the item and then taking the first element, extracting
+; the text and creating a ISL+ text constant and finally
+; rendering it.
+
+;;=============
+;; render-enum1
+
+(define enum0
+  '(ul
+    (li (word ((text "one"))))
+    (li (word ((text "two"))))))
+
+(define e0-rendered
+  (above/align
+   'left
+   (beside/align 'center BT (text "one" 12 'black))
+   (beside/align 'center BT (text "two" 12 'black))))
+
+; XEnum.v1 -> Image 
+; renders a simple enumeration as an image 
+(check-expect (render-enum1 enum0) e0-rendered)
+
+(define (render-enum1 xe)
+  (local ((define content (xexpr-content xe))
+          ; XItem.v1 Image -> Image 
+          (define (deal-with-one item so-far)
+            (above/align 'left
+                         (render-item1 item)
+                         so-far)))
+    (foldr deal-with-one empty-image content)))
+
+;;=================================
+
+; An XItem.v2 is one of: 
+; – (cons 'li (cons XWord '()))
+; – (cons 'li (cons [List-of Attribute] (list XWord)))
+; – (cons 'li (cons XEnum.v2 '()))
+; – (cons 'li (cons [List-of Attribute] (list XEnum.v2)))
+
+; An XEnum.v2 is one of:
+; – (cons 'ul [List-of XItem.v2])
+; – (cons 'ul (cons [List-of Attribute] [List-of XItem.v2]))
+
+(define XITEM.V20 '(li (word ((text "first")))))
+(define XITEM.V21 '(li (word ((text "second")))))
+(define XITEM.V22 `(li (((powerlevel "9000")
+                         (salutation "Well met!"))
+                        (,XITEM.V20 ,XITEM.V21))))
+
+(define XENUM.V20 `(ul (,XITEM.V20 ,XITEM.V21)))
+(define XENUM.V21 `(ul ((status "amber") (load "high"))
+                       (,XITEM.V20 ,XITEM.V21)))
+
+;;============================
+;; 373
+
+(define SIZE 12) ; font size 
+(define COLOR "black") ; font color 
+(define BT1 ; a graphical constant 
+  (beside (circle 1 'solid 'black) (text " " SIZE COLOR)))
+ 
+; Image -> Image
+; marks item with bullet
+(check-expect (bulletize (text "happy" SIZE COLOR))
+              (beside/align 'center BT1
+                            (text "happy" SIZE COLOR)))
+
+(define (bulletize item)
+  (beside/align 'center BT1 item))
+ 
+; XEnum.v2 -> Image
+; renders an XEnum.v2 as an image
+(check-expect
+ (render-enum XENUM.V20)
+ (above/align 'left
+              (bulletize (text "first" SIZE COLOR))
+              (above/align
+               'left
+               (bulletize (text "second" SIZE COLOR))
+               empty-image)))
+
+(define (render-enum xe)
+  (local ((define content (xexpr-content xe))
+          ; XItem.v2 Image -> Image 
+          (define (deal-with-one item so-far)
+            (above/align 'left (render-item item) so-far)))
+    (foldr deal-with-one empty-image content)))
+ 
+; XItem.v2 -> Image
+; renders one XItem.v2 as an image 
+(define (render-item an-item)
+  (local ((define content (first (xexpr-content an-item))))
+    (bulletize
+     (cond
+       [(word? content)
+        (text (word-text content) SIZE 'black)]
+       [else (render-enum content)]))))
 
 
 
 
 
 
-             
+
 
 
 
