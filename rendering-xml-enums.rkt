@@ -36,8 +36,7 @@
        (local ((define loa-or-x
                  (first optional-loa+content)))
          (if (list-of-attributes? loa-or-x)
-             loa-or-x
-             '()))])))
+             loa-or-x '()))])))
 
 ;;=======================
 ;; xexpr-content
@@ -60,11 +59,12 @@
 (define (xexpr-content x)
   (local ((define optional-loa+content (rest x)))
     (cond
-      [(empty? x) '()]
-      [else (if (list-of-attributes?
-                 (first optional-loa+content))
-                (rest optional-loa+content)
-                optional-loa+content)])))
+      [(empty? optional-loa+content) '()]
+      [else (local ((define loa-or-x
+                      (first optional-loa+content)))
+              (if (list-of-attributes? loa-or-x)
+                  (rest optional-loa+content)
+                  optional-loa+content))])))
 
 ;;==============
 ;; 370
@@ -72,75 +72,27 @@
 ; An XWord is '(word ((text String)))
 
 (define XWORD0 '(word ((text "hello"))))
-(define XWORD1 '(word ((text "world"))))
 
 ; String XWord -> Boolean
-; consumes a String s and an XWord xw and produces
+; consumes an XWord xw and produces
 ; true if xw contains s
 
-(check-expect (word? "hello" XWORD0) #true)
-(check-expect (word? "yolo" XWORD0) #false)
+(check-expect (word? XWORD0) #true)
+(check-expect (word? 99) #false)
 
-(define (fn-word? s xw)
-  (local
-    ((define fn-extract-content (rest xw)))
-    (cond
-      [(empty? (fn-extract-content)) ...]
-      [else
-       (local
-         ((define fn-list-of-words
-            (first fn-extract-content)))
-         (contains-word? s fn-list-of-words))])))
-
-(define (word? s xw)
-  (local
-    ((define extract-content (rest xw)))
-    (cond
-      [(empty? extract-content) #false]
-      [else
-       (local
-         ((define list-of-words
-            (first extract-content)))
-         (contains-word? s list-of-words))])))
-
-; List-of XWord -> Boolean
-(define (contains-word? str low)
-  (cond
-    [(empty? low) #false]
-    [else (if (and (symbol=? (first (first low))
-                             'text)
-                   (string=? (second (first low))
-                             str))
-              #true
-              (contains-word? str (rest low)))]))
+(define (word? xw)
+  (if (cons? xw)
+      (equal? 'word (first xw))
+      #false))
 
 ; XWord -> String
 ; consumes an XWord xw and produces the value of
 ; the only attribute of an instance of XWord
 
-(check-expect (word-text XWORD0) "hello")
-
-(define (fn-word-text xw)
-  (local
-    ((define fn-extract-element  (rest xw))
-     (define
-       fn-extract-xwords       
-       (first fn-extract-element)))
-    (cond
-      [else (if (symbol=? 'word (first xw))
-                (second (first fn-extract-xwords))
-                (error "not a word element"))])))
+(check-expect (word-text '(word ((text "hello")))) "hello")
   
 (define (word-text xw)
-  (local
-    ((define extract-element  (rest xw))
-     (define
-       extract-xwords       
-       (first extract-element)))
-    (cond
-      [else (if (symbol=? 'word (first xw))
-                (second (first extract-xwords))
-                (error "not a word element"))])))
+  (second (first (first (rest xw)))))
          
 ;;=============================
 ;; 371
@@ -258,9 +210,9 @@
 
 (define XITEM.V20 '(li (word ((text "first")))))
 (define XITEM.V21 '(li (word ((text "second")))))
-(define XITEM.V22 `(li (((powerlevel "9000")
-                         (salutation "Well met!"))
-                        (,XITEM.V20 ,XITEM.V21))))
+(define XITEM.V22 `(li ((powerlevel "9000")
+                        (salutation "Well met!"))
+                       (,XITEM.V20 ,XITEM.V21)))
 
 (define XENUM.V20 `(ul (,XITEM.V20 ,XITEM.V21)))
 (define XENUM.V21 `(ul ((status "amber") (load "high"))
@@ -302,14 +254,34 @@
     (foldr deal-with-one empty-image content)))
  
 ; XItem.v2 -> Image
-; renders one XItem.v2 as an image 
+; renders one XItem.v2 as an image
+(check-expect
+ (render-item XITEM.V20)
+ (bulletize
+  (text (word-text (first (xexpr-content XITEM.V20)))
+        SIZE COLOR)))
+
+(check-expect
+ (render-item XITEM.V22)
+ (above/align
+  'left
+  (bulletize
+   (text (word-text (first (xexpr-content XITEM.V20)))
+         SIZE COLOR))
+  (bulletize
+   (text (word-text (first (xexpr-content XITEM.V21)))
+         SIZE COLOR))))
+              
+
 (define (render-item an-item)
-  (local ((define content (first (xexpr-content an-item))))
+  (local ((define content
+            (first (xexpr-content an-item))))
     (bulletize
      (cond
        [(word? content)
         (text (word-text content) SIZE 'black)]
-       [else (render-enum content)]))))
+       [else (render-enum content)])))) 
+
 
 
 
