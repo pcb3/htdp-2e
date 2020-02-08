@@ -8,13 +8,15 @@
 (require 2htdp/image)
 
 ; An FSM is a [List-of 1Transition]
-; A 1Transition is a list of two items:
-;   (cons FSM-State (cons FSM-State '()))
+; A 1Transition is a list of three items:
+;   (cons FSM-State (cons FSM-State (cons Key '())))
 ; An FSM-State is a String that specifies a color
+; A Key is a String that specifies a key press
  
 ; data examples 
 (define fsm-traffic
-  '(("red" "green") ("green" "yellow") ("yellow" "red")))
+  '(("red" "green" "right")
+    ("green" "yellow" " ") ("yellow" "red" " ")))
  
 ; FSM FSM-State -> FSM-State 
 ; matches the keys pressed by a player with the given FSM 
@@ -27,12 +29,20 @@
         (square 100 "solid" current)))]
     [on-key
      (lambda (current key-event)
-       (find transitions current))]))
+       (cond
+         [(and (key=? key-event "right")
+               (string=? current "red"))
+          (find transitions current)]
+         [(and (key=? key-event " ")
+               (or (string=? current "green")
+                   (string=? current "yellow")))
+          (find transitions current)]
+         [else current]))]))
  
 ; [X Y] [List-of [List X Y]] X -> Y
 ; finds the matching Y for the given X in alist
 (check-expect (find fsm-traffic "red") "green")
-(check-expect (find fsm-traffic "pink") (error "not found"))
+; (check-expect (find fsm-traffic "pink") (error "not found"))
 
 (define (find alist x)
   (local ((define fm (assoc x alist)))
