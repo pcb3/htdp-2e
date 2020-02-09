@@ -56,7 +56,7 @@
 ;   `(action ((state ,FSM-State) (next ,FSM-State)))
 
 ;;=================
-;; 382
+;; 381
 
 ; An X1T is a nested list of this shape (using list):
 (define X1T0
@@ -82,6 +82,47 @@
         (cons
          (cons (cons 'initial (cons "blue" '())) '())
          (cons (cons X1T1 '()) '()))))
+
+;;===================
+;; 382
+
+; <bwmachine initial="black">
+;  <key state="black" next="white" />
+;  <key state"white" next="black" />
+; </bwmachine>
+
+(define bw0
+  '(machine ((initial "black"))
+              (action ((state "black") (next "white")))
+              (action ((state "white") (next "black")))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
