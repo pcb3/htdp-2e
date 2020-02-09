@@ -47,3 +47,59 @@
 (define (find alist x)
   (local ((define fm (assoc x alist)))
     (if (cons? fm) (second fm) (error "not found"))))
+
+;;============================
+
+; An XMachine is a nested list of this shape:
+;   `(machine ((initial ,FSM-State)) [List-of X1T])
+; An X1T is a nested list of this shape:
+;   `(action ((state ,FSM-State) (next ,FSM-State)))
+
+;;=================
+;; 382
+
+; An X1T is a nested list of this shape (using list):
+(define X1T0
+  (list 'action (list (list 'state "red")
+                      (list 'next "green"))))
+
+; An X1T is a nested list of this shape (using cons):
+(define X1T1
+  (cons 'action
+        (cons
+         (cons (cons 'state (cons "red" '()))
+               (cons (cons 'next (cons "green" '())) '()))
+         '())))
+
+; An XMachine is a nested list of thie shape (using list):
+(define XMACHINE0
+  (list 'machine (list (list 'initial "blue"))
+        (list X1T0)))
+
+; An XMachine is a nested list of thie shape (using cons):
+(define XMACHINE1
+  (cons 'machine
+        (cons
+         (cons (cons 'initial (cons "blue" '())) '())
+         (cons (cons X1T1 '()) '()))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
