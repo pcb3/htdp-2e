@@ -6,6 +6,7 @@
 
 (require 2htdp/universe)
 (require 2htdp/image)
+(require 2htdp/abstraction)
 
 ; An FSM is a [List-of 1Transition]
 ; A 1Transition is a list of three items:
@@ -13,7 +14,11 @@
 ; An FSM-State is a String that specifies a color
 ; A Key is a String that specifies a key press
  
-; data examples 
+; data examples
+(define fsm-traffic0
+  '(("red" "green")
+    ("green" "yellow") ("yellow" "red")))
+
 (define fsm-traffic
   '(("red" "green" "right")
     ("green" "yellow" " ") ("yellow" "red" " ")))
@@ -93,18 +98,106 @@
 
 (define bw0
   '(machine ((initial "black"))
-              (action ((state "black") (next "white")))
-              (action ((state "white") (next "black")))))
+            (action ((state "black") (next "white")))
+            (action ((state "white") (next "black")))))
 
+;;=======================
+;; Xexpr helper functions
 
+; [List-of Attribute] or Xexpr.v2 -> Boolean
+; is x a list of attributes
+(define (list-of-attributes? x)
+  (cond
+    [(empty? x) #true]
+    [else
+     (local ((define possible-attribute (first x)))
+       (cons? possible-attribute))]))
 
+(define (xexpr-attr xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else
+       (local ((define loa-or-x
+                 (first optional-loa+content)))
+         (if (list-of-attributes? loa-or-x)
+             loa-or-x '()))])))
 
+; Xexpr.v2 -> List-of Xexpr.v2
+; consumes an Xexpr.v2 xe and produces a list of content
+; elements
+(define (xexpr-content x)
+  (local ((define optional-loa+content (rest x)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else (local ((define loa-or-x
+                      (first optional-loa+content)))
+              (if (list-of-attributes? loa-or-x)
+                  (rest optional-loa+content)
+                  optional-loa+content))])))
 
+(define (find-attr loa s)
+  (cond
+    [(empty? loa) #false]
+    [else
+     (if (list? (assq s loa))
+         (second (assq s  loa))
+         #false)]))
 
+;;=======================
 
+(define xm0
+  '(machine ((initial "red"))
+            (action ((state "red") (next "green")))
+            (action ((state "green") (next "yellow")))
+            (action ((state "yellow") (next "red")))))
 
+;;=======================
+;; 383
 
+; XMachine -> FSM-State 
+; interprets the given configuration as a state machine 
+(define (simulate-xmachine xm)
+  (simulate (xm-state0 xm) (xm->transitions xm)))
+ 
+; XMachine -> FSM-State 
+; extracts and translates the transition table from xm0
+ 
+(check-expect (xm-state0 xm0) "red")
+ 
+(define (xm-state0 xm)
+  (find-attr (xexpr-attr xm) 'initial))
+ 
+; XMachine -> [List-of 1Transition]
+; extracts the transition table from xm
+ 
+(check-expect (xm->transitions xm0) fsm-traffic0)
+ 
+(define (xm->transitions xm)
+  (local (; X1T -> 1Transition
+          (define (xaction->action xa)
+            (list (find-attr (xexpr-attr xa) 'state)
+                  (find-attr (xexpr-attr xa) 'next))))
+    (map xaction->action (xexpr-content xm))))
 
+;;======================
+;; simulate using bw0
+
+; FSM FSM-State -> FSM-State 
+; matches the keys pressed by a player with the given FSM 
+(define (simulate1 state0 transitions)
+  (big-bang state0 ; FSM-State
+    [to-draw
+      (lambda (current)
+        (square 100 "solid" current))]
+    [on-key
+      (lambda (current key-event)
+        (find transitions current))]))
+
+(define (simulate-xmachine1 xm)
+  (simulate1 (xm-state0 xm) (xm->transitions xm)))
+
+(simulate-xmachine1 bw0)
 
 
 
