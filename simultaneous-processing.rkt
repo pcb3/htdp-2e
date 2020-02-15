@@ -5,7 +5,7 @@
 ;; 23 Simultaneous Processing
 
 ;;================================================
-;; 23.1 Processing Two Lists Simultaneously: Case1
+;; 23.1 Processing pwo lists simultaneously: Case 1
 
 ;;==============
 ;; 387
@@ -48,7 +48,7 @@
 ; Interpretation: employee is a record including their
 ; pay rate in $USD per hour
 
-(define EMPLOYEE0 (make-employee "freddy" 123 25))
+(define EMPLOYEE0 (make-employee "freddy" 123 75))
 (define EMPLOYEE1 (make-employee "jason" 888 4))
 
 (define-struct wr [name hours])
@@ -57,7 +57,7 @@
 ; Interpretation: a wr is a record of the number of hours
 ; worked per week of an employee.
 
-(define WR0 (make-wr "freddy" 120))
+(define WR0 (make-wr "freddy" 32))
 (define WR1 (make-wr "jason" 40))
 
 ;;==========================
@@ -133,8 +133,11 @@
       (make-phone-record (first lon) (first lop))
       (zip (rest lon) (rest lop)))]))
 
+;;=================================================
+;; 23.3 Processing two lists simultaneously: Case 3
 
-
+;;====
+;; 390
 
 
 
