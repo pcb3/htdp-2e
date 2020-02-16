@@ -192,12 +192,36 @@
                       (branch-right tos)
                       (branch-left tos)))))]))
 
+;;===========================
+;; 391
 
+; [List-of Number] [List-of Number] -> [List-of Number]
+; replaces the final '() in front with end
+(check-expect (replace-eol-with '() '(a b)) '(a b))
+(check-expect (replace-eol-with '(1 2) '())
+              (cons 1 (cons 2 '())))
+(check-expect (replace-eol-with (cons 1 '()) '(a))
+              (cons 1 '(a)))
+(check-expect (replace-eol-with
+               (cons 2 (cons 1 '())) '(a))
+              (cons 2 (cons 1 '(a))))
 
+(define (fn-replace-eol-with front end)
+  (cond
+    [(and (empty? front) (empty? end)) ...]
+    [(and (empty? front) (cons? end)) ...]
+    [(and (cons? front) (empty? end)) ...]
+    [(and (cons? front) (cons? end))
+     (... ... (... (rest front) ...))]))
 
-
-
-
+(define (replace-eol-with front end)
+  (cond
+    [(empty? front) end]
+    [(empty? end) front]
+    [(cons? front)
+     (cons (first front)
+           (replace-eol-with (rest front) end))]))
+    
 
 
 
