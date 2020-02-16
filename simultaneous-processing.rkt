@@ -136,8 +136,8 @@
 ;;=================================================
 ;; 23.3 Processing two lists simultaneously: Case 3
 
-;;====
-;; 390
+;;==========
+;; 390 & 392
 
 (define-struct branch [left right])
  
@@ -182,15 +182,15 @@
 
 (define (tree-pick p tos)
   (cond
-    [(and (empty? p) (symbol? tos)) tos]
-    [(and (empty? p) (branch? tos)) tos]
-    [(and (cons? p) (symbol? tos)) "end of branch"]
-    [(and (cons? p) (branch? tos))
-     (tree-pick
-      (rest p)
-      (cond (else (if (symbol=? 'right (first p))
-                      (branch-right tos)
-                      (branch-left tos)))))]))
+    [(and (or (branch? tos) (symbol? tos))
+          (empty? p)) tos]
+    [(and (or (branch? tos) (symbol? tos)) 
+          (cons? p)) "end of branch"]
+    (tree-pick
+     (rest p)
+     (cond (else (if (symbol=? 'right (first p))
+                     (branch-right tos)
+                     (branch-left tos)))))]))
 
 ;;===========================
 ;; 391
