@@ -139,6 +139,58 @@
 ;;====
 ;; 390
 
+(define-struct branch [left right])
+ 
+; A TOS is one of:
+; – Symbol
+; – (make-branch TOS TOS)
+
+(define TOS0 '*)
+(define TOS1 (make-branch '^ '&))
+(define TOS2 (make-branch (make-branch '! '@)
+                          (make-branch '$ '%)))
+
+
+; A Direction is one of:
+; – 'left
+; – 'right
+ 
+; A list of Directions is also called a path. 
+; - '()
+; (cons Direction Path)
+
+; Path TOS -> Symbol
+; consumes a Path p and a Tree of Symbols tos and
+; produces the symbol at the end of the path or signals
+; an error
+
+(check-expect (tree-pick '() '*) '*)
+(check-expect (tree-pick '(left) TOS1) '^)
+(check-expect (tree-pick '(right left) TOS2) '$)
+(check-expect (tree-pick '() TOS1) TOS1)
+(check-expect (tree-pick '(right) '$) "end of branch")
+
+(define (fn-tree-pick p tos)
+  (cond
+    [(and (empty? p) (symbol? tos)) ...]
+    [(and (empty? p) (branch? tos)) ...]
+    [(and (cons? p) (symbol? tos)) ...]
+    [(and (cons? p) (branch? tos))
+     (... (rest p)
+          (cond (else (if (symbol=? ... (first p))
+                          (... ...)))))]))
+
+(define (tree-pick p tos)
+  (cond
+    [(and (empty? p) (symbol? tos)) tos]
+    [(and (empty? p) (branch? tos)) tos]
+    [(and (cons? p) (symbol? tos)) "end of branch"]
+    [(and (cons? p) (branch? tos))
+     (tree-pick
+      (rest p)
+      (cond (else (if (symbol=? 'right (first p))
+                      (branch-right tos)
+                      (branch-left tos)))))]))
 
 
 
