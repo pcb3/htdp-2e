@@ -10,7 +10,14 @@
 
 ;;====
 ;; 393
-	
+
+; A Son.L is one of: 
+; – empty 
+; – (cons Number Son.L)
+; 
+; Son is used when it 
+; applies to Son.L and Son.R
+  
 ; A Son.R is one of: 
 ; – empty 
 ; – (cons Number Son.R)
@@ -68,6 +75,68 @@
               (cons (first s1)
                     (intersect (rest s1) s2))
               (intersect (rest s1) s2))]))
+
+;;=======================
+;; 394
+
+; SON.L SON.L -> SON.L
+; consumes two sets s1 s2 and produces the union of
+; both including repeats
+(check-expect (merge '() '()) '())
+(check-expect (merge '() '(1)) '(1))
+(check-expect (merge '(1) '()) '(1))
+(check-expect (merge '(1 2) '(3 4)) '(1 2 3 4))
+(check-expect (merge '(1 1 2) '(3 3 4)) '(1 1 2 3 3 4))             
+
+(define (fn-merge s1 s2)
+  (cond
+    [(and (cons? ...) (cons? ...))
+     (...
+      (first s1)
+      (... (first s2) (fn-merge (rest s1) (rest s2))))]
+    [(and (cons? ...) (empty? ...))
+     (... (first s1) (fn-merge (rest s1) ...))]
+    [(and (empty? ...) (cons? ...))
+     (... (first s2) (fn-merge ... (rest s2)))]
+    [(and (empty? ...) (empty? ...))
+     ...]))
+
+(define (merge s1 s2)
+  (cond
+    [(and (cons? s1) (cons? s2))
+     (cond
+       [else (if (<= (first s1) (first s2))
+                 (cons
+                  (first s1)
+                  (merge (rest s1) s2))
+                 (cons (first s2) (merge s1) (rest s2)))])]
+    [(and (cons? s1) (empty? s2))
+     (cons (first s1) (merge (rest s1) s2))]
+    [(and (empty? s1) (cons? s2))
+     (cons (first s2) (merge s1 (rest s2)))]
+    [(and (empty? s1) (empty? s2)) '()]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
