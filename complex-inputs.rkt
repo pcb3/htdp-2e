@@ -116,8 +116,28 @@
      (cons (first s2) (merge s1 (rest s2)))]
     [(and (empty? s1) (empty? s2)) '()]))
 
+;;=======================
+;; 395
 
+; List N -> List
+; consumes a list l and a natural number n and produces
+; the first n items from l or all l if it is too short
+(check-expect (take '(a b c) 0) '())
+(check-expect (take '(a b c) 2) '(a b))
+(check-expect (take '(a b c) 10) '(a b c))
 
+(define (fn-take l n)
+  (cond
+    [(and (empty? l) (= n 0)) ...]
+    [(and (empty? l) (> n 0)) ...]
+    [(and (cons? l) (= n 0)) ...]
+    [(and (cons? l) (> n 0))
+     (... (first l) (fn-take (rest l) (sub1 n)))]))
+
+(define (take l n)
+  (if (and (cons? l) (> n 0))
+      (cons (first l) (take (rest l) (sub1 n)))
+      '()))
 
 
 
