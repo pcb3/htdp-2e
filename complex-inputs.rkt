@@ -139,7 +139,34 @@
       (cons (first l) (take (rest l) (sub1 n)))
       '()))
 
+;;=====
+;; drop
 
+; List N -> List
+; consumes a list l and a natural number n and produces
+; l with first n items removed or the empty list if the
+; length of l is less than or equal to n
+(check-expect (drop '() 1) '())
+(check-expect (drop '(a b c) 0) '(a b c))
+(check-expect (drop '(a b c) 2) '(c))
+(check-expect (drop '(a b c) 3) '())
+(check-expect (drop '(a b c) 10) '())
+
+(define (fn-drop l n)
+  (cond
+    [(and (empty? l) (= n 0)) ...]
+    [(and (empty? l) (> n 0)) ...]
+    [(and (cons? l) (= n 0)) ...]
+    [(and (cons? l) (> n 0))
+     (fn-drop (rest l) (sub1 n))]))
+
+(define (drop l n)
+  (cond
+    [(and (or (> n 0) (= n 0)) (empty? l)) l]
+    [(and (cons? l) (= n 0)) l]
+    [(and (cons? l) (> n 0))
+     (drop (rest l) (sub1 n))]))
+  
 
 
 
