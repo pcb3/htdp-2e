@@ -5,6 +5,10 @@
 ;; 23.5 Designing functions that
 ;;      consume two complex inputs
 
+(require 2htdp/batch-io)
+(require 2htdp/universe)
+(require 2htdp/image)
+
 ;;==================================
 ;; 23.6 Finger exercises: two inputs
 
@@ -167,7 +171,68 @@
     [(and (cons? l) (> n 0))
      (drop (rest l) (sub1 n))]))
   
+;;==============================
 
+;;====
+;; 396
+
+; An HM-Word is a [List-of Letter or "_"]
+; interpretation "_" represents a letter to be guessed 
+
+(define LETTERS
+  (explode "abcdefghijklmnopqrstuvwxyz"))
+
+; HM-Word N -> String
+; runs a simplistic hangman game, produces the current state
+(define (play the-pick time-limit)
+  (local ((define the-word  (explode the-pick))
+          (define the-guess (make-list (length the-word) "_"))
+          ; HM-Word -> HM-Word
+          (define (do-nothing s) s)
+          ; HM-Word KeyEvent -> HM-Word 
+          (define (checked-compare current-status ke)
+            (if (member? ke LETTERS)
+                (compare-word the-word current-status ke)
+                current-status)))
+    (implode
+     (big-bang the-guess ; HM-Word
+       [to-draw render-word]
+       [on-tick do-nothing 1 time-limit]
+       [on-key  checked-compare]))))
+ 
+; HM-Word -> Image
+(define (render-word w)
+  (text (implode w) 22 "black"))
+
+; HM-Word HM-Word 1String -> HM-word
+; consumes the target word w, a word s that represents
+; the partially guessed word and the current letter
+; guessed l and produces s with all "_" representing
+; undiscovered letters
+(check-expect
+ (compare-word '("h" "i") '("_" "_") "o") '("_" "_"))
+(check-expect
+ (compare-word '("h" "i") '("_" "_") "h") '("h" "_"))
+(check-expect
+ (compare-word '("h" "i") '("h" "_") "i") '("h" "i"))
+
+(define (fn-compare-word w s l)
+  (cond
+    [(empty? w) ...]
+    [(string=? (first w) ...) ...]
+    [else
+     (fn-compare-word (rest w) (rest s) ...)]))
+    
+(define (compare-word w s l)
+  (cond
+    [(empty? w) '()]
+    [(string=? (first w) l)
+     (cons l (compare-word (rest w) (rest s) l))]
+    [(string=? "_" (first s))
+     (cons "_" (compare-word (rest w) (rest s) l))]
+    [else
+     (cons (first s)
+           (compare-word (rest w) (rest s) l))]))
 
 
 
