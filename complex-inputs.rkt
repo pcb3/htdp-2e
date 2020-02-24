@@ -172,8 +172,6 @@
      (drop (rest l) (sub1 n))]))
   
 ;;==============================
-
-;;====
 ;; 396
 
 ; An HM-Word is a [List-of Letter or "_"]
@@ -183,10 +181,12 @@
   (explode "abcdefghijklmnopqrstuvwxyz"))
 
 ; HM-Word N -> String
-; runs a simplistic hangman game, produces the current state
+; runs a simplistic hangman game, produces the current
+; state
 (define (play the-pick time-limit)
   (local ((define the-word  (explode the-pick))
-          (define the-guess (make-list (length the-word) "_"))
+          (define the-guess (make-list
+                             (length the-word) "_"))
           ; HM-Word -> HM-Word
           (define (do-nothing s) s)
           ; HM-Word KeyEvent -> HM-Word 
@@ -234,9 +234,91 @@
      (cons (first s)
            (compare-word (rest w) (rest s) l))]))
 
+(define LOCATION "/usr/share/dict/words") ; on OS X
+(define AS-LIST (read-lines LOCATION))
+(define SIZE (length AS-LIST))
+;(play (list-ref AS-LIST (random SIZE)) 10)
 
+;;========================
+;; 397
 
+(define-struct employee [name ssn payrate])
+; an employee is a structure:
+; (make-employee (String Number Number)
+; Interpretation: employee is a record including their
+; pay rate in $USD per hour
 
+(define EMPLOYEE0 (make-employee "freddy" 123 75))
+(define EMPLOYEE1 (make-employee "jason" 888 4))
+
+(define-struct time-card [ssn hours])
+; a time-card is a structure:
+; (make-time-card (Number Number))
+; Interpretation: a time-card is a an electronic record
+; of an employee's number and hours worked that week
+
+(define TC0 (make-time-card 123 30))
+(define TC1 (make-time-card 888 120))
+
+(define-struct wr [name wage])
+; a Wr is a structure:
+; (make-wr (String Number))
+; Interpretation: a wr is a record of the name and wage
+; of an employee
+
+(define WR0 (make-wr "freddy" (* 75 30)))
+(define WR1 (make-wr "jason" (* 4 120)))
+
+(define NOT-FOUND "entry not found")
+
+; [List-of Employee] [List-of Time-card] -> [List-of Wr]
+; consumes a list of Employee records ler and a list
+; of Time-card ltc, and produces a list of Wr
+(check-expect (wages '() '()) '())
+(check-expect
+ (wages `(,EMPLOYEE0 ,EMPLOYEE1) `(,TC0 , TC1))
+ `(,WR0 , WR1))
+(check-expect
+ (wages `(,(make-employee "pc" 999 999)) `(,TC0))
+ (error NOT-FOUND))
+(check-expect
+ (wages `(,EMPLOYEE0)
+        `(,TC0 ,(make-time-card 666 10000)))
+ (error NOT-FOUND))
+
+(define (fn-wages ler ltc)
+  (cond
+    [(and (empty? ler) (empty? ltc)) ...]
+    [(and (cons? ler) (cons? ltc))
+     (cond
+       [else
+        (if
+         (= (employee-ssn (first ler))
+            (time-card-ssn (first ltc)))
+         (...
+          (make-wr (employee-name (first ler))
+                   (* (employee-payrate (first ler))
+                      (time-card-hours (first ltc))))
+          (fn-wages (rest ler) (rest ltc)))
+         (fn-wages (first ler) (rest ltc)))])]
+    [else ...]))
+                
+(define (wages ler ltc)
+  (cond
+    [(and (empty? ler) (empty? ltc)) '()]
+    [(and (cons? ler) (cons? ltc))
+     (cond
+       [else
+        (if
+         (= (employee-ssn (first ler))
+            (time-card-ssn (first ltc)))
+         (cons
+          (make-wr (employee-name (first ler))
+                   (* (employee-payrate (first ler))
+                      (time-card-hours (first ltc))))
+          (wages (rest ler) (rest ltc)))
+         (wages (first ler) (rest ltc)))])]
+    [else (error NOT-FOUND)]))
 
 
 
