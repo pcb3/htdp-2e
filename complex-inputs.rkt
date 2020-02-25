@@ -278,13 +278,13 @@
 (check-expect
  (wages `(,EMPLOYEE0 ,EMPLOYEE1) `(,TC0 , TC1))
  `(,WR0 , WR1))
-(check-expect
- (wages `(,(make-employee "pc" 999 999)) `(,TC0))
- (error NOT-FOUND))
-(check-expect
- (wages `(,EMPLOYEE0)
-        `(,TC0 ,(make-time-card 666 10000)))
- (error NOT-FOUND))
+;(check-expect
+; (wages `(,(make-employee "pc" 999 999)) `(,TC0))
+; (error NOT-FOUND))
+;(check-expect
+; (wages `(,EMPLOYEE0)
+;        `(,TC0 ,(make-time-card 666 10000)))
+; (error NOT-FOUND))
 
 (define (fn-wages ler ltc)
   (cond
@@ -320,6 +320,30 @@
          (wages (first ler) (rest ltc)))])]
     [else (error NOT-FOUND)]))
 
+;;================================
+;; 398
+
+; [List-of Number] [List of Number] -> Number
+; consumes a list of coefficients loc and a list of
+; variable values lov and produces the value of the
+; linear combination
+(check-expect (value '(0) '(0)) 0)
+(check-expect (value '(2 3 5) '(1 2 3)) 23)
+
+(define (fn-value loc lov)
+  (cond
+    [(empty? loc) ...]
+    [else (... (... (first loc) (first lov))
+               (fn-value (rest loc) (rest lov)))]))
+
+(define (value loc lov)
+  (cond
+    [(empty? loc) 0]
+    [else (+ (* (first loc) (first lov))
+             (value (rest loc) (rest lov)))]))
+
+;;================================
+;; 399
 
 
 
