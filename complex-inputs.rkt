@@ -393,26 +393,50 @@
 ; consumes two lists of DNA symbols, a pattern p and
 ; search string s and produces true if p is
 ; identical to intial part of s
-(check-expect (DNAprefix '(a g t c a g) '(a g t c))
+(check-expect (DNAprefix '(a g t c) '(a g t c a g))
               #true)
-(check-expect (DNAprefix '(a c g t) '(g c a t))
+(check-expect (DNAprefix '(a c g t) '(c c g t a g))
               #false)
 
 (define (fn-DNAprefix p s)
   (cond
-    [(empty? s) ...]
+    [(empty? p) ...]
     [else (... (symbol=? (first p) (first s))
                (fn-DNAprefix (rest p) (rest s))
                ...)]))
 
 (define (DNAprefix p s)
   (cond
-    [(empty? s) #true]
+    [(empty? p) #true]
     [else (if (symbol=? (first p) (first s))
                (DNAprefix (rest p) (rest s))
                #false)]))
 
+; [List-of Symbol] [List-of Symbol] -> Symbol
+; consumes a pattern p and search string s and produces
+; the first item in s beyond p
+(check-expect (DNAdelta '(a g t c) '(a g t c a t c))
+              'a)
+;(check-expect (DNAdelta '(a g t c) '(a g t c))
+;              (error "identical sequence"))
+(check-expect (DNAdelta '(a g t c) '(t g t c a t c))
+              #false)
 
+(define (fn-DNAdelta p s)
+  (cond
+    [(equal? p s) ...]
+    [(empty? p) (first s)]
+    [else (if (symbol=? (first p) (first s))
+              (fn-DNAdelta (rest p) (rest s))
+              ...)]))
+     
+(define (DNAdelta p s)
+  (cond
+    [(equal? p s) (error "identical sequence")]
+    [(empty? p) (first s)]
+    [else (if (symbol=? (first p) (first s))
+              (fn-DNAdelta (rest p) (rest s))
+              #false)]))
 
 
 
