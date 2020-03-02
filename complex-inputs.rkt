@@ -362,9 +362,30 @@
 ; -> 
 ; [List-of [List-of String]]
 ; produces the list of those lists in ll that do 
-; not agree with names at any place 
+; not agree with names at any place
+(check-expect (non-same '(1 2 3)
+                        '((1 2 3)
+                          (1 3 2)
+                          (3 2 1) (3 1 2) (2 1 3)))
+              '((3 1 2)))
+
 (define (non-same names ll)
-  ll)
+  (cond
+    [(empty? ll) '()]
+    [(boolean=? #true
+                (same-in-a-position (first ll) names))
+     (non-same names (rest ll))]
+    [else
+     (cons (first ll) (non-same names (rest ll)))]))
+
+(define (same-in-a-position l lnames)
+  (cond
+    [(empty? lnames) #false]
+    [else (if (equal? (first l) (first lnames))
+              #true
+              (same-in-a-position (rest l)
+                                  (rest lnames)))]))
+     
 
 
 
