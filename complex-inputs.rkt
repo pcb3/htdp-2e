@@ -345,9 +345,26 @@
 ;;================================
 ;; 399
 
+(check-random (random-pick '(1 2 3))
+              (list-ref '(1 2 3) (random 3)))
 
-
-
+; [NEList-of X] -> X 
+; returns a random item from the list 
+(define (random-pick l)
+  (local
+    ((define (select num rand-num li)
+       (cond
+         [(= num rand-num) (first li)]
+         [else (select (add1 num) rand-num (rest li))])))
+    (select 0 (random (length l)) l)))
+ 
+; [List-of String] [List-of [List-of String]] 
+; -> 
+; [List-of [List-of String]]
+; produces the list of those lists in ll that do 
+; not agree with names at any place 
+(define (non-same names ll)
+  ll)
 
 
 
