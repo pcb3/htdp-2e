@@ -386,7 +386,31 @@
               (same-in-a-position (rest l)
                                   (rest lnames)))]))
      
+;;============================
+;; 400
 
+; [List-of Symbol] [List-of Symbol] -> Boolean
+; consumes two lists of DNA symbols, a pattern p and
+; search string s and produces true if p is
+; identical to intial part of s
+(check-expect (DNAprefix '(a g t c a g) '(a g t c))
+              #true)
+(check-expect (DNAprefix '(a c g t) '(g c a t))
+              #false)
+
+(define (fn-DNAprefix p s)
+  (cond
+    [(empty? s) ...]
+    [else (... (symbol=? (first p) (first s))
+               (fn-DNAprefix (rest p) (rest s))
+               ...)]))
+
+(define (DNAprefix p s)
+  (cond
+    [(empty? s) #true]
+    [else (if (symbol=? (first p) (first s))
+               (DNAprefix (rest p) (rest s))
+               #false)]))
 
 
 
