@@ -409,8 +409,8 @@
   (cond
     [(empty? p) #true]
     [else (if (symbol=? (first p) (first s))
-               (DNAprefix (rest p) (rest s))
-               #false)]))
+              (DNAprefix (rest p) (rest s))
+              #false)]))    
 
 ; [List-of Symbol] [List-of Symbol] -> Symbol
 ; consumes a pattern p and search string s and produces
@@ -438,7 +438,38 @@
               (fn-DNAdelta (rest p) (rest s))
               #false)]))
 
+;;==========================================
+;; 401
 
+; S-expr S-expr -> Boolean
+; consumes two S-expressions and produces true if they
+; are equal
+(check-expect (sexp=? 1 1) #true)
+(check-expect (sexp=? 1 0) #false)
+(check-expect (sexp=? '(a) '(a)) #true)
+(check-expect (sexp=? 'a '(a)) #false)
+(check-expect (sexp=? '(1 a "p") '(1 a "p")) #true)
+(check-expect (sexp=? '(1 a "z") '(1 a "m")) #false)
+
+(define (atom? a)
+  (or (number? a) (string? a) (symbol? a)))
+
+(define (fn-sexp=? a b)
+  (cond
+    [(and (empty? a) (empty? b)) ...]
+    [(or (and (atom? a) (atom? b))
+         (and (cons? a) (cons? b))) ...]
+    [(or (and (atom? a) (cons? b))
+         (and (cons? a) (atom? b))) ...]))
+
+(define (sexp=? a b)
+  (cond
+    [(and (empty? a) (empty? b)) #true]
+    [(and (atom? a) (atom? b)) (equal? a b)]
+    [(and (cons? a) (cons? b))
+     (and (sexp=? (first a) (first b))
+          (sexp=? (rest a) (rest b)))]
+    [else #false]))
 
 
 
