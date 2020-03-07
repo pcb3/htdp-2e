@@ -55,47 +55,6 @@
 (define presence-db
   (make-db presence-schema presence-content))
 
-;;=====================
-
-; DB -> Boolean
-; do all rows in db satisfy (I1) and (I2)
-     
-;(check-expect (integrity-check school-db) #true)
-;(check-expect (integrity-check presence-db) #true)
-     
-(define (fn-integrity-check db)
-  #false)
-
-(define (integrity-check db)
-  (local (; Row -> Boolean
-          (define (row-integrity-check row)
-            ...))
-    (andmap row-integrity-check (db-content db))))
-
-; Row -> Boolean 
-; does row satisfy (I1) and (I2) 
-(define (row-integrity-check row)
-  #false)
-
-; Row -> Boolean
-; checks length of each row satisfies I1
-
-(define (fn-length-of-row-check row)
-  (... (= (length row) (length (db-schema db)))
-       ...))
-
-(define (length-of-row-check row) #true)
-
-; Row -> Boolean
-; checks every ith cell in a row satisfies the ith
-; predicate in the schema
-
-(define (fn-check-every-cell row)
-  (... (andmap cell-integrity-check row)
-       ...))
-
-(define (check-every-cell row) #true)
-
 ;;====
 ;; 404
 
@@ -122,14 +81,67 @@
       [else (and (f (first sch) (first row))
                  (andmap2 f (rest sch) (rest row)))]))
 
+;;====
+;; 405
 
+; Row [List-of Label] -> Row
+; retains those cells whose corresponding element 
+; in names is also in labels
+(check-expect
+ (row-filter '("Alice" 35 #true)
+             '("Name" "Age" "Present"))
+ '("Alice" #true))
 
+(define (fn-row-filter row names)
+  (cond
+    [(empty? row) ...]
+    [...
+     (... (member? (first names) '("Name" "Present"))
+         (... (first row
+                     (fn-row-filter (rest row)
+                                    (rest names))))
+         (fn-row-filter (rest row) (rest names)))]))
 
+(define (row-filter row names)
+  (cond
+    [(empty? row) '()]
+    [else
+     (if (member? (first names) '("Name" "Present"))
+         (cons (first row
+                     (fn-row-filter (rest row)
+                                    (rest names))))
+         (fn-row-filter (rest row) (rest names)))]))
 
+;;====
+;; 406
 
-
-
-
+(define (project.v1 db labels)
+  (local ((define schema  (db-schema db))
+          (define content (db-content db))
+          (define labels (map first schema))
+ 
+          ; Spec -> Boolean
+          ; does this column belong to the new schema
+          (define (keep? c)
+            (member? (first c) labels))
+ 
+          ; Row -> Row
+          ; retains those columns whose name is in labels
+          (define (row-project row)
+            (row-filter row labels))
+ 
+          ; Row [List-of Label] -> Row
+          ; retains those cells whose name is in labels
+          (define (row-filter row names)
+            (cond
+              [(empty? names) '()]
+              [else
+               (if (member? (first names) labels)
+                   (cons (first row)
+                     (row-filter (rest row) (rest names)))
+                   (row-filter (rest row) (rest names)))])))
+    (make-db (filter keep? schema)
+             (map row-project content))))
 
 
 
