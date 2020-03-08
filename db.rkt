@@ -127,11 +127,6 @@
           (define (keep? c)
             (member? (first c) labels))
  
-          ; Row -> Row
-          ; retains those columns whose name is in labels
-          (define (row-project row)
-            (row-filter row labels))
- 
           ; Row [List-of Label] -> Row
           ; retains those cells whose name is in labels
           (define (row-filter row names)
@@ -143,7 +138,7 @@
                          (row-filter (rest row) (rest names)))
                    (row-filter (rest row) (rest names)))])))
     (make-db (filter keep? schema)
-             (map row-project content))))
+             (map (row-filter content labels)))))
 
 ;;====
 ;; 407
@@ -163,6 +158,7 @@
                            (cons a c)
                            (append '() c)))
          '() row names))
+
 
 
 
