@@ -6,6 +6,8 @@
 ; This section pulls together knowledge from all
 ; four parts of the book.
 
+(require 2htdp/abstraction)
+
 (define-struct db [schema content])
 ; A DB is a structure: (make-db Schema Content)
  
@@ -76,10 +78,10 @@
  (andmap2 integrity SCHEMA0 CONTENT0) #true)
 
 (define (andmap2 f sch row)
-    (cond
-      [(empty? sch) #true]
-      [else (and (f (first sch) (first row))
-                 (andmap2 f (rest sch) (rest row)))]))
+  (cond
+    [(empty? sch) #true]
+    [else (and (f (first sch) (first row))
+               (andmap2 f (rest sch) (rest row)))]))
 
 ;;====
 ;; 405
@@ -95,22 +97,22 @@
 (define (fn-row-filter row names)
   (cond
     [(empty? row) ...]
-    [...
+    [else
      (... (member? (first names) '("Name" "Present"))
-         (... (first row
-                     (fn-row-filter (rest row)
-                                    (rest names))))
-         (fn-row-filter (rest row) (rest names)))]))
+          (... (first row)
+               (fn-row-filter (rest row)
+                              (rest names)))
+     (fn-row-filter (rest row) (rest names)))]))
 
 (define (row-filter row names)
   (cond
-    [(empty? row) '()]
+    [(empty? names) '()]
     [else
      (if (member? (first names) '("Name" "Present"))
-         (cons (first row
-                     (fn-row-filter (rest row)
-                                    (rest names))))
-         (fn-row-filter (rest row) (rest names)))]))
+         (cons (first row)
+               (row-filter (rest row)
+                           (rest names)))
+         (row-filter (rest row) (rest names)))]))
 
 ;;====
 ;; 406
@@ -138,14 +140,29 @@
               [else
                (if (member? (first names) labels)
                    (cons (first row)
-                     (row-filter (rest row) (rest names)))
+                         (row-filter (rest row) (rest names)))
                    (row-filter (rest row) (rest names)))])))
     (make-db (filter keep? schema)
              (map row-project content))))
 
+;;====
+;; 407
 
+(define LABELS '("Name" "Present"))
 
+; Row [List-of Label] -> Row
+; retains those cells whose name is in labels using
+; foldr
+(check-expect
+ (row-filter-foldr '("Alice" 35 #true)
+                   '("Name" "Age" "Present"))
+ '("Alice" #true))
 
+(define (row-filter-foldr row names)
+  (foldr (lambda (a b c) (if (member? b LABELS)
+                           (cons a c)
+                           (append '() c)))
+         '() row names))
 
 
 
