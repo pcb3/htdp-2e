@@ -156,7 +156,7 @@
 (define (row-filter-foldr row names)
   (foldr (lambda (a b c) (if (member? b LABELS)
                            (cons a c)
-                           (append '() c)))
+                           c))
          '() row names))
 
 
