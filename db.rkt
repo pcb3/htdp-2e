@@ -198,8 +198,8 @@
  (select DB0
          '("Age")
          `(,string? ,number? ,boolean?))
- (make-db `(("Age" ,number?))
-          '((35 25))))
+ (make-db `(("Age" number?))
+          '((35) (25))))
 
 (define (fn-select db labels predicate)
   (local
