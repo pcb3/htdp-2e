@@ -102,7 +102,7 @@
           (... (first row)
                (fn-row-filter (rest row)
                               (rest names)))
-     (fn-row-filter (rest row) (rest names)))]))
+          (fn-row-filter (rest row) (rest names)))]))
 
 (define (row-filter row names)
   (cond
@@ -120,7 +120,6 @@
 (define (project.v1 db labels)
   (local ((define schema  (db-schema db))
           (define content (db-content db))
-          (define labels (map first schema))
  
           ; Spec -> Boolean
           ; does this column belong to the new schema
@@ -155,11 +154,88 @@
 
 (define (row-filter-foldr row names)
   (foldr (lambda (a b c) (if (member? b LABELS)
-                           (cons a c)
-                           c))
+                             (cons a c) c))
          '() row names))
 
 
+;;====
+;; 408
+
+(define DB0
+  (make-db `(("Name" string?)
+             ("Age" number?)
+             ("Present" boolean?))
+           '(("Alice" 35 #true)
+             ("Bob"   25 #false)
+             ("Woody" 13 '@))))
+
+(check-expect
+ (project DB0 '("Age"))
+ (make-db `(("Age" number?))
+          '((35) (25) (13))))
+ 
+
+(define (project db labels)
+  (local ((define schema (db-schema db))
+          (define content (db-content db))
+          
+          (define (keep? c) (member? (first c) labels))
+          
+          (define mask (map keep? schema))
+
+          (define (row-project row)
+            (foldr (lambda (cell m c) (if m (cons cell c) c))
+                   '() row mask)))
+          
+    (make-db (filter keep? schema)
+             (map row-project content))))
+
+; DB [List-of Label] [Row -> Boolean] -> DB
+; consumes a database, a list of labels and a predicate
+; for each row that satisfies the given predicate
+; projected down to the given set of labels
+(check-expect
+ (select DB0
+         '("Age")
+         `(,string? ,number? ,boolean?))
+ (make-db `(("Age" ,number?))
+          '((35 25))))
+
+(define (fn-select db labels predicate)
+  (local
+    ((define (row-satisfies? row pred)
+       (cond
+         [(empty? row) ...]
+         [((first pred) (first row))
+          (row-satisfies? (rest row)
+                          (rest pred))]
+         [else ...])))
+    (project
+     (make-db (db-schema db)
+              (map (lambda (r)
+                     (row-satisfies? ... ...))
+                   (db-content db)))
+     ...)))
+
+(define (select db labels predicate)
+  (local
+    ((define (row-satisfies? row pred)
+       (cond
+         [(empty? row) #true]
+         [((first pred) (first row))
+          (row-satisfies? (rest row)
+                          (rest pred))]
+         [else #false])))
+    (project
+     (make-db (db-schema db)
+              (filter
+               (lambda (n)
+                 (not (empty? n)))
+               (map (lambda (r)
+                      (if (row-satisfies? r predicate)
+                          r (append '())))
+                    (db-content db))))
+     labels)))
 
 
 
