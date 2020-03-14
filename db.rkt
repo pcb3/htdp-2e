@@ -219,23 +219,41 @@
 
 (define (select db labels predicate)
   (local
-    ((define (row-satisfies? row pred)
-       (cond
-         [(empty? row) #true]
-         [((first pred) (first row))
-          (row-satisfies? (rest row)
-                          (rest pred))]
-         [else #false])))
-    (project
-     (make-db (db-schema db)
-              (filter
-               (lambda (n)
-                 (not (empty? n)))
-               (map (lambda (r)
-                      (if (row-satisfies? r predicate)
-                          r (append '())))
-                    (db-content db))))
-     labels)))
+    ((define schema (db-schema db))
+     (define content (db-content db))
+
+     (define (pred-satisfy row)
+       (andmap (lambda (x)
+                 (boolean=? #true x))
+               (foldr (lambda (r p b)
+                        (if (p r) (cons #t b) (cons #f b)))
+                      '() row predicate))))
+    
+    (project (make-db schema
+                      (filter pred-satisfy content))
+             labels)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
