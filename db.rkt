@@ -219,6 +219,7 @@
 
 (define (select db labels predicate)
   (local
+    
     ((define schema (db-schema db))
      (define content (db-content db))
 
@@ -229,9 +230,102 @@
                         (if (p r) (cons #t b) (cons #f b)))
                       '() row predicate))))
     
-    (project (make-db schema
-                      (filter pred-satisfy content))
-             labels)))
+    (project
+     (make-db schema (filter pred-satisfy content))
+     labels)))
+
+;;====
+;; 409
+
+; DB [List-of Label] -> DB
+; consumes a database db and a list of labels lol and
+; produces a new db with the columns reordered according
+; to lol
+
+(check-expect
+ (reorder (make-db `(("Name" string?)
+                     ("Health" number?)
+                     ("Mana" number?)
+                     ("Hardcore" boolean?))
+                   '(("Fern" 108 200 #true)
+                     ("Pus" 120 220 #true)
+                     ("Ophinian" 400 90 #false)))
+          '("Name" "Health" "Mana" "Hardcore"))
+ (make-db `(("Name" string?)
+            ("Health" number?)
+            ("Mana" number?)
+            ("Hardcore" boolean?))
+          '(("Fern" 108 200 #true)
+            ("Pus" 120 220 #true)
+            ("Ophinian" 400 90 #false))))
+
+(check-expect
+ (reorder (make-db `(("Name" string?)
+                     ("Health" number?)
+                     ("Mana" number?)
+                     ("Hardcore" boolean?))
+                   '(("Fern" 108 200 #true)
+                     ("Pus" 120 220 #true)
+                     ("Ophinian" 400 90 #false)))
+          '("Health" "Mana" "Hardcore""Name" ))
+ (make-db `(("Health" number?)
+            ("Mana" number?)
+            ("Hardcore" boolean?)
+            ("Name" string?))
+          '((108 200 #true "Fern")
+            (120 220 #true "Pus")
+            (400 90 #false "Ophinian"))))
+
+(define (fn-reorder db lol)
+  (local
+    ((define schema (db-schema db))
+     (define content (db-content db))
+
+     (define (position start label schm)
+       (cond
+         [(empty? schm) ...]
+         [else
+          (... (equal? ... (first (first schm)))
+               ...
+               (positon (add1 ...) ... (rest schm)))]))
+
+     (define position-list
+       (map (lambda (lbl) (position ... lbl schema)) lol)))
+
+    (make-db (map (lambda (n)
+                    (list-ref ... ...)) position-list)
+             (map
+              (lambda (row)
+                (map (lambda (n)
+                       (list-ref ... ...)) position-list))
+              ...))))
+             
+(define (reorder db lol)
+  (local
+    ((define schema (db-schema db))
+     (define content (db-content db))
+
+     (define (position start label schm)
+       (cond
+         [(empty? schm) '()]
+         [else
+          (if
+           (equal? label (first (first schm)))
+           start
+           (position (add1 start) label (rest schm)))]))
+
+     (define position-list
+       (map (lambda (lbl) (position 0 lbl schema)) lol)))
+
+    (make-db (map (lambda (n)
+                    (list-ref schema n)) position-list)
+             (map
+              (lambda (row)
+                (map (lambda (n)
+                       (list-ref row n)) position-list))
+              content))))
+
+
 
 
 
