@@ -379,7 +379,76 @@
               content-db1
               (exclusive-list db2)))))
 
+;;====
+;; 411
 
+; DB DB ->
+; consumes two DB's and joins them together by replacing
+; the last cell in each row of the first DB with the
+; translation of the cell in the second DB
+(check-expect
+ (join (make-db `(("Name" string?)
+                  ("Price" number?)
+                  ("Local" boolean?))
+                `(("Apple" 3 #true)
+                  ("Orange" 4 #true)
+                  ("Banana" 1 #false)))
+       (make-db `(("Local" boolean?)
+                  ("Description" string?))
+                `((#true "New Zealand")
+                  (#false "Imported"))))
+ (make-db `(("Name" string?)
+            ("Price" number?)
+            ("Description" string?))
+          `(("Apple" 3 "New Zealand")
+            ("Orange" 4 "New Zealand")
+            ("Banana" 1 "Imported"))))
+
+(check-expect
+ (join (make-db `(("Name" string?)
+                  ("Price" number?)
+                  ("Local" boolean?))
+                `(("Apple" 3 #true)
+                  ("Orange" 4 #true)
+                  ("Banana" 1 #false)))
+       (make-db `(("Local" boolean?)
+                  ("Description" string?))
+                `((#true "New Zealand")
+                  (#true "Seasonal")
+                  (#false "Imported")
+                  (#false "Non-seasonal"))))
+ (make-db `(("Name" string?)
+            ("Price" number?)
+            ("Description" string?))
+          `(("Apple" 3 "New Zealand")
+            ("Apple" 3 "Seasonal")
+            ("Orange" 4 "New Zealand")
+            ("Orange" 4 "Seasonal")
+            ("Banana" 1 "Imported")
+            ("Banana" 1 "Seasonal"))))
+   
+(define (join db1 db2)
+  (local
+    ((define translation-list
+       (map (lambda (row)
+              (second (first
+                       (filter
+                        (lambda (cont-row)
+                          (equal? (first (reverse row))
+                                  (first cont-row)))
+                        (db-content db2)))))
+            (db-content db1))))
+    
+    (make-db
+     (map (lambda (schm-row)
+            (if (equal? schm-row (first (db-schema db2)))
+                (second (db-schema db2)) schm-row))
+          (db-schema db1))
+     (foldr (lambda (translation row base)
+              (cons (append (reverse (rest (reverse row)))
+                            (list translation))
+                    base))
+            '() translation-list (db-content db1)))))
 
 
 
