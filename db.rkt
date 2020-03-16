@@ -302,6 +302,7 @@
              
 (define (reorder db lol)
   (local
+
     ((define schema (db-schema db))
      (define content (db-content db))
 
@@ -324,6 +325,59 @@
                 (map (lambda (n)
                        (list-ref row n)) position-list))
               content))))
+         
+;;====
+;; 410
+
+; DB DB -> DB
+; consumes two DB's with the same schema and produces a new
+; DB that is the union of boths content
+(check-expect
+ (db-union (make-db `(("Name" string?)
+                      ("Local" boolean?)
+                      ("Price" number?))
+                    `(("Apple" #true 3)
+                      ("Orange" #true 4)
+                      ("Banana" #false 1)))
+           (make-db `(("Name" string?)
+                      ("Local" boolean?)
+                      ("Price" number?))
+                    `(("Pear" #true 5)
+                      ("Date" #false 20)
+                      ("Banana" #false 1))))
+ (make-db `(("Name" string?)
+            ("Local" boolean?)
+            ("Price" number?))
+          `(("Apple" #true 3)
+            ("Orange" #true 4)
+            ("Banana" #false 1)
+            ("Pear" #true 5)
+            ("Date" #false 20))))
+
+(define (db-union db1 db2)
+  (local
+    (
+     
+     (define schema-db1 (db-schema db1))
+     (define content-db1 (db-content db1))
+     
+     (define (exclusive-list db)
+       (cond
+         [(empty? (db-content db)) '()]
+         [else
+          (if (member? (first (db-content db))
+                       content-db1)
+              (exclusive-list
+               (make-db schema-db1
+                        (rest (db-content db))))
+              (cons (first (db-content db))
+                    (exclusive-list
+                     (make-db schema-db1
+                              (rest (db-content db))))))])))
+    (make-db schema-db1
+             (append
+              content-db1
+              (exclusive-list db2)))))
 
 
 
