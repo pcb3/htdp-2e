@@ -425,30 +425,41 @@
             ("Orange" 4 "New Zealand")
             ("Orange" 4 "Seasonal")
             ("Banana" 1 "Imported")
-            ("Banana" 1 "Seasonal"))))
+            ("Banana" 1 "Non-seasonal"))))
    
 (define (join db1 db2)
   (local
-    ((define translation-list
-       (map (lambda (row)
-              (second (first
-                       (filter
-                        (lambda (cont-row)
-                          (equal? (first (reverse row))
-                                  (first cont-row)))
-                        (db-content db2)))))
-            (db-content db1))))
+
+    ((define content1 (db-content db1))
+     (define content2 (db-content db2))
+     (define schema1 (db-schema db1))
+     (define schema2 (db-schema db2))
+
+     (define (build-content con1)
+       (if (empty? con1)
+           '()
+           (append (build-row (first con1) content2)
+                   (build-content (rest con1)))))
+
+     (define (build-row row content)
+       (cond
+         [(empty? content) '()]
+         [else
+          (if (equal? (first (reverse row))
+                      (first (first content)))
+              (cons (translate row (second (first content)))
+                    (build-row row (rest content)))
+              (build-row row (rest content)))]))
+
+     (define (translate r cell)
+       (reverse (cons cell (rest (reverse r))))))
     
     (make-db
      (map (lambda (schm-row)
-            (if (equal? schm-row (first (db-schema db2)))
-                (second (db-schema db2)) schm-row))
-          (db-schema db1))
-     (foldr (lambda (translation row base)
-              (cons (append (reverse (rest (reverse row)))
-                            (list translation))
-                    base))
-            '() translation-list (db-content db1)))))
+            (if (equal? schm-row (first schema2))
+                (second schema2) schm-row))
+          schema1)
+     (build-content content1))))
 
 
 
