@@ -53,10 +53,20 @@
  (inex+ (create-inex 56 1 0) (create-inex 56 1 0))
  (create-inex 11 1 1))
 
+; handle opposite signs
+;(check-expect
+; (inex+ (create-inex 2 1 1) (create-inex 2 -1 1))
+; (create-inex 3 1 1))
+
+; challenge: exponenet that differ by 1
+;(check-expect
+;  (inex+ (create-inex 1 1 0) (create-inex 1 -1 1))
+;  (create-inex 11 -1 1))
+
 (check-error
  (inex+ MAX-POSITIVE MAX-POSITIVE)
  "result out of range")
- 
+
 (define (fn-inex+ inex1 inex2)
   (local
     (
@@ -83,33 +93,38 @@
 (define (inex+ inex1 inex2)
   (local
     (
-     ; checks that Inex is within MAX/MIN-POSITIVE range
-     (define exceeds-range?
-       (or
-        (> (+ (inex->number inex1) (inex->number inex2))
-           (inex->number MAX-POSITIVE))
-        (< (+ (inex->number inex1) (inex->number inex2))
-           (inex->number MIN-POSITIVE))))
-          
-        
-     ; raw number by adding both mantissi
-     (define raw-add
-       (+ (inex-mantissa inex1) (inex-mantissa inex2)))
+     ; builds a temporary inex
+     (define raw-inex
+       (make-inex (+ (inex-mantissa inex1)
+                     (inex-mantissa inex2))
+                  (inex-sign inex1)
+                  (inex-exponent inex1)))
      
-     ; create a new inex from two inex representations
-     (define build-inex
-       (cond
-         [exceeds-range? (error "result out of range")]
-         [else
-          (if (> raw-add (inex-mantissa MAX-POSITIVE))
-              (create-inex
-               (round (/ raw-add 10))
-               (inex-sign inex1) (add1 (inex-exponent inex1)))
-              (create-inex raw-add
-                           (inex-sign inex1)
-                           (inex-exponent inex1)))])))
+     ; checks that Inex is within range
+     (define exceeds-range?
+       (or (> (+ (inex->number inex1)
+                 (inex->number inex2))
+              (inex->number MAX-POSITIVE))
+           (and (> (+ (inex-mantissa inex1)
+                      (inex-mantissa inex2)) 99)
+                (or (> (inex-exponent inex1) 99)
+                    (> (inex-exponent inex2) 99)))))
 
-    build-inex))
+     ; constructs the sum of two inex
+     (define (build-inex inx)
+       (cond
+         [(> (inex-mantissa inx) (inex-mantissa MAX-POSITIVE))
+          (build-inex
+           (make-inex (/ (inex-mantissa inx)  10)
+                      (inex-sign inx)
+                      (add1 (inex-exponent inx))))]
+         [(> (inex-exponent inx) (inex-exponent MAX-POSITIVE))
+          (error "result out of range")]
+         [else (create-inex (round (inex-mantissa inx))
+                            (inex-sign inx)
+                            (inex-exponent inx))])))
+    
+    (build-inex raw-inex)))
 
 
 
