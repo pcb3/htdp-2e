@@ -207,8 +207,7 @@
      (define minmant (inex-mantissa MIN-POSITIVE))
      (define maxexpt (inex-exponent MAX-POSITIVE))
      (define minexpt (inex-exponent MIN-POSITIVE))
-     (define sum-exponents
-       (+ (* sign1 expt1) (* sign2 expt2)))
+     (define sum-exponents (+ (* sign1 expt1) (* sign2 expt2)))
              
      (define raw-inex
        (make-inex
@@ -246,6 +245,70 @@
     (create-inex (round (inex-mantissa refined-inex))
                  (inex-sign refined-inex)
                  (inex-exponent refined-inex))))
+
+;;====
+;; 414
+
+; Number -> Number
+; consumes a number n and adds up n many copies of #i1/185
+
+(check-within (add 1) #i1/185 0.0001)
+(check-within (add 185) 1 0.0001)
+
+(define (fn-add n)
+  (cond
+    [(zero? n) ...]
+    [else (... ... (fn-add (sub1 n)))]))
+
+(define (add n)
+  (cond
+    [(zero? n) 0]
+    [else (+ #i1/185 (add (sub1 n)))]))
+
+; Number -> Number
+; consumes a number n and a counter i and subtracts n copies
+; of 1/185 until n is equal to 0 and produces the number of
+; times this was possible
+(check-expect (sub 1 0) 185)
+; (check-expect (sub #i1.0 0) 185)
+; condition never met so function never halts
+
+(define (fn-sub n i)
+  (cond
+    [(zero? n) ...]
+    [else (fn-sub (- ... ...) (add1 ...))]))
+
+(define (sub n i)
+  (cond
+    [(zero? n) i]
+    [else (sub (- n 1/185) (add1 i))]))
+    
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
