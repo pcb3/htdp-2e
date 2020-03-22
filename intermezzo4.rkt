@@ -53,15 +53,10 @@
  (inex+ (create-inex 56 1 0) (create-inex 56 1 0))
  (create-inex 11 1 1))
 
-; handle opposite signs
+; challenge: handle exponents that differ by 1
 ;(check-expect
-; (inex+ (create-inex 2 1 1) (create-inex 2 -1 1))
-; (create-inex 3 1 1))
-
-; challenge: exponenet that differ by 1
-;(check-expect
-;  (inex+ (create-inex 1 1 0) (create-inex 1 -1 1))
-;  (create-inex 11 -1 1))
+; (inex+ (create-inex 1 1 0) (create-inex 1 -1 1))
+; (create-inex 11 -1 1))
 
 (check-error
  (inex+ MAX-POSITIVE MAX-POSITIVE)
@@ -89,10 +84,17 @@
                            (inex-exponent ...)))])))
 
     build-inex))
-              
+
 (define (inex+ inex1 inex2)
   (local
     (
+     (define mant1 (inex-mantissa inex1))
+     (define mant2 (inex-mantissa inex2))
+     (define sign1 (inex-sign inex1))
+     (define sign2 (inex-sign inex2))
+     (define expt1 (inex-exponent inex1))
+     (define expt2 (inex-exponent inex2))
+     
      ; builds a temporary inex
      (define raw-inex
        (make-inex (+ (inex-mantissa inex1)
@@ -126,9 +128,124 @@
     
     (build-inex raw-inex)))
 
+;;====
+;; 413
 
+; Inex Inex -> Inex
+; multiplies two Inex's together
+(check-expect
+ (inex* (create-inex 2 1 0) (create-inex 3 1 0))
+ (create-inex 6 1 0))
+(check-expect
+ (inex* (create-inex 2 1 5) (create-inex 2 1 5))
+ (create-inex 4 1 10))
+(check-expect
+ (inex* (create-inex 2 -1 3) (create-inex 2 -1 2))
+ (create-inex 4 -1 5))
+(check-error
+ (inex* MAX-POSITIVE MAX-POSITIVE)
+ "result out of range")
+(check-error
+ (inex* MIN-POSITIVE MIN-POSITIVE)
+ "result out of range")
 
+(define (fn-inex* inex1 inex2)
+  (local
 
+    ((define mant1 (inex-mantissa inex1))
+     (define mant2 (inex-mantissa inex2))
+     (define sign1 (inex-sign inex1))
+     (define sign2 (inex-sign inex2))
+     (define expt1 (inex-exponent inex1))
+     (define expt2 (inex-exponent inex2))
+     (define maxmant (inex-mantissa MAX-POSITIVE))
+     (define minmant (inex-mantissa MIN-POSITIVE))
+     (define maxexpt (inex-exponent MAX-POSITIVE))
+     (define minexpt (inex-exponent MIN-POSITIVE))
+
+     (define check-positive
+       (positive? (+ (* sign1 expt1) (* sign2 expt2))))
+             
+     (define raw-inex
+       (make-inex
+        (* mant1 mant2)
+        (cond (else (if check-positive 1 -1)))
+        (+ (* sign1 expt1) (* sign2 expt2))))
+
+     (define (reduce-to-range raw)
+       (cond
+         [(> (inex->number raw) (inex->number MAX-POSITIVE))
+          (error "result out of range")]
+         [(< (inex->number raw) (inex->number MIN-POSITIVE))
+          (error "result out of range")]
+         [(> (round (inex-mantissa raw)) maxmant)
+          (reduce-to-range
+           (make-inex (/ (inex-mantissa raw) 10)
+                      (inex-sign raw)
+                      (add1 (inex-exponent raw))))]
+         [(< (round (inex-mantissa raw)) 1)
+          (reduce-to-range
+           (make-inex (* (inex-mantissa raw) 10)
+                      (inex-sign raw)
+                      (sub1 (inex-exponent raw))))]
+         [else (make-inex (round (inex-mantissa raw))
+                          (inex-sign raw)
+                          (inex-exponent raw))])))
+
+    (create-inex (reduce-to-range raw-inex))))
+                                    
+(define (inex* inex1 inex2)
+  (local
+
+    ((define mant1 (inex-mantissa inex1))
+     (define mant2 (inex-mantissa inex2))
+     (define sign1 (inex-sign inex1))
+     (define sign2 (inex-sign inex2))
+     (define expt1 (inex-exponent inex1))
+     (define expt2 (inex-exponent inex2))
+     (define maxmant (inex-mantissa MAX-POSITIVE))
+     (define minmant (inex-mantissa MIN-POSITIVE))
+     (define maxexpt (inex-exponent MAX-POSITIVE))
+     (define minexpt (inex-exponent MIN-POSITIVE))
+     (define sum-exponents
+       (+ (* sign1 expt1) (* sign2 expt2)))
+             
+     (define raw-inex
+       (make-inex
+        (* mant1 mant2)
+        (cond
+          [(positive? sum-exponents) 1]
+          [(negative? sum-exponents) -1]
+          [(zero? sum-exponents) 1])
+        (cond
+          [else (if (negative? sum-exponents)
+                    (* -1 sum-exponents) sum-exponents)])))
+
+     (define (reduce-to-range raw)
+       (cond
+         [(> (inex->number raw) (inex->number MAX-POSITIVE))
+          (error "result out of range")]
+         [(< (inex->number raw) (inex->number MIN-POSITIVE))
+          (error "result out of range")]
+         [(> (round (inex-mantissa raw)) maxmant)
+          (reduce-to-range
+           (make-inex (/ (inex-mantissa raw) 10)
+                      (inex-sign raw)
+                      (add1 (inex-exponent raw))))]
+         [(< (round (inex-mantissa raw)) 1)
+          (reduce-to-range
+           (make-inex (* (inex-mantissa raw) 10)
+                      (inex-sign raw)
+                      (sub1 (inex-exponent raw))))]
+         [else (make-inex (round (inex-mantissa raw))
+                          (inex-sign raw)
+                          (inex-exponent raw))]))
+
+     (define refined-inex (reduce-to-range raw-inex)))
+
+    (create-inex (round (inex-mantissa refined-inex))
+                 (inex-sign refined-inex)
+                 (inex-exponent refined-inex))))
 
 
 
