@@ -24,3 +24,52 @@
   (cond
     [(= (expt n i) +inf.0) (sub1 i)]
     [else (raised-to n (add1 i))]))
+
+;;=========================
+;; Underflow
+
+;; 416
+
+(check-satisfied
+ (expt #i10.0 (add1 (raised-to-abstract #i10.0 0 +inf.0)))
+ (lambda (x) (equal? #i+inf.0 x)))
+
+(check-satisfied
+ (expt #i10.0 (sub1 (raised-to-abstract #i10.0 0 #i0.0)))
+ (lambda (x) (equal? #i0.0 x)))
+
+(define (fn-raised-to-abstract n i goal)
+  (cond
+    [(< ... ...)
+     (cond
+       [(= (expt ... ...) goal) (add1 ...)]
+       [else (fn-raised-to-abstract ... (sub1 ...) ...)])]
+    [else
+     (cond
+       [(= (expt ... ...) goal) (sub1 ...)]
+       [else (fn-raised-to-abstract ... (add1 ...) ...)])]))
+
+(define (raised-to-abstract n i goal)
+  (cond
+    [(< goal n)
+     (cond
+       [(= (expt n i) goal) (add1 i)]
+       [else (raised-to-abstract n (sub1 i) goal)])]
+    [else
+     (cond
+       [(= (expt n i) goal) (sub1 i)]
+       [else (raised-to-abstract n (add1 i) goal)])]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
