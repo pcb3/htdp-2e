@@ -50,15 +50,17 @@
        [else (fn-raised-to-abstract ... (add1 ...) ...)])]))
 
 (define (raised-to-abstract n i goal)
-  (cond
-    [(< goal n)
-     (cond
-       [(= (expt n i) goal) (add1 i)]
-       [else (raised-to-abstract n (sub1 i) goal)])]
-    [else
-     (cond
-       [(= (expt n i) goal) (sub1 i)]
-       [else (raised-to-abstract n (add1 i) goal)])]))
+  (local
+    
+    ((define less-than? (< goal n)))
+    
+    (cond
+      [(= (expt n i) goal)
+       (cond [else (if less-than? (add1 i) (sub1 i))])]
+      [else
+       (raised-to-abstract
+        n (cond [else (if less-than? (sub1 i) (add1 i))])
+        goal)])))
 
 
 
