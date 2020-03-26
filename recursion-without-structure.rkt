@@ -61,8 +61,7 @@
 
 (define (list->chunks l n)
   (cond
-    [(empty? l) '()]
-    [(zero? n) '()]
+    [(or (empty? l) (zero? n)) '()]
     [else (cons (take l n) (list->chunks (drop l n) n))]))
 
 
