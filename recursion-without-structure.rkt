@@ -28,6 +28,9 @@
     [(empty? l) l]
     [else (drop (rest l) (sub1 n))]))
 
+(check-expect (bundle (explode "abcdefg") 3)
+              '("abc" "def" "g"))
+
 ;;====
 ;; 421
 
@@ -44,13 +47,12 @@
 ; produces a list of lists of chunk size n where each chunk
 ; represents a sub-sequence of items in l
 (check-expect (list->chunks '() 0) '())
-(check-expect (list->chunks '("ab") 0) '())
-(check-expect (list->chunks '("carrot" "daikon") 1)
-              '(("carrot") ("daikon")))
-(check-expect (list->chunks '("carrot" "daikon" "cabbage" "basil") 3)
-              '(("carrot" "daikon" "cabbage") ("basil")))
-(check-expect (list->chunks '("carrot" "daikon" "basil") 4)
-              '(("carrot" "daikon" "basil")))
+(check-expect (list->chunks (explode "ab") 0) '())
+(check-expect (list->chunks (explode "abc") 1)
+              '(("a") ("b") ("c")))
+(check-expect (list->chunks (explode "abcdefg") 3)
+              '(("abc") ("def") ("g")))
+(check-expect (list->chunks (explode "abc") 4) '(("abc")))
 
 (define (fn-list->chunks l n)
   (cond
@@ -62,7 +64,36 @@
 (define (list->chunks l n)
   (cond
     [(or (empty? l) (zero? n)) '()]
-    [else (cons (take l n) (list->chunks (drop l n) n))]))
+    [else (cons (list (implode (take l n)))
+                (list->chunks (drop l n) n))]))
+
+;; TO DO***
+; Use list->chunks to define bundle via function composition.
+
+;;====
+;; 423
+
+; String N -> [List-of String]
+; consumes a String s and a natural n and produces a list of
+; string chunks of size n
+(check-expect (partition "abcdef" 0) '("abcdef"))
+(check-expect (partition "abcdefg" 3) '("abc" "def" "g"))
+(check-expect (partition "" 0) '(""))
+
+(define (fn-partition s n)
+  (cond
+    [(empty? s) ...]
+    [(zero? n) ...]
+    [(> n (length s)) (list (substring s ...))]
+    [else (cons (list (substring s 0 (sub1 n)))
+                (fn-partition (substring s n) n))]))
+
+(define (partition s n)
+  (cond
+    [(zero? n) (list s)]
+    [(> n (string-length s)) (list (substring s 0))]
+    [else (cons (substring s 0 n)
+                (partition (substring s n) n))])) 
 
 
 
