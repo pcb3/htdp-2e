@@ -67,8 +67,11 @@
     [else (cons (list (implode (take l n)))
                 (list->chunks (drop l n) n))]))
 
-;; TO DO***
+; [List-of X] N -> [List-of X]
 ; Use list->chunks to define bundle via function composition.
+
+(define (bundle-by-composition s n)
+  (foldr append '() (list->chunks s n)))
 
 ;;====
 ;; 423
@@ -93,7 +96,9 @@
     [(zero? n) (list s)]
     [(> n (string-length s)) (list (substring s 0))]
     [else (cons (substring s 0 n)
-                (partition (substring s n) n))])) 
+                (partition (substring s n) n))]))
+
+;(equal? (partition "abcdefg" 3) (bundle (explode "abcdefg") 3))
 
 
 
