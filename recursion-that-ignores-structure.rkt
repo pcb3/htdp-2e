@@ -101,7 +101,7 @@
   (cond
     [(empty? alon) '()]
     [(= (length alon) 1) alon]
-    ;[(<= (length alon) 10) (liam-sort> alon)]
+    [(<= (length alon) 10) (liam-sort> alon)]
     [else
      (local
        ((define  pivot (first alon))
