@@ -139,6 +139,32 @@
               (cons n l)
               (cons (first l) (insert n (rest l))))]))
 
+;;====
+;; 429
+
+; [List-of Number] Number -> [List-of Number]
+; consumes a list of numbers alon and a number n and produces
+; a list larger than n
+(check-expect (larger> '(1 2 3) 1) '(2 3))
+(check-expect (larger> '(1 2 3) 4) '())
+(check-expect (larger> '() 0) '())
+
+(define (larger> alon n)
+  (filter (lambda (y) (> y n)) alon))
+
+; [List-of Number] Number -> [List-of Number]
+; consumes a list of numbers alon and a number n and produces
+; a list smaller than n
+(check-expect (smaller< '(1 2 3) 0) '())
+(check-expect (smaller< '(1 2 3) 4) '(1 2 3))
+(check-expect (smaller< '() 0) '())
+
+(define (smaller< alon n)
+  (filter (lambda (x) (< x n)) alon))
+
+; how would I do that without the arguments?
+
+
 
 
 
