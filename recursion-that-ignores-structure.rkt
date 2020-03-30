@@ -104,11 +104,13 @@
     ;[(<= (length alon) 10) (liam-sort> alon)]
     [else
      (local
-       ((define  pivot (first alon)))
+       ((define  pivot (first alon))
+        (define list-of-pivots
+          (filter (lambda (x) (= pivot x)) alon)))
        (append (quick-sort> (largers> alon pivot))
-               (list pivot)
+               list-of-pivots
                (quick-sort>
-                (reverse(smallers> alon pivot)))))]))
+                (reverse (smallers> alon pivot)))))]))
 
 (define (largers> aln pvt)
   (cond
