@@ -50,7 +50,10 @@
 (check-expect (quick-sort> '()) '())
 (check-expect (quick-sort> '(1)) '(1))
 (check-expect (quick-sort> '(2 1 3)) '(3 2 1))
-(check-expect (quick-sort> '(1 1 1)) '(1 1 1))
+(check-expect (quick-sort> '(1 2 4 3 6 5 8 7 9 11 10))
+              '(11 10 9 8 7 6 5 4 3 2 1))
+(check-expect (quick-sort> '(1 1 1 1 1 1 1 1 1 1 1))
+              '(1 1 1 1 1 1 1 1 1 1 1))
 
 (define (fn-quick-sort> alon)
   (cond
@@ -98,20 +101,21 @@
   (cond
     [(empty? alon) '()]
     [(= (length alon) 1) alon]
-    [(<= (length alon) 10) (liam-sort> alon)]
+    ;[(<= (length alon) 10) (liam-sort> alon)]
     [else
      (local
        ((define  pivot (first alon)))
        (append (quick-sort> (largers> alon pivot))
                (list pivot)
-               (quick-sort> (smallers> alon pivot))))]))
+               (quick-sort>
+                (reverse(smallers> alon pivot)))))]))
 
 (define (largers> aln pvt)
   (cond
     [(empty? aln) '()]
     [else (if (> (first aln) pvt)
               (cons (first aln) (largers> (rest aln) pvt))
-              (largers> (rest aln pvt)))]))
+              (largers> (rest aln) pvt))]))
 
 (define (smallers> aln pvt)
   (cond
@@ -119,7 +123,7 @@
     [else
      (if (< (first aln) pvt)
          (cons (first aln) (smallers> (rest aln) pvt))
-         (smallers> (rest aln pvt)))]))
+         (smallers> (rest aln) pvt))]))
 
 (define (liam-sort> l)
   (cond
