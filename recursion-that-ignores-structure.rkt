@@ -181,41 +181,52 @@
   (cond
     [(empty? alon) '()]
     [(= (length alon) 1) alon]
-    [(<= (length alon) 10) (sort< alon)]
+    
     [else
      (local
-       ((define  pivot (first alon))
+       (
+        (define  pivot (first alon))
+
         (define list-of-pivots
-          (filter (lambda (x) (= pivot x)) alon)))
-       (append (my-quick-sort< (small< alon pivot))
-               list-of-pivots
-               (my-quick-sort<
-                (reverse (large< alon pivot)))))]))
+          (filter (lambda (x) (= pivot x)) alon))
 
-(define (small< l p)
-  (cond
-    [(empty? l) '()]
-    [else (if (< (first l) p)
-              (cons (first l) (small< (rest l) p))
-              (small< (rest l) p))]))
+        (define (small< l p)
+          (cond
+            [(empty? l) '()]
+            [else (if (< (first l) p)
+                      (cons (first l) (small< (rest l) p))
+                      (small< (rest l) p))]))
 
-(define (large< l p)
-  (cond
-    [(empty? l) '()]
-    [(or (< (first l) p) (= (first l) p)) (large< (rest l) p)]
-    [else (cons (first l) (large< (rest l) p))]))
+        (define (large< l p)
+          (cond
+            [(empty? l) '()]
+            [(or (< (first l) p) (= (first l) p))
+             (large< (rest l) p)]
+            [else (cons (first l) (large< (rest l) p))]))
 
-(define (sort< l)
-  (cond
-    [(empty? l) '()]
-    [else (insert< (first l) (sort< (rest l)))]))
+        (define (sort< l)
+          (cond
+            [(empty? l) '()]
+            [else (insert< (first l) (sort< (rest l)))]))
 
-(define (insert< n l)
-  (cond
-    [(empty? l) (cons n '())]
-    [else (if (< n (first l))
-              (cons n l)
-              (cons (first l) (insert< n (rest l))))]))
+        (define (insert< n l)
+          (cond
+            [(empty? l) (cons n '())]
+            [else (if (< n (first l))
+                      (cons n l)
+                      (cons (first l) (insert< n (rest l))))])))
+
+       (if (<= (length alon) 10)
+           (sort< alon)
+           (append (my-quick-sort< (small< alon pivot))
+                   list-of-pivots
+                   (my-quick-sort<
+                    (reverse (large< alon pivot))))))]))
+
+
+
+
+
 
 
 
