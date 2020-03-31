@@ -110,7 +110,7 @@
        (append (quick-sort> (largers> alon pivot))
                list-of-pivots
                (quick-sort>
-                (reverse (smallers> alon pivot)))))]))
+                (reverse (smallers< alon pivot)))))]))
 
 (define (largers> aln pvt)
   (cond
@@ -119,13 +119,13 @@
               (cons (first aln) (largers> (rest aln) pvt))
               (largers> (rest aln) pvt))]))
 
-(define (smallers> aln pvt)
+(define (smallers< aln pvt)
   (cond
     [(empty? aln) '()]
     [else
      (if (< (first aln) pvt)
-         (cons (first aln) (smallers> (rest aln) pvt))
-         (smallers> (rest aln) pvt))]))
+         (cons (first aln) (smallers< (rest aln) pvt))
+         (smallers< (rest aln) pvt))]))
 
 (define (liam-sort> l)
   (cond
@@ -162,8 +162,60 @@
 (define (smaller< alon n)
   (filter (lambda (x) (< x n)) alon))
 
-; how would I do that without the arguments?
+;;====
+;; 430
 
+; [List-of Number] -> [List-of Number]
+; consumes a list of number alon and sorts them in decreasing
+; order
+(check-expect (my-quick-sort< '()) '())
+(check-expect (my-quick-sort< '(1)) '(1))
+(check-expect (my-quick-sort< '(3 2 1)) '(1 2 3))
+(check-expect (my-quick-sort<
+               (reverse '(1 2 4 3 6 5 8 7 9 11 10)))
+              '(1 2 3 4 5 6 7 8 9 10 11))
+(check-expect (my-quick-sort< '(1 1 1 1 1 1 1 1 1 1 1))
+              '(1 1 1 1 1 1 1 1 1 1 1))
+
+(define (my-quick-sort< alon)
+  (cond
+    [(empty? alon) '()]
+    [(= (length alon) 1) alon]
+    [(<= (length alon) 10) (sort< alon)]
+    [else
+     (local
+       ((define  pivot (first alon))
+        (define list-of-pivots
+          (filter (lambda (x) (= pivot x)) alon)))
+       (append (my-quick-sort< (small< alon pivot))
+               list-of-pivots
+               (my-quick-sort<
+                (reverse (large< alon pivot)))))]))
+
+(define (small< l p)
+  (cond
+    [(empty? l) '()]
+    [else (if (< (first l) p)
+              (cons (first l) (small< (rest l) p))
+              (small< (rest l) p))]))
+
+(define (large< l p)
+  (cond
+    [(empty? l) '()]
+    [(or (< (first l) p) (= (first l) p)) (large< (rest l) p)]
+    [else (cons (first l) (large< (rest l) p))]))
+
+(define (sort< l)
+  (cond
+    [(empty? l) '()]
+    [else (insert< (first l) (sort< (rest l)))]))
+
+(define (insert< n l)
+  (cond
+    [(empty? l) (cons n '())]
+    [else (if (< n (first l))
+              (cons n l)
+              (cons (first l) (insert< n (rest l))))]))
 
 
 
