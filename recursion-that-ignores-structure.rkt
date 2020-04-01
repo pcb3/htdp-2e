@@ -180,8 +180,7 @@
 (define (my-quick-sort< alon)
   (cond
     [(empty? alon) '()]
-    [(= (length alon) 1) alon]
-    
+    [(= (length alon) 1) alon]    
     [else
      (local
        (
@@ -224,8 +223,87 @@
                     (reverse (large< alon pivot))))))]))
 
 
+;;=======================
+;; quick-sort abstraction
 
+; [List-of Number] [X -> Y] -> [List-of Number]
+; consumes a list of numbers alon and a comparison function
+; comp and produces a list of numbers that that respect the
+; function
+(check-expect (my-quick-sort '() <) '())
+(check-expect (my-quick-sort '(1) <) '(1))
+(check-expect (my-quick-sort '(3 2 1) <) '(1 2 3))
+(check-expect (my-quick-sort
+               (reverse '(1 2 4 3 6 5 8 7 9 11 10)) <)
+              '(1 2 3 4 5 6 7 8 9 10 11))
+(check-expect (my-quick-sort '(1 1 1 1 1 1 1 1 1 1 1) <)
+              '(1 1 1 1 1 1 1 1 1 1 1))
+(check-expect (my-quick-sort '() >) '())
+(check-expect (my-quick-sort '(1) >) '(1))
+(check-expect (my-quick-sort '(2 1 3) >) '(3 2 1))
+(check-expect (my-quick-sort '(1 2 4 3 6 5 8 7 9 11 10) >)
+              '(11 10 9 8 7 6 5 4 3 2 1))
+(check-expect (my-quick-sort '(1 1 1 1 1 1 1 1 1 1 1) >)
+              '(1 1 1 1 1 1 1 1 1 1 1))
 
+(define (fn-my-quick-sort alon comp)
+  (cond
+    [(empty? alon) ...]
+    [(= (length alon) 1) ...]
+    [else
+     (local
+       (
+        (define fn-pivot (first alon))
+
+        (define fn-lop
+          (filter (lambda (x) (= fn-pivot x)) alon))
+        
+        (define (fn-compare l p c)
+          (cond
+            [(empty? l) ...]
+            [... (... (c (first l) p)
+                      (... (first l) (fn-compare (rest l) p c))
+                      (fn-compare (rest l) p c))])))
+
+       (... (fn-my-quick-sort
+             (fn-compare alon fn-pivot comp) comp)
+            fn-lop
+            (fn-my-quick-sort
+             (reverse
+              (fn-compare alon fn-pivot
+                          (cond
+                            [else
+                             (... (equal? comp <) > comp)])
+                          comp))))
+       )]))
+
+(define (my-quick-sort alon comp)
+  (cond
+    [(empty? alon) '()]
+    [(= (length alon) 1) alon]
+    [else
+     (local
+       (
+        (define pivot (first alon))
+
+        (define lop (filter (lambda (x) (= pivot x)) alon))
+        
+        (define (compare l p c)
+          (cond
+            [(empty? l) '()]
+            [else (if (c (first l) p)
+                      (cons (first l) (compare (rest l) p c))
+                      (compare (rest l) p c))])))
+
+       (append (my-quick-sort (compare alon pivot comp) comp)
+               lop
+               (my-quick-sort
+                (reverse
+                 (compare alon pivot
+                          (cond
+                            [else
+                             (if (equal? comp <)
+                                 > <)]))) comp)))]))
 
 
 
