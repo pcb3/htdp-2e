@@ -1,0 +1,34 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname structural-v-generative-recursion) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; 26.3 Structural versus Generative Recursion
+
+;;====
+;; 437
+
+; [List-of X] -> Number
+; consumes a list P and returns its length
+(check-expect (special-length '()) 0)
+(check-expect (special-length (explode "abcdefg")) 7)
+
+(define (special-length P)
+  (cond
+    [(empty? P) (solve P)]
+    [else
+     (combine-solutions
+       P
+       (special-length (rest P)))]))
+
+; [List-of X] -> Number
+; consumes a List and produces its length
+(define (solve p)
+  (length p))
+
+; [List-of X] Number -> Number
+; consumes a list l and a number n and adds 1 to the
+; result of n
+(check-expect (combine-solutions '("a" "b" "c") 0) 1)
+
+(define (combine-solutions l n)
+  (add1 n))
+
