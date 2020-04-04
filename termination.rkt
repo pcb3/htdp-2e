@@ -70,6 +70,45 @@
     (if (check-s s) (bundle s n) (error ERROR))))
 
 
+;;====
+;; 434
+
+; the "else if" clause in smallers that uses '<=' means that
+; when its compared to the pivot n then the list may not
+; get smaller and so recursive calls never terminate with
+; certain inputs
+
+;;====
+;; 435
+
+; [List-of Number] -> [List-of Number]
+; produces a sorted version of alon
+; assume the numbers are all distinct 
+(define (quick-sort< alon)
+  (cond
+    [(empty? alon) '()]
+    [else (local ((define pivot (first alon))
+                  (define list-of-pivots
+                    (filter (lambda (x) (= pivot x)) alon)))
+            (append (quick-sort< (smallers (rest alon) pivot))
+                    list-of-pivots
+                    (quick-sort< (largers (rest alon) pivot))))]))
+ 
+; [List-of Number] Number -> [List-of Number]
+(define (largers alon n)
+  (cond
+    [(empty? alon) '()]
+    [else (if (> (first alon) n)
+              (cons (first alon) (largers (rest alon) n))
+              (largers (rest alon) n))]))
+ 
+; [List-of Number] Number -> [List-of Number]
+(define (smallers alon n)
+  (cond
+    [(empty? alon) '()]
+    [else (if (< (first alon) n)
+              (cons (first alon) (smallers (rest alon) n))
+              (smallers (rest alon) n))]))
 
 
 
