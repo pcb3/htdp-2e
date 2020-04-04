@@ -58,6 +58,8 @@
 ; Posn -> Posn
 ; ???
 ; consumes a Posn p and produces a Posn different from p
+; termination: when the posn created is not equal to
+; the candidate else loops.
 (check-satisfied (food-create (make-posn 1 1)) not=-1-1?)
 
 (define (food-create p)
@@ -67,25 +69,4 @@
     (food-check-create
      p (make-posn (random MAX) (random MAX)))))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+;;
