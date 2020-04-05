@@ -53,6 +53,24 @@
 
 ;;======
 
+; [List-of X] -> Number
+; consumes a list P and returns its length
+(check-expect (special-upper '()) '())
+(check-expect (special-upper '("oh" "hai" "ther"))
+              '("OH" "HAI" "THER"))
+
+(define (special-upper P)
+  (cond
+    [(empty? P) (solve-upper P)]
+    [else
+     (combine-solutions-upper
+       P
+       (special-upper (rest P)))]))
+
+(define (solve-upper p) '())
+
+(define (combine-solutions-upper l los)
+  (cons (string-upcase (first l)) los))
 
 
 
