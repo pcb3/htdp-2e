@@ -21,14 +21,54 @@
 
 ; [List-of X] -> Number
 ; consumes a List and produces its length
-(define (solve p)
-  (length p))
+(define (solve p) (length p))
 
 ; [List-of X] Number -> Number
 ; consumes a list l and a number n and adds 1 to the
 ; result of n
 (check-expect (combine-solutions '("a" "b" "c") 0) 1)
 
-(define (combine-solutions l n)
-  (add1 n))
+(define (combine-solutions l n) (add1 n))
+
+;;======
+
+; [List-of X] -> Number
+; consumes a list P and returns its length
+(check-expect (special-negate '()) '())
+(check-expect (special-negate '(0 1 2 -3))
+              '(0 -1 -2 3))
+
+(define (special-negate P)
+  (cond
+    [(empty? P) (solve-negate P)]
+    [else
+     (combine-solutions-negate
+       P
+       (special-negate (rest P)))]))
+
+(define (solve-negate p) '())
+
+(define (combine-solutions-negate l lon)
+  (cons (* (first l) -1) lon))
+
+;;======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
