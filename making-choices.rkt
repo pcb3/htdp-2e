@@ -18,7 +18,7 @@
 ;;====
 ;; 439
 
-(time (gcd-structural 101135853 45014640))
+;(time (gcd-structural 101135853 45014640))
 
 ;;====
 ;; 438
@@ -44,11 +44,91 @@
               [else (clever-gcd S (remainder L S))])))
     (clever-gcd (max m n) (min m n))))
 
-
 ;;====
 ;; 440
 
-(time (gcd-generative 101135853 45014640))
+;(time (gcd-generative 101135853 45014640))
+
+;;================================
+;; 441
+
+;; 14 recursive calls to quicksort
+;; 7 recursive calls to append
+
+;;====
+;; 442
+
+;;=====
+;; sort
+
+(define (sort< l)
+  (cond
+    [(empty? l) '()]
+    [else (insert (first l) (sort< (rest l)))]))
+
+(define (insert n l)
+  (cond
+    [(empty? l) (cons n '())]
+    [else (if (> n (first l))
+              (cons n l)
+              (cons (first l) (insert n (rest l))))]))
+
+;;============
+;; quick-sort<
+
+(define (quick-sort< alon)
+  (cond
+    [(empty? alon) '()]
+    [else (local ((define pivot (first alon)))
+            (append (quick-sort< (smallers alon pivot))
+                    (list pivot)
+                    (quick-sort< (largers alon pivot))))]))
+ 
+; [List-of Number] Number -> [List-of Number]
+(define (largers alon n)
+  (cond
+    [(empty? alon) '()]
+    [else (if (> (first alon) n)
+              (cons (first alon) (largers (rest alon) n))
+              (largers (rest alon) n))]))
+ 
+; [List-of Number] Number -> [List-of Number]
+(define (smallers alon n)
+  (cond
+    [(empty? alon) '()]
+    [else (if (< (first alon) n)
+              (cons (first alon) (smallers (rest alon) n))
+              (smallers (rest alon) n))]))
+
+;(sort< '())
+;(sort< '(1 1 1 1))
+;(sort< (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14))
+;(quick-sort< '())
+;(quick-sort< '(1 1 1 1))
+;(quick-sort< (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14))
+
+; N N N -> [List-of [List-of Number]]
+; consumes a Natural n, a Natural l and a Natural d and
+; produces a list of depth d of lists of length l of
+; random numbers [0, n)
+(check-random (create-tests 10 100 3)
+              (build-list
+               3
+               (lambda (l)
+                 (build-list
+                  10 (lambda (m) (random 100))))))
+
+(define (fn-create-tests n l d)
+  (build-list d (...
+                 (build-list n (... (random l))))))
+
+(define (create-tests n l d)
+  (build-list
+   d (lambda (a) (build-list n (lambda (b) (random l))))))
+
+
+
+
 
 
 
