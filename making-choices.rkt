@@ -3,6 +3,8 @@
 #reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname making-choices) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ;; 26.4 Making Choices
 
+(require plot)
+
 (define (gcd-structural n m)
   (local (; N -> N
           ; determines the gcd of n and m less than i
@@ -108,26 +110,28 @@
 ;(quick-sort< (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14))
 
 ; N N N -> [List-of [List-of Number]]
-; consumes a Natural n, a Natural l and a Natural d and
-; produces a list of depth d of lists of length l of
-; random numbers [0, n)
-(check-random (create-tests 10 100 3)
+; consumes a Natural n and a Natural d and
+; produces a list of depth d of lists of increasing length up
+; to length d of random numbers [0, n)
+(check-random (create-tests 100 10)
               (build-list
-               3
-               (lambda (l)
+               10
+               (lambda (a)
                  (build-list
-                  10 (lambda (m) (random 100))))))
+                  (add1 a) (lambda (m) (random 100))))))
 
-(define (fn-create-tests n l d)
-  (build-list d (...
-                 (build-list n (... (random l))))))
-
-(define (create-tests n l d)
+(define (fn-create-tests n d)
   (build-list
-   d (lambda (a) (build-list n (lambda (b) (random l))))))
+   d (lambda (a)
+       (build-list (... a)
+                   (lambda (b) (... n))))))
 
+(define (create-tests n d)
+  (build-list
+   d (lambda (a) (build-list (add1 a)
+                             (lambda (b) (random n))))))
 
-
+(define TEST-SUITE (create-tests 100 100))
 
 
 
