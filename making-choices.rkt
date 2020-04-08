@@ -71,7 +71,7 @@
 (define (insert n l)
   (cond
     [(empty? l) (cons n '())]
-    [else (if (> n (first l))
+    [else (if (< n (first l))
               (cons n l)
               (cons (first l) (insert n (rest l))))]))
 
@@ -81,9 +81,11 @@
 (define (quick-sort< alon)
   (cond
     [(empty? alon) '()]
-    [else (local ((define pivot (first alon)))
+    [else (local ((define pivot (first alon))
+                  (define lop
+                    (filter (lambda (x) (= pivot x)) alon)))
             (append (quick-sort< (smallers alon pivot))
-                    (list pivot)
+                    lop
                     (quick-sort< (largers alon pivot))))]))
  
 ; [List-of Number] Number -> [List-of Number]
@@ -113,12 +115,12 @@
 ; consumes a Natural n and a Natural d and
 ; produces a list of depth d of lists of increasing length up
 ; to length d of random numbers [0, n)
-(check-random (create-tests 100 10)
+(check-random (create-tests 100 3)
               (build-list
-               10
+               3
                (lambda (a)
                  (build-list
-                  (add1 a) (lambda (m) (random 100))))))
+                  (expt 2 a) (lambda (m) (random 100))))))
 
 (define (fn-create-tests n d)
   (build-list
@@ -128,10 +130,35 @@
 
 (define (create-tests n d)
   (build-list
-   d (lambda (a) (build-list (add1 a)
+   d (lambda (a) (build-list (expt 2 a)
                              (lambda (b) (random n))))))
 
-(define TEST-SUITE (create-tests 100 100))
+(define TEST-SUITE (create-tests 100 10))
+;
+;(map (lambda (a) (time (sort< a))) TEST-SUITE)
+;(map (lambda (a) (time (quick-sort< a))) TEST-SUITE)
+
+;;============
+;; clever-sort
+
+(define THRESHOLD 7)
+
+; [List-of Number] -> [List-of Number]
+; consumes a list of numbers alon and produces an increasingly
+; sorted list using quicksort< for large lists and sort<
+; otherwise.
+(check-expect (clever-sort '()) '())
+(check-expect (clever-sort '(2)) '(2))
+(check-expect (clever-sort '(3 2 1)) '(1 2 3))
+(check-random (clever-sort
+               (build-list 100 (lambda (x) (random 100))))
+              (sort<
+               (build-list 100 (lambda (x) (random 100)))))
+
+(define (clever-sort alon)
+  (if (> (length alon) THRESHOLD)
+      (quick-sort< alon)
+      (sort< alon)))
 
 
 
