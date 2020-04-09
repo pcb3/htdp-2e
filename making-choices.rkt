@@ -160,8 +160,24 @@
       (quick-sort< alon)
       (sort< alon)))
 
+;;====
+;; 443
 
+; N[>= 1] N[>= 1] -> N
+; finds the greatest common divisor of n and m
 
+;; ???
+
+;;====
+;; 444
+
+; divisors consumes two numbers becuse you want the funciton
+; to terminate and so can recur on one of the numbers
+
+; the gcd of both must be smaller or equal to the
+; smallest number. The choice of numbers is irrelevant as long
+; as you have an exhaustive list of all divisors of L <= S
+; and S <= S or vice-versa
 
 
 
