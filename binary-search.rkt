@@ -17,23 +17,23 @@
 ; assume f is continuous 
 ; assume (or (<= (f left) 0 (f right)) (<= (f right) 0 (f left)))
 ; generative divides interval in half, the root is in one of the two
-; halves, picks according to assumption 
-(define (find-root f left right)
-  (cond
-    [(<= (- right left) ε) left]
-    [else
-      (local ((define mid (/ (+ left right) 2))
-              (define f@mid (f mid))
-              (define f-left (f left))
-              (define f-right (f right)))
-        (cond
-          [(or (<= f-left 0 f@mid) (<= f@mid 0 f-left))
-           (find-root f left mid)]
-          [(or (<= f@mid 0 f-right) (<= f-right 0 f@mid))
-           (find-root f mid right)]))]))
-
+; halves, picks according to assumption
 (check-satisfied (round (poly (find-root poly 1 6)))
                  zero?)
+
+(define (find-root f left right)
+  (local ((define (helper l r fl fr)
+            (cond
+              [(<= (- r l) ε) l]
+              [else
+               (local ((define mid (/ (+ l r) 2))
+                       (define f@mid (f mid)))
+                 (cond
+                   [(or (<= fl 0 f@mid) (<= f@mid 0 fl))
+                    (helper l mid fl f@mid)]
+                   [(or (<= f@mid 0 fr) (<= fr 0 f@mid))
+                    (helper mid r f@mid fr)]))])))
+    (helper left right (f left) (f right))))
 
 ;;====
 ;; 447
@@ -54,11 +54,7 @@
 ; 1/2 and so we are closer to within epsilon of the root.
 
 ;;====
-;; 449
-
-
-
-
+;; 450
 
 
 
