@@ -56,7 +56,22 @@
 ;;====
 ;; 450
 
+(check-satisfied (round (poly (find-root.v2 poly 1 6)))
+                 zero?)
 
+(define (find-root.v2 f left right)
+  (local ((define (helper l r fl fr)
+            (cond
+              [(<= (- r l) ε) l]
+              [else
+               (local ((define mid (/ (+ l r) 2))
+                       (define f@mid (f mid)))
+                 (cond
+                   [(<= fl 0 f@mid)
+                    (helper l mid fl f@mid)]
+                   [(<= f@mid 0 fr)
+                    (helper mid r f@mid fr)]))])))
+    (helper left right (f left) (f right))))
 
 
 
