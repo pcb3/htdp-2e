@@ -98,6 +98,10 @@
 ; Table -> N
 ; consumes a monotonically increasing table t and produces
 ; the smallest index for a root of the table
+(check-expect
+ (find-linear (make-table 3 (lambda (x) (- 1 x)))) 1)
+(check-expect
+ (find-linear (make-table 3 (lambda (x) x))) 0)
 
 (define (fn-find-linear t)
   (local
@@ -133,10 +137,10 @@
          [else
           (if
            (<= root
-              (cond
-                [(negative? (table-ref t n))
-                 (* -1 (table-ref t n))]
-                [else (table-ref t n)]))
+               (cond
+                 [(negative? (table-ref t n))
+                  (* -1 (table-ref t n))]
+                 [else (table-ref t n)]))
            (iterate (add1 n) index root)
            (iterate (add1 n) n (table-ref t n)))])))
     
@@ -145,6 +149,43 @@
       [else (iterate 1 0 initial-root)])))
 
 
+;;===============
+;; find-linear.v2
+
+(check-expect
+ (find-linear.v2 (make-table 3 (lambda (x) (- 1 x)))) 1)
+(check-expect
+ (find-linear.v2 (make-table 3 (lambda (x) x))) 0)
+
+(define (find-linear.v2 t)
+  (local
+    (
+     (define table-size (table-length t))
+
+     (define array-value
+       (map (lambda (j)
+              (if (negative? j)
+                  (* -1 j) j))
+            (map (lambda (x) (table-ref t x))
+                 (build-list table-size (lambda (y) y)))))
+
+     (define (find-root n index root arr)
+       (cond
+         [(empty? arr) index]
+         [else
+          (if (<= root (first arr))
+              (find-root (add1 n) index root (rest arr))
+              (find-root (add1 n) n (first arr) (rest arr)))])))
+    
+    (cond
+      [(= table-size 1) 0]
+      [else
+       (find-root 1 0 (first array-value)
+                  (rest array-value))])))
+
+;;============
+;; find-binary
+       
 
 
 
