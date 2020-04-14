@@ -99,7 +99,6 @@
 ; consumes a monotonically increasing table t and produces
 ; the smallest index for a root of the table
 
-
 (define (fn-find-linear t)
   (local
     ((define table-size (table-length t))
@@ -133,23 +132,17 @@
          [(= n table-size) index]
          [else
           (if
-           (< root
+           (<= root
               (cond
                 [(negative? (table-ref t n))
                  (* -1 (table-ref t n))]
                 [else (table-ref t n)]))
-           (iterate (add1 n) n (table-ref t n))
-           (iterate (add1 n) index root))])))
+           (iterate (add1 n) index root)
+           (iterate (add1 n) n (table-ref t n)))])))
     
     (cond
       [(= table-size 1) 0]
       [else (iterate 1 0 initial-root)])))
-
-
-
-
-
-
 
 
 
