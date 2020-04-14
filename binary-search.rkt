@@ -38,7 +38,7 @@
 ;;====
 ;; 447
 
-(find-root poly -1 8)
+(check-expect (round (find-root poly -1 8)) 2)
 
 ;;====
 ;; 448
@@ -72,6 +72,92 @@
                    [(<= f@mid 0 fr)
                     (helper mid r f@mid fr)]))])))
     (helper left right (f left) (f right))))
+
+;;====
+;; 451
+
+(define-struct table [length array])
+; A Table is a structure:
+;   (make-table N [N -> Number])
+
+(define table1 (make-table 3 (lambda (i) i)))
+
+; N -> Number
+(define (a2 i)
+  (if (= i 0)
+      pi
+      (error "table2 is not defined for i =!= 0")))
+
+(define table2 (make-table 1 a2))
+
+; Table N -> Number
+; looks up the ith value in array of t
+(define (table-ref t i)
+  ((table-array t) i))
+
+; Table -> N
+; consumes a monotonically increasing table t and produces
+; the smallest index for a root of the table
+
+
+(define (fn-find-linear t)
+  (local
+    ((define table-size (table-length t))
+
+     (define initial-root (table-ref t 0))
+
+     (define (iterate n index root)
+       (cond
+         [(= n table-size) ...]
+         [else
+          (if
+           (< root
+              (cond
+                [(negative? (table-ref t n))
+                 (* -1 (table-ref t n))]
+                [else (table-ref t n)]))
+           (iterate (add1 n) n (table-ref t n))
+           (iterate (add1 n) index root))])))
+    (cond
+      [(= table-length 1) ...]
+      [else (iterate 1 0 initial-root)])))
+
+(define (find-linear t)
+  (local
+    ((define table-size (table-length t))
+
+     (define initial-root (table-ref t 0))
+
+     (define (iterate n index root)
+       (cond
+         [(= n table-size) index]
+         [else
+          (if
+           (< root
+              (cond
+                [(negative? (table-ref t n))
+                 (* -1 (table-ref t n))]
+                [else (table-ref t n)]))
+           (iterate (add1 n) n (table-ref t n))
+           (iterate (add1 n) index root))])))
+    
+    (cond
+      [(= table-size 1) 0]
+      [else (iterate 1 0 initial-root)])))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
