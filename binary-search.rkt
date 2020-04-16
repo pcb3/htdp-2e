@@ -198,6 +198,8 @@
 (check-expect
  (find-binary (make-table 3 (lambda (x) (- 1 x)))) 1)
 (check-expect
+ (find-binary (make-table 4 (lambda (x) (- 1 x)))) 1)
+(check-expect
  (find-binary (make-table 3 (lambda (x) x))) 0)
 (check-expect
  (find-binary (make-table 3 (lambda (x) 24))) 0)
@@ -205,28 +207,21 @@
 (define (fn-find-binary t)
   (local
     (
-     (define (neg->pos i)
-       (if (negative? i) (* -1 i) i))
-     (define max-index (table-length t))
 
-     (define (helper l r)
-       (local
-         (
-          (define mid (round (/ (+ l r) 2)))
-          (define fmid (neg->pos (table-ref t mid)))
-          (define submid (neg->pos (table-ref t (sub1 mid))))
-          (define addmid (neg->pos (table-ref t (add1 mid))))
-          (define fl (neg->pos (table-ref t l)))
-          (define fr (neg->pos (table-ref t r))))
+     (define max-index ...)
+     (define fl ...)
+     (define fr ...)
+     (define fmid ...)
+     
+     (define (fn-helper l r)
+       (cond
+         [(= l max-index) ...]
+         [(and (= l 0) (<= fl fr)) ...]
+         [(<= fl fmid) (fn-helper 0 l)]
+         [(< fr fmid) (fn-helper r max-index)]
+         [else ...])))
 
-         (cond
-           [(= l max-index) ...]
-           [(and (= l 0) (<= fl fr)) ...]
-           [(<= fl fmid) (helper 0 l)]
-           [(< fr fmid) (helper r max-index)]
-           [else ...]))))
-
-    (helper 0 max-index)))
+    (fn-helper 0 max-index)))
          
 (define (find-binary t)
   (local
@@ -236,26 +231,24 @@
          [(zero? fi) 0]
          [else (if (negative? fi) (* -1 fi) fi)]))
      
-     (define max-index (table-length t))
+     (define max-index (sub1 (table-length t)))
 
      (define (helper l r)
        (local
          (
           (define mid (round (/ (+ l r) 2)))
           (define fmid (neg->pos (table-ref t mid)))
-          (define submid (neg->pos (table-ref t (sub1 mid))))
-          (define addmid (neg->pos (table-ref t (add1 mid))))
           (define fl (neg->pos (table-ref t l)))
           (define fr (neg->pos (table-ref t r))))
 
          (cond
            [(= l max-index) r]
-           [(and (= l 0) (<= fl fr)) l]
-           [(<= fl fmid) (helper 0 l)]
-           [(< fr fmid) (helper r max-index)]
+           [(and (= l 0) (<= fl fr) (= l (sub1 r))) l]
+           [(<= fl fmid) (helper l mid)]
+           [(< fr fmid) (helper mid r)]
            [else mid]))))
 
-    (helper 0 max-index)))
+    (helper 0 max-index))) 
        
 
 
