@@ -185,6 +185,77 @@
 
 ;;============
 ;; find-binary
+
+; Table -> N
+; consumes a table t and finds the smallest index for a root of
+; the table
+; termination argument:
+; assume f is monotonically increasing
+; generative step finds median of search space if size is odd,
+; or if even divides by 2. Takes index on either side and if
+; it is closer to 0 or 0 then outputs that index else repeats
+; the process on the value of the index closest to 0
+(check-expect
+ (find-binary (make-table 3 (lambda (x) (- 1 x)))) 1)
+(check-expect
+ (find-binary (make-table 3 (lambda (x) x))) 0)
+(check-expect
+ (find-binary (make-table 3 (lambda (x) 24))) 0)
+
+(define (fn-find-binary t)
+  (local
+    (
+     (define (neg->pos i)
+       (if (negative? i) (* -1 i) i))
+     (define max-index (table-length t))
+
+     (define (helper l r)
+       (local
+         (
+          (define mid (round (/ (+ l r) 2)))
+          (define fmid (neg->pos (table-ref t mid)))
+          (define submid (neg->pos (table-ref t (sub1 mid))))
+          (define addmid (neg->pos (table-ref t (add1 mid))))
+          (define fl (neg->pos (table-ref t l)))
+          (define fr (neg->pos (table-ref t r))))
+
+         (cond
+           [(= l max-index) ...]
+           [(and (= l 0) (<= fl fr)) ...]
+           [(<= fl fmid) (helper 0 l)]
+           [(< fr fmid) (helper r max-index)]
+           [else ...]))))
+
+    (helper 0 max-index)))
+         
+(define (find-binary t)
+  (local
+    (
+     (define (neg->pos fi)
+       (cond
+         [(zero? fi) 0]
+         [else (if (negative? fi) (* -1 fi) fi)]))
+     
+     (define max-index (table-length t))
+
+     (define (helper l r)
+       (local
+         (
+          (define mid (round (/ (+ l r) 2)))
+          (define fmid (neg->pos (table-ref t mid)))
+          (define submid (neg->pos (table-ref t (sub1 mid))))
+          (define addmid (neg->pos (table-ref t (add1 mid))))
+          (define fl (neg->pos (table-ref t l)))
+          (define fr (neg->pos (table-ref t r))))
+
+         (cond
+           [(= l max-index) r]
+           [(and (= l 0) (<= fl fr)) l]
+           [(<= fl fmid) (helper 0 l)]
+           [(< fr fmid) (helper r max-index)]
+           [else mid]))))
+
+    (helper 0 max-index)))
        
 
 
