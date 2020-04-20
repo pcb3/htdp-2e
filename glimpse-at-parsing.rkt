@@ -84,16 +84,18 @@
 (define (bundle l)
   (cond
     [(empty? l) '()]
-    [(string-numeric? (first l)) '()]
-    [(string-whitespace? (first l)) '()]
+    [(red-or-white-queen? (first l)) (rest l)]
     [else (cons (first l) (bundle (rest l)))]))
 
 (define (remove-string l)
   (cond
     [(empty? l) '()]
-    [(or (string-numeric? (first l))
-         (string-whitespace? (first l))) (rest l)]
-    [else (remove-string (rest l))])) 
+    [(red-or-white-queen? (first l)) (rest l)]
+    [else (remove-string (rest l))]))
+
+(define (red-or-white-queen? 1str)
+  (or (string-numeric? 1str)
+      (string-whitespace? 1str)))
 
 
 
