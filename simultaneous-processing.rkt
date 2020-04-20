@@ -184,13 +184,13 @@
   (cond
     [(and (or (branch? tos) (symbol? tos))
           (empty? p)) tos]
-    [(and (or (branch? tos) (symbol? tos)) 
-          (cons? p)) "end of branch"]
-    (tree-pick
-     (rest p)
-     (cond (else (if (symbol=? 'right (first p))
-                     (branch-right tos)
-                     (branch-left tos)))))]))
+    [(and (cons? p) (symbol? tos)) "end of branch"]
+    [(cons? p)
+     (tree-pick
+      (rest p)
+      (cond (else (if (symbol=? 'right (first p))
+                      (branch-right tos)
+                      (branch-left tos)))))]))
 
 ;;===========================
 ;; 391

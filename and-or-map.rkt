@@ -44,10 +44,16 @@
                            (rest b))
                    #false)])))
     (ormap x-str-l (map explode los))))
-          
+
+
 
           
             
+
+
+
+
+
 
 
 

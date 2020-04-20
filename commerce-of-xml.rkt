@@ -5,6 +5,7 @@
 ;; 22 Project: The Commerce of XML
 
 (require 2htdp/abstraction)
+(require 2htdp/image)
 	
 ; An Xexpr.v2 is a list: 
 ; – (cons Symbol Body)

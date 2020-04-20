@@ -524,22 +524,3 @@
 
 (define (interpreter sexpr sl)
   (eval-all (parse sexpr) (map (lambda (x) (parse x)) sl)))
-
-
-     
-
-     
-       
-
-
-
-
-
-
-
-
-
-
-
-
-

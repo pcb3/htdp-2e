@@ -155,26 +155,3 @@
                                  'itemprop))
               (find-attr (xexpr-attr xe) 'content)
               "no such value")]))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

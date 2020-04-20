@@ -658,4 +658,4 @@
     [name "Snake"]))
 
 ; usage
-(snake-main 0.2)
+(snake-main 0.09)

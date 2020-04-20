@@ -318,6 +318,8 @@
  (eval-var-lookup (make-add 'a 'b) AL1) 3)
 (check-expect
  (eval-var-lookup (make-mul 'b 'c) AL1) 6)
+(check-expect
+ (eval-var-lookup (make-add 'a (make-mul 'b 'c)) AL1) 7)
 
 (define (fn-eval-var-lookup e da)
   (cond
@@ -515,7 +517,7 @@
     [(symbol? ex) "this variable is not defined"]
     [(fun-expr? ex)
      (cond
-       [(empty? da) (error "this varibale is not defined")]
+       [(empty? da) (error "this variable is not defined")]
        [(symbol=? (fun-def-name (first da))
                   (fun-expr-name ex))
         (eval-definition2 (fun-expr-arg ex)
@@ -533,16 +535,18 @@
 ; - (cons BSL-fun-def* (cons BSL-da-all '()))
 
 (define CLOSE-TO-PI (make-fun-expr 'close-to-pi 3.14))
+
 (define AREA-OF-CIRCLE
   (make-fun-def 'area-of-circle 'r
-                 (make-mul
-                  CLOSE-TO-PI
-                  (make-mul 'r 'r))))
+                (make-mul
+                 CLOSE-TO-PI
+                 (make-mul 'r 'r))))
+
 (define VOLUME-OF-10-CYLINDER
   (make-fun-def 'volume-of-10-cylinder 'r
-    (make-mul
-     10
-     AREA-OF-CIRCLE)))
+                (make-mul
+                 10
+                 AREA-OF-CIRCLE)))
 
 (define BSL-DA-ALL1
   (list
@@ -557,7 +561,7 @@
 
 (check-expect (lookup-con-def BSL-DA-ALL1 'close-to-pi)
               CLOSE-TO-PI)
-;(check-expect (lookup-con-def BSL-DA-ALL1 'close-to-i)
+;(check-expect (lookup-con-def BSL-DA-ALL1 'close-to-pi)
 ;              (error NOT-FOUND))
 
 (define (fn-lookup-con-def da x)
@@ -601,10 +605,30 @@
 
 ; Exercise 361
 
-; BSL-da-all Symbol -> Number
-; consumes an Symbol x and a defintions area da
-; and produces the value of the expression if it is contained
-; in da
+; [ BSL-fun-expr or BSL-fun-def ] BSL-da-all -> Number
+; consumes an expression ex and a defintions area da
+; and produces the value of the expression if da
+; contains x
+
+(check-expect (eval-all CLOSE-TO-PI BSL-DA-ALL1)
+              (fun-expr-arg CLOSE-TO-PI))
+
+(check-expect (eval-all (AREA-OF-CIRCLE 1) BSL-DA-ALL1)
+              (* (fun-expr-arg CLOSE-TO-PI) (* 1 1)))
+
+(check-expect (eval-all
+               (VOLUME-OF-10-CYCLINDER 2) BSL-DA-ALL1)
+              (* 10
+                 (* (fun-expr-arg CLOSE-TO-PI)
+                    (* 2 2))))
+
+(define (fn-eval-all ex da) ...)
+                                                  
+    
+
+(define (eval-all ex da) 0)
+
+
 
 
 

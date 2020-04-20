@@ -8,9 +8,11 @@
 
 ; Exercise 338
 
+(define working-dir (create-dir "/home/pc/code/htdp"))
 (define test (create-dir "/home/pc/code/test"))
 (define test2 (create-dir "/home/pc/code/test2"))
-(define working-dir (create-dir "/home/pc/code/htdp"))
+(define test3 (create-dir "/home/pc/code/test3"))
+(define test4 (create-dir "/home/pc/code/test4"))
 
 ; exercise 339
 
@@ -75,6 +77,8 @@
     [(empty? d) '()]
     [else (append (ls-empty? (first d))
                   (extract-dir (rest d)))]))
+
+
 
 ; Exercise 341
 
@@ -226,9 +230,99 @@
                      (dir-files d)))))
     
     (d-process d)))
-       
-       
-                
+
+; CHALLENGE: design find-all
+
+; Dir* File* -> List-of Path
+; consumes a Dir* d and File* f and produces all the
+; paths to f or false otherwise
+
+(check-expect (find-all test3 "thisone.txt")
+              (list (list
+                     '/home/pc/code/test
+                     '/home/pc/code/test/second
+                     "thisone.txt")
+                    (list
+                     '/home/pc/code/test
+                     '/home/pc/code/test/first
+                     "thisone.txt")))
+
+(check-expect (find-all test3 "test.txt")
+              (list
+               '/home/pc/code/test
+               '/home/pc/code/test/first
+               "test.txt"))
+
+(check-expect (find-all test3 "false.txt") #false)
+
+(define (fn-find-all d f)
+  (local
+    
+    ((define (fn-d-process di)
+       (cons
+        (map (lambda (s)
+               (... (dir-name di)
+                    (list (file-name s))))
+             (dir-files di))
+        (map (lambda (t)
+               (... (dir-name di)
+                    (fn-d-process t)))
+             (dir-dirs di)))))
+
+    f))
+  
+(define (find-all d f)
+  (local
+
+    ((define (d-process di)
+       (cons
+        (map (lambda (s)
+               (cons (dir-name di)
+                     (list (file-name s))))
+             (dir-files di))
+        (map (lambda (t)
+               (cons (dir-name di)
+                     (d-process t)))
+             (dir-dirs di))))
+
+     (define (dl-process di)
+       (cond
+         [(empty? di) '()]
+         [else
+          (cons (d-process (first di))
+                (dl-process (rest di)))])))
+
+    (d-process d)))
+
+; Exercise 343
+
+; Dir -> List-of Path
+; consumes a directory dir and produces the path to
+; all files
+
+(check-expect
+ (ls-r test)
+ (list
+  (list '/home/pc/code/test3
+        '/home/pc/code/test3/first
+        "happy.txt")
+  (list '/home/pc/code/test3
+        '/home/pc/code/test3/first
+        "test.txt")
+  (list '/home/pc/code/test3
+        '/home/pc/code/test3/second
+        "thisone.txt")))
+
+(check-expect
+ (ls-r test4)
+ (list (list '/home/pc/code/test4 "test.txt")))
+
+(check-expect (ls-r test5) '())
+
+(define (fn-ls-r dir) '())
+
+(define (ls-r dir) '())
+
 
 
 

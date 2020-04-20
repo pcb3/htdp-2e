@@ -298,12 +298,11 @@
        (append (my-quick-sort (compare alon pivot comp) comp)
                lop
                (my-quick-sort
-                (reverse
                  (compare alon pivot
                           (cond
                             [else
                              (if (equal? comp <)
-                                 > <)]))) comp)))]))
+                                 > <)])) comp)))]))
 
 
 

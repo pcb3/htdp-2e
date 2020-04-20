@@ -21,7 +21,7 @@
 
 ; [List-of X] -> Number
 ; consumes a List and produces its length
-(define (solve p) (length p))
+(define (solve p) 0)
 
 ; [List-of X] Number -> Number
 ; consumes a list l and a number n and adds 1 to the

@@ -471,7 +471,15 @@
           (sexp=? (rest a) (rest b)))]
     [else #false]))
 
+;;=================================
+;; 402
 
+; If we treat the expression as an atomic value
+; we can simplify the function into a list
+; processor rather than a function with two
+; complex inputs. Also, the expression when evaluated
+; becomes a number so we can temporarily treat it as
+; such
 
 
 

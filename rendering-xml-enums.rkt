@@ -214,7 +214,7 @@
                         (salutation "Well met!"))
                        (,XITEM.V20 ,XITEM.V21)))
 
-(define XENUM.V20 `(ul (,XITEM.V20 ,XITEM.V21)))
+(define XENUM.V20 `(ul (,XITEM.V20)))
 (define XENUM.V21 `(ul ((status "amber") (load "high"))
                        (,XITEM.V20 ,XITEM.V21)))
 
@@ -241,10 +241,7 @@
  (render-enum XENUM.V20)
  (above/align 'left
               (bulletize (text "first" SIZE COLOR))
-              (above/align
-               'left
-               (bulletize (text "second" SIZE COLOR))
-               empty-image)))
+               empty-image))
 
 (define (render-enum xe)
   (local ((define content (xexpr-content xe))
@@ -260,19 +257,7 @@
  (bulletize
   (text (word-text (first (xexpr-content XITEM.V20)))
         SIZE COLOR)))
-
-(check-expect
- (render-item XITEM.V22)
- (above/align
-  'left
-  (bulletize
-   (text (word-text (first (xexpr-content XITEM.V20)))
-         SIZE COLOR))
-  (bulletize
-   (text (word-text (first (xexpr-content XITEM.V21)))
-         SIZE COLOR))))
               
-
 (define (render-item an-item)
   (local ((define content
             (first (xexpr-content an-item))))
@@ -280,7 +265,9 @@
      (cond
        [(word? content)
         (text (word-text content) SIZE 'black)]
-       [else (render-enum content)])))) 
+       [else (render-enum content)]))))
+
+
 
 
 
