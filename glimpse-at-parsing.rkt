@@ -30,4 +30,91 @@
     [(string=? (first afile) NEWLINE) (rest afile)]
     [else (remove-first-line (rest afile))]))
              
-(define NEWLINE "\n") ; the 1String 
+(define NEWLINE "\n") ; the 1String
+
+;;====
+;; 453
+
+; A Token is one of:
+; - 1String or
+; - String
+; A Token is either a 1String of non-letters or a String of
+; letters. There is no whitespace
+
+; Line -> [List-of Token]
+; consumes a a Line line and produces a list of tokens.
+; all white-space 1Strings are dropped,non-letter 1Strings
+; are cons'ed onto letter 1Strings that are bundled together
+
+(check-expect (tokenize '()) '())
+(check-expect (tokenize '("1")) '("1"))
+(check-expect (tokenize '("a" "b" "c")) '("abc"))
+(check-expect (tokenize '(" " "a" " ")) '("a"))
+
+(define (fn-tokenize line)
+  (cond
+    [(empty? line) ...]
+    [(string-numeric? (first line))
+     (...(first line) (fn-tokenize (rest line)))]
+    [else (cons (bundle line)
+                (fn-tokenize (remove-string line)))]))
+
+(define (fn-bundle l)
+  (cond
+    [(empty? l) ...]
+    [else (... (first l) (fn-bundle (rest l)))]))
+
+(define (fn-remove-string l)
+  (cond
+    [(empty? l) ....]
+    [(or (string-numeric? (first l))
+         (string-whitespace? (first l))) (rest l)]
+    [else (fn-remove-string (rest l))]))
+     
+(define (tokenize line)
+  (cond
+    [(empty? line) '()]
+    [(string-numeric? (first line))
+     (cons (first line) (tokenize (rest line)))]
+    [(string-whitespace? (first line))
+     (tokenize (rest line))]
+    [else (cons (implode (bundle line))
+                (tokenize (remove-string line)))]))
+
+(define (bundle l)
+  (cond
+    [(empty? l) '()]
+    [(string-numeric? (first l)) '()]
+    [(string-whitespace? (first l)) '()]
+    [else (cons (first l) (bundle (rest l)))]))
+
+(define (remove-string l)
+  (cond
+    [(empty? l) '()]
+    [(or (string-numeric? (first l))
+         (string-whitespace? (first l))) (rest l)]
+    [else (remove-string (rest l))])) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
