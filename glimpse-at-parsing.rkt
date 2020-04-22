@@ -97,6 +97,59 @@
   (or (string-numeric? 1str)
       (string-whitespace? 1str)))
 
+;;====
+;; 454
+
+; A Matrix is a:
+; - '()
+; - (cons (list Number) Matrix)
+
+; a Matrix is either the empty matrix '() or a n x n list of
+; lists of numbers
+
+; Number [List-of Number] -> Matrix
+; consumes a number n and a list of n squared numbers
+; n-squared, and produces a n x n matrix
+
+(check-expect
+ (create-matrix 2 (list 1 2 3 4))
+ (list (list 1 2)
+       (list 3 4)))
+(check-expect (create-matrix 1 (list 1)) (list (list 1)))
+(check-expect
+ (create-matrix 3 (list 1 2 3 4 5 6 7 8 9))
+ (list (list 1 2 3)
+       (list 4 5 6)
+       (list 7 8 9)))
+
+(define (fn-create-matrix n n-squared)
+  (cond
+    [(empty? n-squared) ...]
+    [else
+     (... (take-n n n-squared)
+          (fn-create-matrix ... (remove-n n n-squared)))]))
+
+(define (create-matrix n n-squared)
+  (cond
+    [(empty? n-squared) '()]
+    [else
+     (cons (take-n n n-squared)
+           (create-matrix n (remove-n n n-squared)))]))
+
+(define (take-n n n-squared)
+  (cond
+    [(zero? n) '()]
+    [else
+     (cons
+      (first n-squared)
+      (take-n (sub1 n) (rest n-squared)))]))
+
+(define (remove-n n n-squared)
+  (cond
+    [(zero? n) n-squared]
+    [else
+     (remove-n (sub1 n) (rest n-squared))]))
+     
 
 
 
