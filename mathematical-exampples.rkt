@@ -8,7 +8,7 @@
 ;; 28.1 Newton's Method
 
 ; [Number -> Number] Number -> Number
-; consumes a function f and a number n and
+; consumes a function f and a Number n and
 ; produces the slope of f at n
 
 (check-expect (slope (lambda (x) 1) 10) 0)
@@ -26,3 +26,29 @@
 (define (slope f n)
   (* (/ 1 (* 2 EPSILON))
      (- (f (+ n EPSILON)) (f (- n EPSILON)))))
+
+
+;;====
+;; 456
+
+; [Number -> Number] Number -> Number
+; consumes a function f and a Number n and produces the root
+; of the tangent of f at n
+
+(check-error
+ (root-of-tangent (lambda (x) 1) 10) ERROR)
+(check-expect (root-of-tangent (lambda (x) (+ x 1)) 1) -1)
+(check-expect
+ (root-of-tangent (lambda (x) (- (* 2 x) 1)) 1) 1/2)
+
+(define (fn-root-of-tangent f n)
+  (cond
+    [(zero? (slope f n)) ...]
+    [else (- n (/ (f n) (slope f n)))]))
+
+(define (root-of-tangent f n)
+  (cond
+    [(zero? (slope f n)) (error ERROR)]
+    [else (- n (/ (f n) (slope f n)))]))
+
+(define ERROR "undefined")
