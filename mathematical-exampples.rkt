@@ -3,7 +3,7 @@
 #reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname mathematical-exampples) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ;; 28 Mathematical Examples
 
-;(require htdp/graphing)
+(require htdp/graphing)
 
 ;; 28.1 Newton's Method
 
@@ -52,3 +52,61 @@
     [else (- n (/ (f n) (slope f n)))]))
 
 (define ERROR "undefined")
+
+;;====
+;; 457
+
+; Number -> Number
+; consumes a Number p and r and produces the
+; time in months it takes to be within epsilon of double p at
+; r % interest
+; generative: each step we get closer to the target amount
+; terminate: does not terminate for 0% interest rate
+
+(define epsilon 1)
+
+(define (double-amount p r)
+  (local
+    ((define doubled (* 2 p)))
+    (cond
+      [(zero? r) (error "infinite loop")]
+      [else (compound p r 0 doubled)])))
+
+(define (compound v r n final)
+  (cond
+    [(<= final v) n]
+    [else
+     (compound (+ v (* v (/ r 100))) r (add1 n) final)]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
