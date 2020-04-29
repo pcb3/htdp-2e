@@ -90,6 +90,50 @@
      (+ (integrate-dc f a (+ a (/ (- b a) 2)))
         (integrate-dc f (+ a (/ (- b a) 2)) b))]))
 
+;;====
+;; 461
+
+; [Number -> Number] Number Number -> Number
+; consumes a function f and an interval a b and produces the
+; area under the cureve between the interval
+; generation: recursively divides the area up into smaller
+; pieces and applies Kepler's method when the area of the
+; piece is within the error margin ε
+
+(check-within (integrate-adaptive
+               (lambda (x) 20) 12 22) 200 ε)
+(check-within (integrate-adaptive
+               (lambda (x) (* 2 x)) 0 10) 100 ε)
+(check-within (integrate-adaptive
+               (lambda (x) (* 3 (sqr x))) 0 10) 1000 ε)
+
+(define (fn-integrate-adaptive f a b)
+  (cond
+    [(< ... (... ε)) (integrate-kepler f a b)]
+    [else
+     (... (fn-integrate-adaptive f ...)
+          (fn-integrate-adaptive f ...))]))
+
+(define (integrate-adaptive f a b)
+  (local
+    ((define area-threshold (* ε (- b a)))
+     (define area-left
+       (integrate-kepler f a (+ a (/ (- b a) 2))))
+     (define area-right
+       (integrate-kepler f (+ a (/ (- b a) 2)) b)))
+    (cond
+      [(< (abs (- area-right area-left)) area-threshold)
+       (integrate-kepler f a b)]
+      [else
+       (+ (integrate-adaptive f a (+ a (/ (- b a) 2)))
+          (integrate-adaptive f (+ a (/ (- b a) 2)) b))])))
+
+
+
+
+
+
+
 
 
 
