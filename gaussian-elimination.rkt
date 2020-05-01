@@ -61,3 +61,13 @@
    (foldl + 0 (map (lambda (a b) (* a b)) (lhs equ) sol))
    (rhs equ)))
               
+;;====
+;; 462
+
+(define triangle-M '((2 2 3 10)
+                     (0 3 9 21)
+                     (0 0 1 2)))
+
+(check-expect (check-solution triangle-M S) #t)
+
+
