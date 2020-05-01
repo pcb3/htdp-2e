@@ -87,6 +87,8 @@
               '(-4 1 -12))
 (check-expect (subtract '(3 2 1 5) '(1 3 4 2))
               '(-7 -11 -1))
+(check-expect (subtract '(1 1 1 2) '(-1 -1 -1 4))
+              '(0 0 6))
        
 (define (subtract eq1 eq2)
   (rest
