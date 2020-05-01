@@ -71,8 +71,34 @@
 (check-expect (check-solution triangle-M S) #t)
 
 (define transformed-M '((2 2 3 10)
-                       (0 3 9 21)
-                       (0 -3 -8 -19)))
+                        (0 3 9 21)
+                        (0 -3 -8 -19)))
 
 (check-expect (check-solution transformed-M S) #t)
+
+;;====
+;; 465
+
+; Equation Equation -> Equation
+; consumes two Equations eq1 and eq2 and produces the rest of
+; an Equation that has a a zero in the leading coefficient
+
+(check-expect (subtract '(4 2 3 8) '(2 3 1 10))
+              '(-4 1 -12))
+(check-expect (subtract '(3 2 1 5) '(1 3 4 2))
+              '(-7 -11 -1))
+       
+(define (subtract eq1 eq2)
+  (rest
+   (map (lambda (x y)
+          (- y (* (/ (first eq1) (first eq2)) x))) eq2 eq1)))
+
+
+
+
+
+
+
+
+
 
