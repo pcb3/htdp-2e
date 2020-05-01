@@ -40,13 +40,14 @@
 ; SOE Solution -> Boolean
 ; consumes an SOE soe and a Solution sol and produces #true if
 ; both sides of the equation are equal after plugging in values
-; of variables
+; of variables for the entire system
 
 (check-expect (check-solution M S) #true)
 (check-expect (check-solution M '(0 0 1)) #false)
 
-(define (check-solution soe sol) #f)
-
+(define (check-solution soe sol)
+  (andmap (lambda (x) (plug-in x sol)) soe))
+  
 ; Equation Solution -> Boolean
 ; consumes an Equation equ and a Solution sol and produces
 ; #true when the left-hand-side equal the right-hand-side
