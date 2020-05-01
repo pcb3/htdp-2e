@@ -70,4 +70,9 @@
 
 (check-expect (check-solution triangle-M S) #t)
 
+(define transformed-M '((2 2 3 10)
+                       (0 3 9 21)
+                       (0 -3 -8 -19)))
+
+(check-expect (check-solution transformed-M S) #t)
 
