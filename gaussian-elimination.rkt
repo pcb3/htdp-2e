@@ -83,23 +83,36 @@
 ; consumes two Equations eq1 and eq2 and produces the rest of
 ; an Equation that has a a zero in the leading coefficient
 
-(check-expect (subtract '(4 2 3 8) '(2 3 1 10))
-              '(-4 1 -12))
-(check-expect (subtract '(3 2 1 5) '(1 3 4 2))
-              '(-7 -11 -1))
+(check-expect (subtract '(1 2 3 8) '(2 3 1 10))
+              '(-1 -5 -6))
+(check-expect (subtract '(2 2 1 5) '(1 3 4 2))
+              '(2 3.5 -0.5))
 (check-expect (subtract '(1 1 1 2) '(-1 -1 -1 4))
               '(0 0 6))
        
 (define (subtract eq1 eq2)
   (rest
    (map (lambda (x y)
-          (- y (* (/ (first eq1) (first eq2)) x))) eq2 eq1)))
+          (- y (* (/ (first eq2) (first eq1)) x))) eq1 eq2)))
 
+;;====
+;; 466
 
+; A TM is an [NEList-of Equation]
+; such that the Equations are of decreasing length: 
+;   n + 1, n, n - 1, ..., 2. 
+; interpretation represents a triangular matrix
 
+; SOE -> TM
+; triangulates the given system of equations 
 
-
-
+(check-expect (triangulate
+               (list (list 2 2 5 10)
+                     (list 1 1 2 4)))
+              (list 1 2))
+              
+(define (triangulate M)
+  '(1 2))
 
 
 
