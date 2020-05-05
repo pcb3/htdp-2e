@@ -89,11 +89,11 @@
               '(2 3.5 -0.5))
 (check-expect (subtract '(1 1 1 2) '(-1 -1 -1 4))
               '(0 0 6))
-       
+
 (define (subtract eq1 eq2)
   (rest
    (map (lambda (x y)
-          (- y (* (/ (first eq2) (first eq1)) x))) eq1 eq2)))
+           (- y (* (/ (first eq2) (first eq1)) x))) eq1 eq2)))
 
 ;;====
 ;; 466
@@ -105,14 +105,68 @@
 
 ; SOE -> TM
 ; triangulates the given system of equations 
+; generation: uses subtract on an Equation to create a zero
+; in the leading coefficient, reducing its length.
+; termination:
+
+(check-expect (triangulate (list (list 1 2 3 4)))
+              (list (list 1 2 3 4)))
+                                 
+(check-expect (triangulate (list (list 1 2 3 4)
+                                 (list 0 0 2 2)))
+              (list (list 1 2 3 4)
+                    (list 2 2)))
 
 (check-expect (triangulate
                (list (list 2 2 5 10)
                      (list 1 1 2 4)))
-              (list 1 2))
-              
-(define (triangulate M)
-  '(1 2))
+              (list (list 2 2 5 10)
+                    (list 0 -0.5 -1)))
+
+(check-expect (triangulate
+               (list (list 2  2  3  10)
+                     (list 0  3  9  21)
+                     (list 0 -3 -8 -19)))
+              (list (list 2  2  3  10)
+                    (list 3  9 21)
+                    (list    1  2)))
+
+(define (triangulate soe)
+  (cond
+    [(empty? (rest soe)) soe]
+    [else
+     (cons
+      (first soe)
+      (triangulate
+       (map
+        (lambda (x) (subtract (first soe) x))
+        (rest soe))))]))
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
