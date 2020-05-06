@@ -93,7 +93,7 @@
 (define (subtract eq1 eq2)
   (rest
    (map (lambda (x y)
-           (- y (* (/ (first eq2) (first eq1)) x))) eq1 eq2)))
+          (- y (* (/ (first eq2) (first eq1)) x))) eq1 eq2)))
 
 ;;====
 ;; 466
@@ -115,7 +115,7 @@
 (check-expect (triangulate (list (list 1 2 3 4)
                                  (list 0 0 2 2)))
               (list (list 1 2 3 4)
-                    (list 2 2)))
+                    (list 0 2 2)))
 
 (check-expect (triangulate
                (list (list 2 2 5 10)
@@ -131,9 +131,18 @@
                     (list 3  9 21)
                     (list    1  2)))
 
+(check-expect (triangulate
+               (list (list   0 -5  -5)
+                     (list  -8 -4 -12)))
+              (list (list   -8 -4 -12)
+                    (list      -5  -5)))
+
 (define (triangulate soe)
   (cond
     [(empty? (rest soe)) soe]
+    [(zero? (first (first soe)))
+     (triangulate (append (rest soe)
+                          (list (first soe))))]
     [else
      (cons
       (first soe)
@@ -142,6 +151,8 @@
         (lambda (x) (subtract (first soe) x))
         (rest soe))))]))
     
+
+
 
 
 
