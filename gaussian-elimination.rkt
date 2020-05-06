@@ -137,9 +137,17 @@
               (list (list   -8 -4 -12)
                     (list      -5  -5)))
 
+(check-error (triangulate
+              (list (list 2 2 2 6)
+                    (list 2 2 4 8)
+                    (list 2 2 1 2)))
+             "system has no solution")
+
 (define (triangulate soe)
   (cond
     [(empty? (rest soe)) soe]
+    [(andmap (lambda (x) (zero? (first x))) soe)
+     (error "system has no solution")]
     [(zero? (first (first soe)))
      (triangulate (append (rest soe)
                           (list (first soe))))]
