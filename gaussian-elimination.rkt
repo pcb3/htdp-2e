@@ -158,17 +158,38 @@
        (map
         (lambda (x) (subtract (first soe) x))
         (rest soe))))]))
-    
+
+;;====
+;; 469
+
+; SOE -> Solution
+; consumes a triangular SOE soe and produces a Solution to
+; the system
+
+(check-expect (solve
+               '((2 2 3 10)
+                 (  3 9 21)
+                 (   1 2)))
+              '(1 1 2))
+
+(define (fn-solve soe) '())
+                  
+
+(define (solve soe) '())
 
 
-
-
-
-
-
-
-
-
+(define (solve-single equ sol)
+  (cond
+    [(empty? sol) (/ (rhs equ) (first (lhs equ)))]
+    [else
+     (solve-single
+      (cons (first equ)
+            (cons (rest (rest (lhs equ)))
+                  (list(- (rhs equ)
+                          (* (first (rest equ))
+                             (first sol))))))
+      (rest sol))]))
+      
 
 
 
