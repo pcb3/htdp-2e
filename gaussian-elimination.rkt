@@ -187,16 +187,17 @@
                                   
 (define (solve soe)
   (local
-    ((define solution-set '())
-     (define (process-soe eqs sols)
+    ((define (solve-system soe sols)
        (cond
-         [(empty? eqs) '()]
+         [(empty? soe) '()]
          [else
-          (cons (solve-single (first eqs) sols)
-                (process-soe (rest eqs)
-                             (cons (solve-single eqs sols)
-                                   sols)))])))
-    (reverse (process-soe (reverse soe) '()))))
+          (cons (solve-single (first soe) sols)
+                (solve-system (rest soe)
+                              (cons
+                               (solve-single (first soe) sols)
+                               sols)))])))
+    
+    (reverse (solve-system (reverse soe) '()))))
 
 ; Equation Solution -> Number
 ; consumes an Equation equ and a Solution sol and produces
