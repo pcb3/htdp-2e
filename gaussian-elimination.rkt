@@ -231,8 +231,17 @@
     (combine-and-solve
      (product-coefficients trailing-coefficients sol)
      (rhs equ))))
- 
-     
+
+;;==========
+;; challenge
+
+
+
+
+;;====
+;; 470
+
+(define (gauss soe) (solve (triangulate soe)))
 
 
 
