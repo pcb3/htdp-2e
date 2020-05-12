@@ -50,7 +50,7 @@
   
 ; Equation Solution -> Boolean
 ; consumes an Equation equ and a Solution sol and produces
-; #true when the left-hand-side equal the right-hand-side
+; #true when the left-hand-side equals the right-hand-side
 ; when the solution set is substituted into the variables
 
 (check-expect (plug-in (first M) S) #t)
@@ -169,45 +169,81 @@
 (check-expect (solve
                '((2 2 3 10)
                  (  3 9 21)
-                 (   1 2)))
+                 (    1 2)))
               '(1 1 2))
 
-(define (fn-solve soe) '())
-                  
+(define (fn-solve soe)
+  (local
+    ((define solution-set '())
+     (define (process-soe eqs sols)
+       (cond
+         [(empty? eqs) ...]
+         [...
+          (... (solve-single (first eqs) sols)
+               (process-soe (rest eqs)
+                            (... (solve-single eqs sols)
+                                 sols)))])))
+    (reverse (process-soe (reverse soe) '()))))
+                                  
+(define (solve soe)
+  (local
+    ((define solution-set '())
+     (define (process-soe eqs sols)
+       (cond
+         [(empty? eqs) '()]
+         [else
+          (cons (solve-single (first eqs) sols)
+                (process-soe (rest eqs)
+                             (cons (solve-single eqs sols)
+                                   sols)))])))
+    (reverse (process-soe (reverse soe) '()))))
 
-(define (solve soe) '())
+; Equation Solution -> Number
+; consumes an Equation equ and a Solution sol and produces
+; a solution for the leading coefficient
 
+(check-expect (solve-single '(2 2 3 10) '(1 2)) 1)
+(check-expect (solve-single '(3 9 21) '(2)) 1)
+(check-expect (solve-single '(1 2) '()) 2)
 
 (define (solve-single equ sol)
-  (cond
-    [(empty? sol) (/ (rhs equ) (first (lhs equ)))]
-    [else
-     (solve-single
-      (cons (first equ)
-            (cons (rest (rest (lhs equ)))
-                  (list(- (rhs equ)
-                          (* (first (rest equ))
-                             (first sol))))))
-      (rest sol))]))
+  (local
+    ((define leading-coefficient (first equ))
+     (define trailing-coefficients (rest (lhs equ)))
+
+     (define (product-coefficients coefficients sols)
+       (cond
+         [(empty? sols) coefficients]
+         [else
+          (cons (* (first coefficients) (first sols))
+                (product-coefficients (rest coefficients)
+                                      (rest sols)))]))
+
+     (define (combine-and-solve trail right-hand)
+       (cond
+         [(empty? trail) (/ right-hand leading-coefficient)]
+         [else
+          (combine-and-solve
+           (rest trail)
+           (- right-hand (first trail)))])))
+
+    (combine-and-solve
+     (product-coefficients trailing-coefficients sol)
+     (rhs equ))))
+ 
+     
+
+
+
+
+
+
+
+
+
+
+
+
+       
+                                      
       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
