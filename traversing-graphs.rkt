@@ -47,3 +47,64 @@
     [(symbol=? n (first (first g))) (rest (first g))]
     [else
      (neighbours n (rest g))]))
+
+;;=============
+
+; Node Node Graph -> [Maybe Path]
+; finds a path from origination to destination in G
+; if there is no path, the function produces #false
+
+(define (find-path origination destination G)
+  (cond
+    [(symbol=? origination destination) (list destination)]
+    [else (local ((define next (neighbours origination G))
+                  (define candidate
+                    (find-path/list next destination G)))
+            (cond
+              [(boolean? candidate) #false]
+              [else (cons origination candidate)]))]))
+ 
+; [List-of Node] Node Graph -> [Maybe Path]
+; finds a path from some node on lo-Os to D
+; if there is no path, the function produces #false
+(define (find-path/list lo-Os D G)
+  (cond
+    [(empty? lo-Os) #false]
+    [else (local ((define candidate
+                    (find-path (first lo-Os) D G)))
+            (cond
+              [(boolean? candidate)
+               (find-path/list (rest lo-Os) D G)]
+              [else candidate]))]))
+
+;;==================
+;; test-on-all-nodes
+
+; Graph -> Boolean
+; consumes a Graph g and produces true if there is a path
+; between any pair of nodes
+
+(check-expect (test-on-all-nodes sample-graph) #false)
+(check-expect (test-on-all-nodes '((A B C)
+                                   (B C A)
+                                   (C B A))) #true)
+
+(define (test-on-all-nodes g)
+  (andmap
+   (lambda (x) (= (length g) (length x))) g))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
