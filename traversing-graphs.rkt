@@ -54,12 +54,12 @@
 ; finds a path from origination to destination in G
 ; if there is no path, the function produces #false
 
-(define (find-path origination destination G)
+(define (fn-find-path origination destination G)
   (cond
     [(symbol=? origination destination) (list destination)]
     [else (local ((define next (neighbours origination G))
                   (define candidate
-                    (find-path/list next destination G)))
+                    (fn-find-path/list next destination G)))
             (cond
               [(boolean? candidate) #false]
               [else (cons origination candidate)]))]))
@@ -67,15 +67,20 @@
 ; [List-of Node] Node Graph -> [Maybe Path]
 ; finds a path from some node on lo-Os to D
 ; if there is no path, the function produces #false
-(define (find-path/list lo-Os D G)
+(define (fn-find-path/list lo-Os D G)
   (cond
     [(empty? lo-Os) #false]
     [else (local ((define candidate
-                    (find-path (first lo-Os) D G)))
+                    (fn-find-path (first lo-Os) D G)))
             (cond
               [(boolean? candidate)
-               (find-path/list (rest lo-Os) D G)]
+               (fn-find-path/list (rest lo-Os) D G)]
               [else candidate]))]))
+
+; (map (lambda (x)
+;         (fn-find-path
+;          x 'G sample-graph))
+;       (neighbours 'A sample-graph))
 
 ;;==================
 ;; test-on-all-nodes
@@ -93,11 +98,133 @@
   (andmap
    (lambda (x) (= (length g) (length x))) g))
 
+(define cyclic-graph '((A B E)
+                       (B E F)
+                       (E C F)
+                       (C B D)
+                       (F D G)
+                       (D)
+                       (G)))
 
+;;====
+;; 473
 
+(check-expect (find-path 'B 'C cyclic-graph) '(B E C))
+(check-expect (test-on-all-nodes cyclic-graph) #false)
 
+;;====
+;; 474
 
+; Node Node Graph -> [Maybe Path]
+; finds a path from origination to destination in G
+; if there is no path, the function produces #false
 
+(define (find-path origination destination G)
+  (local
+    ((define (find-path/list lo-Os D G)
+       (cond
+         [(empty? lo-Os) #false]
+         [else (local ((define candidate
+                         (find-path (first lo-Os) D G)))
+                 (cond
+                   [(boolean? candidate)
+                    (find-path/list (rest lo-Os) D G)]
+                   [else candidate]))])))
+    (cond
+      [(symbol=? origination destination) (list destination)]
+      [else (local ((define next (neighbours origination G))
+                    (define candidate
+                      (find-path/list next destination G)))
+              (cond
+                [(boolean? candidate) #false]
+                [else (cons origination candidate)]))])))
+ 
+;;====
+;; 475
+
+;;===== to do
+
+;;====
+;; 476
+
+(define-struct transition [current key next])
+(define-struct fsm [initial transitions final])
+ 
+; An FSM is a structure:
+;   (make-fsm FSM-State [List-of 1Transition] FSM-State)
+; A 1Transition is a structure:
+;   (make-transition FSM-State 1String FSM-State)
+; An FSM-State is String.
+ 
+; data example: see exercise 109
+ 
+(define fsm-a-bc*-d
+  (make-fsm
+   "AA"
+   (list (make-transition "AA" "a" "BC")
+         (make-transition "BC" "b" "BC")
+         (make-transition "BC" "c" "BC")
+         (make-transition "BC" "d" "DD"))
+   "DD"))
+
+; FSM String -> Boolean 
+; does an-fsm recognize the given string
+(check-expect (fsm-match? fsm-a-bc*-d "p") #false)
+(check-expect (fsm-match? fsm-a-bc*-d "amd") #false)
+(check-expect (fsm-match? fsm-a-bc*-d "abcpd") #false)
+(check-expect (fsm-match? fsm-a-bc*-d "aa") #false)
+(check-expect (fsm-match? fsm-a-bc*-d "ad") #true)
+(check-expect (fsm-match? fsm-a-bc*-d "acd") #true)
+(check-expect (fsm-match? fsm-a-bc*-d "abd") #true)
+(check-expect (fsm-match? fsm-a-bc*-d "abbbbcccd") #true)
+
+(define (fn-fsm-match? an-fsm a-string)
+  (cond
+    ;[(empty? a-string) ...]
+    [(string=? (fsm-initial an-fsm) (fsm-final an-fsm))
+     ...]
+    [else
+     (local
+       ((define 1string (explode a-string))
+        (define (next-state lot lo1s)
+          (cond
+            [(empty? lot) ...]
+            [(and (string=? (fsm-initial an-fsm)
+                            (transition-current (first lot)))
+                  (string=? (transition-key (first lot))
+                            (first lo1s)))
+             (fn-fsm-match?
+              (make-fsm (transition-next (first lot))
+                        (fsm-transitions an-fsm)
+                        (fsm-final an-fsm))
+              (implode (rest lo1s)))]
+            [else
+             (next-state (rest lot) lo1s)])))
+       (next-state (fsm-transitions 1string)))]))
+
+(define (fsm-match? an-fsm a-string)
+  (cond
+    [(string=? (fsm-initial an-fsm) (fsm-final an-fsm))
+     #true]
+    [else
+     (local
+       ((define 1string (explode a-string))
+        (define (next-state lot lo1s)
+          (cond
+            [(empty? lot) #false]
+            [(and (string=? (fsm-initial an-fsm)
+                            (transition-current (first lot)))
+                  (string=? (transition-key (first lot))
+                            (first lo1s)))
+             (fsm-match?
+              (make-fsm (transition-next (first lot))
+                        (fsm-transitions an-fsm)
+                        (fsm-final an-fsm))
+              (implode (rest lo1s)))]
+            [else
+             (next-state (rest lot) lo1s)])))
+       (next-state (fsm-transitions an-fsm) 1string))]))
+          
 
 
 
