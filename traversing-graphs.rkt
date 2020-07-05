@@ -225,13 +225,29 @@
              (next-state (rest lot) lo1s)])))
        (next-state (fsm-transitions an-fsm) 1string))]))
           
+;;====
+;; 477
 
+; What is the trivilly solvable problem?
 
+; - '('())
 
+; How are trivial solutions solved?
 
+; - When the list is empty a list of an empty list is produced
 
+; How does the algorithm generate new problems that are more
+; easily solvable than the original one? Is there one new
+; problem that we generate or are there several?
 
+; - Each recursive call the algorithm produces a list of X
+; That is smaller by one letter
 
+; Is the solution of the given problem the same as the
+; solution of (one of) the new problems?
 
+; - The  solution is produced by appending the solution of
+; the smaller problems together
 
-
+; Termination: the algorithm will terminate if the list of
+; words has finite length
