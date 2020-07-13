@@ -76,9 +76,9 @@
 (define (create-square n)
   (square (/ WIDTH n) "outline" "black"))
 
-; Number Image -> Image
-; consumes a Number n and an Image img produces n squares
-; in a row
+; Number Number -> Image
+; consumes two Numbers n and side, and produces n squares
+; in a row of side length side
 (check-expect
  (create-row 2 2)
  (beside (create-square 2) (create-square 2)))
@@ -100,6 +100,74 @@
     [else
      (beside (create-square side)
              (create-row (sub1 n) side))]))
+
+; N [List-of QP] Image -> Image
+; consumes a natural number n, a list of QP's loqp and an
+; Image img and produces an Image of a chess board with the
+; given image placed according to given QP's
+
+(check-expect (render-queens 2 '() QUEEN)
+              (above (create-row 2 1)
+                     (create-row 2 1)))
+
+(check-expect
+ (render-queens 2 (list (make-posn 1 1)) QUEEN)
+ (place-images
+  (list QUEEN)
+  (list (make-posn (* (/ WIDTH 2)
+                      (posn-x (first (list (make-posn 1 1)))))
+                   (* (/ HEIGHT 2)
+                      (posn-y (first (list (make-posn 1 1)))))))
+  (above (create-row 2 1)
+         (create-row 2 1))))
+
+(check-expect
+ (render-queens 2 (list (make-posn 1 1)
+                        (make-posn 2 2)) QUEEN)
+ (place-images
+  (list QUEEN QUEEN)
+  (list (make-posn
+         (* (/ WIDTH 2)
+            (posn-x (first (list (make-posn 1 1)
+                                 (make-posn 2 2)))))
+         (* (/ HEIGHT 2)
+            (posn-y (first (list (make-posn 1 1)
+                                 (make-posn 2 2))))))
+        (make-posn
+         (+ (/ WIDTH 2)
+            (* (/ WIDTH 2)
+               (posn-x (second (list (make-posn 1 1)
+                                     (make-posn 2 2))))))
+         (+ (/ WIDTH 2)
+            (* (/ HEIGHT 2)
+               (posn-y (second (list (make-posn 1 1)
+                                     (make-posn 2 2))))))))
+  (above (create-row 2 1)
+         (create-row 2 1))))
+
+(define (fn-render-queens n loqp img)
+  (cond
+    [(empty? loqp) ...]
+    [else
+     (place-image
+      img
+      (+ (/ ... n) (* (/ ... n)
+                      (posn-x (first loqp))))
+      (+ (/ ... n) (* (/ ... n)
+                      (posn-y (first loqp))))
+      (fn-render-queens n (rest loqp) img))]))
+    
+(define (render-queens n loqp img)
+  (cond
+    [(empty? loqp) (create-row n n)]
+    [else
+     (place-image
+      img
+      (+ (/ WIDTH n) (* (/ WIDTH n)
+                        (posn-x (first loqp))))
+      (+ (/ WIDTH n) (* (/ WIDTH n)
+                        (posn-y (first loqp))))
+      (render-queens n (rest loqp) img))]))
  
 
 
