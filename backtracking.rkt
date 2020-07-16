@@ -68,109 +68,84 @@
 
 (define WIDTH 100)
 (define HEIGHT 100)
-
-(define MT (empty-scene WIDTH HEIGHT))
 (define QUEEN
   (crop/align "center" "center" 50 50
               (scale 0.1 (bitmap/file "chess-queen.png"))))
 (define (create-square n)
   (square (/ WIDTH n) "outline" "black"))
 
-; Number Number -> Image
-; consumes two Numbers n and side, and produces n squares
-; in a row of side length side
-(check-expect
- (create-row 2 2)
- (beside (create-square 2) (create-square 2)))
-(check-expect
- (create-row 4 4)
- (beside (create-square 4) (create-square 4)
-         (create-square 4) (create-square 4)))
-
-(define (fn-create-row n side)
-  (cond
-    [(= 1 n) ...]
-    [else
-     (beside
-      (create-square side) (fn-create-row (sub1 n) side))]))
-
-(define (create-row n side)
-  (cond
-    [(= 1 n) (create-square side)]
-    [else
-     (beside (create-square side)
-             (create-row (sub1 n) side))]))
+(define LOQP1 (list (make-posn 0 0)))
+(define LOQP2 (list (make-posn 0 0)
+                    (make-posn 1 1)))
+(define LOQP3 (list (make-posn 0 0)
+                    (make-posn 1 1)
+                    (make-posn 2 2)))
 
 ; N [List-of QP] Image -> Image
 ; consumes a natural number n, a list of QP's loqp and an
 ; Image img and produces an Image of a chess board with the
 ; given image placed according to given QP's
 
-(check-expect (render-queens 2 '() QUEEN)
-              (above (create-row 2 1)
-                     (create-row 2 1)))
+(check-expect
+ (render-queens-local 2 '() QUEEN)
+ (place-image
+  (above (beside (create-square 2)
+                 (create-square 2))
+         (beside (create-square 2)
+                 (create-square 2)))
+  (image-width QUEEN)
+  (image-width QUEEN)
+  (empty-scene (* (image-width QUEEN) 2)
+               (* (image-width QUEEN) 2))))
 
 (check-expect
- (render-queens 2 (list (make-posn 1 1)) QUEEN)
- (place-images
-  (list QUEEN)
-  (list (make-posn (* (/ WIDTH 2)
-                      (posn-x (first (list (make-posn 1 1)))))
-                   (* (/ HEIGHT 2)
-                      (posn-y (first (list (make-posn 1 1)))))))
-  (above (create-row 2 1)
-         (create-row 2 1))))
+ (render-queens-local 2 LOQP1 QUEEN)
+ (place-image
+  QUEEN
+  (+ (/ (image-width QUEEN) 2)
+     (* (image-width QUEEN) (posn-x (first LOQP1))))
+  (+ (/ (image-width QUEEN) 2)
+     (* (image-width QUEEN) (posn-y (first LOQP1))))
+  (place-image
+   (above (beside (create-square 2)
+                  (create-square 2))
+          (beside (create-square 2)
+                  (create-square 2)))
+   (image-width QUEEN)
+   (image-width QUEEN)
+   (empty-scene (* (image-width QUEEN) 2)
+                (* (image-width QUEEN) 2)))))
 
-(check-expect
- (render-queens 2 (list (make-posn 1 1)
-                        (make-posn 2 2)) QUEEN)
- (place-images
-  (list QUEEN QUEEN)
-  (list (make-posn
-         (* (/ WIDTH 2)
-            (posn-x (first (list (make-posn 1 1)
-                                 (make-posn 2 2)))))
-         (* (/ HEIGHT 2)
-            (posn-y (first (list (make-posn 1 1)
-                                 (make-posn 2 2))))))
-        (make-posn
-         (+ (/ WIDTH 2)
-            (* (/ WIDTH 2)
-               (posn-x (second (list (make-posn 1 1)
-                                     (make-posn 2 2))))))
-         (+ (/ WIDTH 2)
-            (* (/ HEIGHT 2)
-               (posn-y (second (list (make-posn 1 1)
-                                     (make-posn 2 2))))))))
-  (above (create-row 2 1)
-         (create-row 2 1))))
-
-(define (fn-render-queens n loqp img)
-  (cond
-    [(empty? loqp) ...]
-    [else
-     (place-image
-      img
-      (+ (/ ... n) (* (/ ... n)
-                      (posn-x (first loqp))))
-      (+ (/ ... n) (* (/ ... n)
-                      (posn-y (first loqp))))
-      (fn-render-queens n (rest loqp) img))]))
-    
-(define (render-queens n loqp img)
-  (cond
-    [(empty? loqp) (create-row n n)]
-    [else
-     (place-image
-      img
-      (+ (/ WIDTH n) (* (/ WIDTH n)
-                        (posn-x (first loqp))))
-      (+ (/ WIDTH n) (* (/ WIDTH n)
-                        (posn-y (first loqp))))
-      (render-queens n (rest loqp) img))]))
- 
-
-
+(define (render-queens-local n loqp img)
+  (local
+    ((define SIZE (image-width QUEEN))
+     (define create-square
+       (square (image-width QUEEN) "outline" "black"))     
+     (define MTS (empty-scene (* n SIZE) (* n SIZE)))
+     (define (create-row n)
+       (cond
+         [(= 1 n) create-square]
+         [else
+          (beside create-square
+                  (create-row (sub1 n)))]))
+     (define (create-board rows)
+       (cond
+         [(= 1 rows) (create-row n)]
+         [else
+          (above (create-row n)
+                 (create-board (sub1 rows)))])))
+    (cond
+      [(empty? loqp)
+       (place-image
+        (create-board n)
+        (/ (image-width MTS) 2)
+        (/ (image-width MTS) 2) MTS)]
+      [else
+       (place-image
+        img
+        (+ (/ SIZE 2) (* SIZE (posn-x (first loqp))))
+        (+ (/ SIZE 2) (* SIZE (posn-y (first loqp))))
+        (render-queens-local n (rest loqp) img))])))
 
 
 
