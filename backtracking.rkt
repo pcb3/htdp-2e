@@ -148,7 +148,37 @@
         (render-queens-local n (rest loqp) img))])))
 
 
+;;========================
+;; valid 4-queen solutions
 
+(define 4-QUEEN1 (list (make-posn 1 0)
+                       (make-posn 3 1)
+                       (make-posn 0 2)
+                       (make-posn 2 3)))
+
+(define 4-QUEEN2 (list (make-posn 2 0)
+                       (make-posn 0 1)
+                       (make-posn 3 2)
+                       (make-posn 3 1)))
+
+;;====
+;; 481
+
+; N -> Boolean
+; consumes a Natural number n and produces a predicte to test
+; if a queen placement is a solution to the n queens problem
+
+(check-expect (n-queens-solution? n) ...)
+
+(define (fn-n-queens-solution? n)
+  (lambda (x)
+    (local
+      ((define length-of-list n)
+
+       (define valid? (andmap (lambda (y))))))))
+       
+
+(define (n-queens-solution? n) ...)
 
 
 
