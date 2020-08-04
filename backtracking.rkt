@@ -161,12 +161,24 @@
                        (make-posn 3 2)
                        (make-posn 1 3)))
 
+;;=========================
+;; invalid 4-queen solution
+
+(define 4-QUEEN3 (list (make-posn 2 0)
+                       (make-posn 0 1)
+                       (make-posn 3 2)
+                       (make-posn 1 0)))
+
 ;;====
 ;; 481
 
 ; N -> Boolean
 ; consumes a Natural number n and produces a predicte to test
 ; if a queen placement is a solution to the n queens problem
+
+(check-expect ((n-queens-solution? 4) 4-QUEEN1) #true)
+(check-expect ((n-queens-solution? 4) 4-QUEEN2) #true)
+(check-expect ((n-queens-solution? 4) 4-QUEEN3) #false)
 
 (check-satisfied 4-QUEEN1 (n-queens-solution? 4))
 (check-satisfied 4-QUEEN2 (n-queens-solution? 4))
