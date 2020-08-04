@@ -159,7 +159,7 @@
 (define 4-QUEEN2 (list (make-posn 2 0)
                        (make-posn 0 1)
                        (make-posn 3 2)
-                       (make-posn 3 1)))
+                       (make-posn 1 3)))
 
 ;;====
 ;; 481
@@ -168,17 +168,46 @@
 ; consumes a Natural number n and produces a predicte to test
 ; if a queen placement is a solution to the n queens problem
 
-(check-expect (n-queens-solution? n) ...)
+(check-satisfied 4-QUEEN1 (n-queens-solution? 4))
+(check-satisfied 4-QUEEN2 (n-queens-solution? 4))
 
 (define (fn-n-queens-solution? n)
-  (lambda (x)
+  (lambda (m)
     (local
-      ((define length-of-list n)
+      ((define (ormap-threatening? qp1 qp2)
+         (andmap (lambda (p) (threatening? qp1 p)) qp2))
 
-       (define valid? (andmap (lambda (y))))))))
-       
+       (define (check-threatening loqp)
+         (cond
+           [(empty? (rest loqp)) #true]
+           [(boolean=? #true
+                       (ormap-threatening? (first loqp) (rest loqp)))
+            #false]
+           [else
+            (check-threatening (rest loqp))])))
+      (cond
+        [(boolean=? #true (= n (length m)))
+         (check-threatening m)]
+        [else #false]))))
 
-(define (n-queens-solution? n) ...)
+(define (n-queens-solution? n)
+  (lambda (m)
+    (local
+      ((define (ormap-threatening? qp1 qp2)
+         (andmap (lambda (p) (threatening? qp1 p)) qp2))
+
+       (define (check-threatening loqp)
+         (cond
+           [(empty? (rest loqp)) #true]
+           [(boolean=? #true
+                       (ormap-threatening? (first loqp) (rest loqp)))
+            #false]
+           [else
+            (check-threatening (rest loqp))])))
+      (cond
+        [(boolean=? #true (= n (length m)))
+         (check-threatening m)]
+        [else #false]))))
 
 
 
