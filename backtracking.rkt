@@ -147,9 +147,7 @@
         (+ (/ SIZE 2) (* SIZE (posn-y (first loqp))))
         (render-queens-local n (rest loqp) img))])))
 
-
-;;========================
-;; valid 4-queen solutions
+; valid 4-queen solutions
 
 (define 4-QUEEN1 (list (make-posn 1 0)
                        (make-posn 3 1)
@@ -161,8 +159,7 @@
                        (make-posn 3 2)
                        (make-posn 1 3)))
 
-;;=========================
-;; invalid 4-queen solution
+; invalid 4-queen solution
 
 (define 4-QUEEN3 (list (make-posn 2 0)
                        (make-posn 0 1)
@@ -220,6 +217,26 @@
         [(boolean=? #true (= n (length m)))
          (check-threatening m)]
         [else #false]))))
+
+;;======
+;; set=?
+
+(define 4-QUEEN4 (list (make-posn 2 3)
+                       (make-posn 0 2)
+                       (make-posn 3 1)
+                       (make-posn 1 0)))
+
+; List List -> Boolean
+; consumes two LOQP's and determines if they are a set
+
+(check-expect (set=? 4-QUEEN1 4-QUEEN4) #true)
+(check-expect (set=? 4-QUEEN1 4-QUEEN2) #false)
+
+(define (fn-set=? loqp1 loqp2)
+  (andmap (lambda (x) (member? x loqp2)) loqp1))
+
+(define (set=? loqp1 loqp2)
+  (andmap (lambda (x) (member? x loqp2)) loqp1))
 
 
 
