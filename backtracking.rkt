@@ -238,6 +238,51 @@
 (define (set=? loqp1 loqp2)
   (andmap (lambda (x) (member? x loqp2)) loqp1))
 
+;;====
+;; 482
+
+; Board N -> [Maybe [List-of QP]]
+; places n queens on board; otherwise, returns #false
+
+(check-expect (place-queens (list '()) 3) #false)
+(check-expect (place-queens (list '()) 4) 4-QUEEN1)
+(check-expect (place-queens (list '()) 4) 4-QUEEN2)
+
+(define (fn-place-queens a-board n)
+  (cond
+    [(<= n 3) #false]
+    [(zero? (length (find-open-spots a-board))) a-board]
+    [else
+     (fn-place-queens
+      (cons (first (find-open-spots a-board)) a-board) n)]))
+
+(define (place-queens a-board n)
+  (cond
+    [(<= n 3) #false]
+    [(zero? (length (find-open-spots a-board))) a-board]
+    [else
+     (place-queens
+      (cons (first (find-open-spots a-board)) a-board) n)]))
+
+; N -> Board 
+; creates the initial n by n board
+(define (board0 n) ...)
+ 
+; Board QP -> Board 
+; places a queen at qp on a-board
+(define (add-queen a-board qp)
+  a-board)
+ 
+; Board -> [List-of QP]
+; finds spots where it is still safe to place a queen
+(define (find-open-spots a-board)
+  '())
+
+
+
+
+
+
 
 
 
