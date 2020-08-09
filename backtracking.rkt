@@ -249,20 +249,60 @@
 (check-expect (place-queens (list '()) 4) 4-QUEEN2)
 
 (define (fn-place-queens a-board n)
-  (cond
-    [(<= n 3) #false]
-    [(zero? (length (find-open-spots a-board))) a-board]
-    [else
-     (fn-place-queens
-      (cons (first (find-open-spots a-board)) a-board) n)]))
+  (local
+    (; setup initial board
+     (define setup (board0 n))
 
+     ; places queen if spot avialable
+     (define (place-queen-on-open current-board m)
+       (local
+         (
+          (list-of-open (find-open-spots current-board)))
+         
+         (cond
+           [(zero? m) current-board]
+           [(empty? list-of-open)
+            (place-queen-on-open current-board (sub1 m))]
+           [else
+            (place-queen-on-open
+             (add-queen current-board (first list-of-open))
+             (sub1 m))])))
+
+     ; compute potential solution 
+     (define possible-solution (place-queen-on-open setup n)))
+
+    (cond
+      [(not (= (length possible-solution) n))
+       #false]
+      [else possible-solution])))
+       
 (define (place-queens a-board n)
-  (cond
-    [(<= n 3) #false]
-    [(zero? (length (find-open-spots a-board))) a-board]
-    [else
-     (place-queens
-      (cons (first (find-open-spots a-board)) a-board) n)]))
+  (local
+    (; setup initial board
+     (define setup (board0 n))
+
+     ; places queen if spot avialable
+     (define (place-queen-on-open current-board m)
+       (local
+         (
+          (list-of-open (find-open-spots current-board)))
+         
+         (cond
+           [(zero? m) current-board]
+           [(empty? list-of-open)
+            (place-queen-on-open current-board (sub1 m))]
+           [else
+            (place-queen-on-open
+             (add-queen current-board (first list-of-open))
+             (sub1 m))])))
+
+     ; compute potential solution 
+     (define possible-solution (place-queen-on-open setup n)))
+
+    (cond
+      [(not (= (length possible-solution) n))
+       #false]
+      [else possible-solution])))
 
 ; N -> Board 
 ; creates the initial n by n board
@@ -278,7 +318,17 @@
 (define (find-open-spots a-board)
   '())
 
+;;====
+;; 483
 
+; a Board is a List:
+; - '()
+; - (cons QP Board)
+; A Board is a list of all QP queen placements
+
+(define BOARD0 '())
+(define BOARD1 (cons (make-posn 0 0) BOARD0))
+(define BOARD2 (cons (make-posn 0 0) (cons (make-posn 1 0) BOARD0)))
 
 
 
