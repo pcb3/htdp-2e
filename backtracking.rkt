@@ -256,7 +256,7 @@
      ; places queen if spot avialable
      (define (place-queen-on-open current-board m)
        (local
-         ((define list-of-open (find-open-spots current-board)))
+         ((define list-of-open ((find-open-spots current-board) n)))
          
          (cond
            [(zero? m) current-board]
@@ -283,7 +283,7 @@
      ; places queen if spot avialable
      (define (place-queen-on-open current-board m)
        (local
-         ((define list-of-open (find-open-spots current-board)))
+         ((define list-of-open ((find-open-spots current-board) n)))
          
          (cond
            [(zero? m) current-board]
@@ -323,10 +323,45 @@
 ; Board -> [List-of QP]
 ; finds spots where it is still safe to place a queen
 
-;(check-expect (find-open-spots '()) )
+(define (fn-find-open-spots a-board)
+  (lambda (a)
+    (local
+      ((define (create-row x-pos y-pos)
+         (cond
+           [else (if (< x-pos a)
+                     (cons (make-posn x-pos y-pos)
+                           (create-row (add1 x-pos) y-pos))
+                     '())]))
+
+       (define (create-board x-pos y-pos)
+         (cond
+           [else (if (< y-pos a)
+                     (append (create-row x-pos y-pos)
+                             (create-board x-pos (add1 y-pos)))
+                     '())])))
+
+      (filter (lambda (x) (not (member? x a-board)))
+              (create-board 0 0)))))
 
 (define (find-open-spots a-board)
-  '())
+  (lambda (a)
+    (local
+      ((define (create-row x-pos y-pos)
+         (cond
+           [else (if (< x-pos a)
+                     (cons (make-posn x-pos y-pos)
+                           (create-row (add1 x-pos) y-pos))
+                     '())]))
+
+       (define (create-board x-pos y-pos)
+         (cond
+           [else (if (< y-pos a)
+                     (append (create-row x-pos y-pos)
+                             (create-board x-pos (add1 y-pos)))
+                     '())])))
+
+      (filter (lambda (x) (not (member? x a-board)))
+              (create-board 0 0)))))
 
 ;;====
 ;; 483
