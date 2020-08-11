@@ -195,9 +195,9 @@
            [else
             (check-threatening (rest loqp))])))
       (cond
-        [(boolean=? #true (= n (length m)))
-         (check-threatening m)]
-        [else #false]))))
+        [else (if (check-threatening m)
+                  #true
+                  #false)]))))
 
 (define (n-queens-solution? n)
   (lambda (m)
@@ -214,9 +214,9 @@
            [else
             (check-threatening (rest loqp))])))
       (cond
-        [(boolean=? #true (= n (length m)))
-         (check-threatening m)]
-        [else #false]))))
+        [else (if (check-threatening m)
+                  #true
+                  #false)]))))
 
 ;;======
 ;; set=?
@@ -256,8 +256,7 @@
      ; places queen if spot avialable
      (define (place-queen-on-open current-board m)
        (local
-         (
-          (list-of-open (find-open-spots current-board)))
+         ((define list-of-open (find-open-spots current-board)))
          
          (cond
            [(zero? m) current-board]
@@ -284,8 +283,7 @@
      ; places queen if spot avialable
      (define (place-queen-on-open current-board m)
        (local
-         (
-          (list-of-open (find-open-spots current-board)))
+         ((define list-of-open (find-open-spots current-board)))
          
          (cond
            [(zero? m) current-board]
@@ -306,15 +304,27 @@
 
 ; N -> Board 
 ; creates the initial n by n board
-(define (board0 n) ...)
+
+(check-expect (board0 3) '())
+(check-expect (board0 4) '())
+
+(define (board0 n) '())
  
 ; Board QP -> Board 
 ; places a queen at qp on a-board
+
+(check-expect (add-queen '() (make-posn 0 0)) (list (make-posn 0 0)))
+(check-expect (add-queen (list (make-posn 0 0)) (make-posn 1 1))
+              (list (make-posn 1 1) (make-posn 0 0)))
+
 (define (add-queen a-board qp)
-  a-board)
+  (cons qp a-board))
  
 ; Board -> [List-of QP]
 ; finds spots where it is still safe to place a queen
+
+;(check-expect (find-open-spots '()) )
+
 (define (find-open-spots a-board)
   '())
 
