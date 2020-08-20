@@ -39,6 +39,29 @@
 (define (add-to-each-map n l)
   (map (lambda (b) (+ n b)) l))
 
+;;====
+;; 491
+
+(define (relative->absolute-foldr l)
+  (reverse
+   (foldr (lambda (f l) (cons (+ f (first l)) l))
+          (list (first l))
+          (reverse (rest l)))))
+
+; List -> List
+; consumes a list l and produces a reversed list
+
+(check-expect (rl '()) '())
+(check-expect (rl '(1)) '(1))
+(check-expect (rl '(1 2 3)) '(3 2 1))
+
+(define (rl l)
+  (foldl (lambda (x y) (cons x y)) '() l))
+
+
+
+
+
 
 
 
