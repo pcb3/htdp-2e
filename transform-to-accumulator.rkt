@@ -109,15 +109,41 @@
            (h/a (node-right abt) (add1 s) m))])))
     (h/a abt0 0 0)))
 
+;;====
+;; 499
 
-;;=========
-;; examples
+; List-of Number -> Number
+; consumes a list of Number lon0 and produces the product
 
-; (make-node '() '()) ; s = 0, m = 0
+(check-expect (product/a '(1 2)) 2)
+(check-expect (product/a '(1 2 3)) 6)
+(check-expect (product/a '(0 1 2)) 0)
 
-; (make-node (make-node '() '()) '()) ; s = 1, m = 1
+(define (fn-product/a lon0)
+  (local
+    (; lon0 lon -> Number
+     ; computes the product
+     ; lon is the list of numbers left to be multiplied
+     ; accumulator a is the product of numbers computed so far
+     (define (p/a lon a)
+       (cond
+         [(empty? lon) ...]
+         [else
+          (p/a (rest lon) (* (first lon) a))])))
+    (p/a lon0 1)))
 
-; (make-node '() (make-node '() '())) ; s = 1, m = 0
+(define (product/a lon0)
+  (local
+    (; lon0 lon -> Number
+     ; computes the product
+     ; lon is the list of numbers left to be multiplied
+     ; accumulator a is the product of numbers computed so far
+     (define (p/a lon a)
+       (cond
+         [(empty? lon) a]
+         [else
+          (p/a (rest lon) (* (first lon) a))])))
+    (p/a lon0 1)))
 
 
 
