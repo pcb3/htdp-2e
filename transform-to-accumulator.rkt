@@ -29,13 +29,26 @@
 
 (define ABT0 '())
 (define ABT1 (make-node '() '()))
-(define ABT2 (make-node (make-node '() (make-node '() '()))
-                        '()))
-(define ABT3 (make-node (make-node (make-node '() '()) '()) '()))
+(define ABT2 (make-node
+              (make-node '() '())
+              '()))
+(define ABT3 (make-node
+              (make-node
+               (make-node '() '()) '())
+              '()))
+(define ABT4 (make-node
+              (make-node
+               (make-node '() (make-node '() '())) '())
+              '()))
 
 ; Tree -> N
 ; measures the height of abt0
-(check-expect (height.v2 example) 3)
+
+(check-expect (height.v2 ABT0) 0)
+(check-expect (height.v2 ABT1) 1)
+(check-expect (height.v2 ABT2) 2)
+(check-expect (height.v2 ABT3) 3)
+(check-expect (height.v2 ABT4) 4)
 
 (define (height.v2 abt0)
   (local (; Tree N -> N
@@ -58,6 +71,7 @@
 (check-expect (height.v3 ABT1) 1)
 (check-expect (height.v3 ABT2) 2)
 (check-expect (height.v3 ABT3) 3)
+(check-expect (height.v3 ABT4) 4)
 
 (define (fn-height.v3 abt0)
   (local
@@ -71,7 +85,7 @@
        (cond
          [(empty? abt) ...]
          [else
-          (max
+          (...
            (h/a (node-left abt)
                 s ... ... m ...) ...
                                  ... (h/a (node-right abt)
@@ -88,9 +102,27 @@
      ; the part of abt0 that is to the left of abt
      (define (h/a abt s m)
        (cond
-         [(empty? abt) (max s m)]
+         [(empty? abt) (+ s m)]
          [else
-          (max
+          (max 
            (h/a (node-left abt) s (add1 m))
            (h/a (node-right abt) (add1 s) m))])))
     (h/a abt0 0 0)))
+
+
+;;=========
+;; examples
+
+; (make-node '() '()) ; s = 0, m = 0
+
+; (make-node (make-node '() '()) '()) ; s = 1, m = 1
+
+; (make-node '() (make-node '() '())) ; s = 1, m = 0
+
+
+
+
+
+
+
+
