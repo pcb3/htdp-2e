@@ -145,10 +145,18 @@
           (p/a (rest lon) (* (first lon) a))])))
     (p/a lon0 1)))
 
+(define (product lon)
+  (cond
+    [(empty? lon) 1]
+    [else
+     (* (first lon) (product (rest lon)))]))
 
-
-
-
+(define (product-comparison n)
+  (local
+    ((define a-list (build-list n (lambda (x) (add1 x)))))
+    (list
+     (time (product/a a-list))
+     (time (product a-list)))))
 
 
 
