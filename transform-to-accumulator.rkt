@@ -145,18 +145,74 @@
           (p/a (rest lon) (* (first lon) a))])))
     (p/a lon0 1)))
 
+
+;; non-accumulator product
+
 (define (product lon)
   (cond
     [(empty? lon) 1]
     [else
      (* (first lon) (product (rest lon)))]))
 
-(define (product-comparison n)
+;;====
+;; 500
+
+; List -> Number
+; consumes a List an produces the number of items in that list
+
+(check-expect (how-many '()) 0)
+(check-expect (how-many '(1 2 3)) 3)
+
+(define (fn-how-many l0)
   (local
-    ((define a-list (build-list n (lambda (x) (add1 x)))))
-    (list
-     (time (product/a a-list))
-     (time (product a-list)))))
+    (; List Number -> Number
+     ; produces the length of l
+     ; accumulator a is the number of items observed so far
+     ; l is the current list
+     (define (how-many/a l a)
+       (cond
+         [(empty? l) ...]
+         [else
+          (how-many/a (rest l) (add1 a))])))
+
+    (how-many/a l0 0)))
+
+(define (how-many l0)
+  (local
+    (; List Number -> Number
+     ; produces the length of l
+     ; accumulator a is the number of items observed so far
+     ; l is the current list
+     (define (how-many/a l a)
+       (cond
+         [(empty? l) a]
+         [else
+          (how-many/a (rest l) (add1 a))])))
+
+    (how-many/a l0 0)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
