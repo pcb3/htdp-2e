@@ -191,6 +191,38 @@
 
     (how-many/a l0 0)))
 
+;;====
+;; 501
+
+; N -> Number 
+; adds n to pi without using +
+(check-within (add-to-pi 2) (+ 2 pi) 0.001)
+(define (add-to-pi n)
+  (cond
+    [(zero? n) pi]
+    [else (add1 (add-to-pi (sub1 n)))]))
+
+; N -> Number
+; adds n to pi without using +
+
+(check-within (add-to-pi.v2 0) pi 0.1)
+(check-within (add-to-pi.v2 1) (+ 1 pi) 0.1)
+;(check-within (add-to-pi.v2 -1) (- pi 1) 0.1)
+
+(define (add-to-pi.v2 n)
+  (local
+    (; N Number -> Number
+     ; adds n to pi
+     ; accumulator a adds 1 to the current subtotal
+     (define (add-to-pi/a n a)
+       (cond
+         [(zero? n) (+ pi a)]
+         [else
+          (add-to-pi/a (sub1 n) (add1 a))])))
+
+    (add-to-pi/a n 0)))
+
+
 
 
 
