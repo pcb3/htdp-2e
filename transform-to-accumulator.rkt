@@ -226,13 +226,31 @@
 
 ; [NEList-of 1String] -> [NEList-of 1String]
 ; creates a palindrome from s0
-;(check-expect
-;  (mirror (explode "abc")) (explode "abcba"))
-;(define (mirror s0)
-;  (append (all-but-last s0)
-;          (list (last s0))
-;          (reverse (all-but-last s0))))
+(check-expect
+ (mirror (explode "abc")) (explode "abcba"))
+(define (mirror s0)
+  (append (all-but-last s0)
+          (list (last s0))
+          (reverse (all-but-last s0))))
 
+; [NEList-of 1String] -> [NEList-of 1String]
+; creates a palindrome from s0
+(check-expect
+ (mirror.v2 (explode "abc")) (explode "abcba"))
+
+(define (mirror.v2 s0)
+  (local
+    (; [NElist-of 1String] [NEList-of 1String] -> [NEList-of 1String]
+     ; creates a palindrome from s0
+     ; accumulator a is the list of 1Strings compiled so far
+     (define (mirror/a s a)
+       (cond
+         [(empty? s) (append (reverse a) (reverse (all-but-last s0)))]
+         [else
+          (mirror/a (rest s) (cons (first s) a))])))
+
+    (mirror/a s0 '())))
+          
 ; Polygon -> Posn
 ; extracts the last item from p
 (define (last p)
