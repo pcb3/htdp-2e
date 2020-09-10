@@ -207,7 +207,6 @@
 
 (check-within (add-to-pi.v2 0) pi 0.1)
 (check-within (add-to-pi.v2 1) (+ 1 pi) 0.1)
-;(check-within (add-to-pi.v2 -1) (- pi 1) 0.1)
 
 (define (add-to-pi.v2 n)
   (local
@@ -222,6 +221,41 @@
 
     (add-to-pi/a n 0)))
 
+;;====
+;; 502
+
+; [NEList-of 1String] -> [NEList-of 1String]
+; creates a palindrome from s0
+;(check-expect
+;  (mirror (explode "abc")) (explode "abcba"))
+;(define (mirror s0)
+;  (append (all-but-last s0)
+;          (list (last s0))
+;          (reverse (all-but-last s0))))
+
+; Polygon -> Posn
+; extracts the last item from p
+(define (last p)
+  (cond
+    [(empty? (rest (rest (rest p)))) (third p)]
+    [else (last (rest p))]))
+
+; [NEList-of 1String] -> [NEList-of 1String]
+; consumes a List of 1String's and produces all but the last item
+
+(check-expect (all-but-last (explode "abc")) (explode "ab"))
+
+(define (fn-all-but-last nlon)
+  (cond
+    [(empty? (rest nlon)) ...]
+    [else
+     (cons (first nlon) (fn-all-but-last (rest nlon)))]))
+
+(define (all-but-last nlon)
+  (cond
+    [(empty? (rest nlon)) '()]
+    [else
+     (cons (first nlon) (all-but-last (rest nlon)))]))
 
 
 
