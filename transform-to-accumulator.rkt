@@ -250,7 +250,23 @@
           (mirror/a (rest s) (cons (first s) a))])))
 
     (mirror/a s0 '())))
-          
+
+;;===
+;; v3
+
+(check-expect
+ (mirror.v3 (explode "abc")) (explode "abcba"))
+
+(define (mirror.v3 s0)
+  (local
+    ((define (mirror/a s a)
+       (cond
+         [(empty? (rest s)) (append (reverse a) s a)]
+         [else
+          (mirror/a (rest s) (cons (first s) a))])))
+
+    (mirror/a s0 '())))
+
 ; Polygon -> Posn
 ; extracts the last item from p
 (define (last p)
