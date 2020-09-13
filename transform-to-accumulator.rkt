@@ -291,6 +291,27 @@
     [else
      (cons (first nlon) (all-but-last (rest nlon)))]))
 
+;;====
+;; 503
+
+; Matrix -> Matrix 
+; finds a row that doesn't start with 0 and
+; uses it as the first one
+; generative moves the first row to last place 
+; no termination if all rows start with 0
+;(check-expect (rotate-until.v2 '((0 4 5) (1 2 3)))
+;              '((1 2 3) (0 4 5)))
+(check-error (rotate '((0 1 2) (0 4 5) (0 8 9)))
+             "error: all first coefficients are zero")
+
+(define (rotate M)
+  (local
+    ((define get-firsts (map (lambda (x) (first x)) M)))
+    (cond
+      [(andmap (lambda (y) (zero? y)) get-firsts)
+       (error "error: all first coefficients are zero")]
+      [else
+       (rotate (append (rest M) (list (first M))))])))
 
 
 
