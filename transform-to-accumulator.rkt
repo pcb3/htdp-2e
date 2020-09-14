@@ -301,6 +301,9 @@
 ; no termination if all rows start with 0
 ;(check-expect (rotate-until.v2 '((0 4 5) (1 2 3)))
 ;              '((1 2 3) (0 4 5)))
+
+(check-expect (rotate '((0 4 5) (1 2 3)))
+              '((1 2 3) (0 4 5)))
 (check-error (rotate '((0 1 2) (0 4 5) (0 8 9)))
              "error: all first coefficients are zero")
 
@@ -310,8 +313,23 @@
     (cond
       [(andmap (lambda (y) (zero? y)) get-firsts)
        (error "error: all first coefficients are zero")]
+      [(not (zero? (first (first M))))
+       (cons (first M) (rest M))]
       [else
        (rotate (append (rest M) (list (first M))))])))
+
+;(define (rotate.v2 M0)
+;  (local (; Matrix ... -> Matrix 
+;          ; accumulator seen is the rows seen so far
+;          (define (rotate/a M seen)
+;            (cond
+;              [(empty? M) '()]
+;              [else (... (rotate/a (rest M)
+;                                   ... seen ...)
+;                         ...)])))
+;    (rotate/a M0 ...)))
+
+
 
 
 
