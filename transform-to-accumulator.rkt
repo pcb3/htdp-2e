@@ -299,8 +299,8 @@
 ; uses it as the first one
 ; generative moves the first row to last place 
 ; no termination if all rows start with 0
-;(check-expect (rotate-until.v2 '((0 4 5) (1 2 3)))
-;              '((1 2 3) (0 4 5)))
+(check-expect (rotate.v2 '((0 4 5) (1 2 3)))
+              '((1 2 3) (0 4 5)))
 
 (check-expect (rotate '((0 4 5) (1 2 3)))
               '((1 2 3) (0 4 5)))
@@ -318,16 +318,17 @@
       [else
        (rotate (append (rest M) (list (first M))))])))
 
-;(define (rotate.v2 M0)
-;  (local (; Matrix ... -> Matrix 
-;          ; accumulator seen is the rows seen so far
-;          (define (rotate/a M seen)
-;            (cond
-;              [(empty? M) '()]
-;              [else (... (rotate/a (rest M)
-;                                   ... seen ...)
-;                         ...)])))
-;    (rotate/a M0 ...)))
+(define (rotate.v2 M0)
+  (local (; Matrix ... -> Matrix 
+          ; accumulator seen is the rows seen so far
+          (define (rotate/a M seen)
+            (cond
+              [(empty? M) '()]
+              [(not (zero? (first (first M))))
+               (cons (first M) (cons seen (rest M)))]
+              [else (rotate/a (rest M)
+                              (append (first M) seen))])))
+    (rotate/a M0 '())))
 
 
 
