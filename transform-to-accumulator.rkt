@@ -325,9 +325,9 @@
             (cond
               [(empty? M) '()]
               [(not (zero? (first (first M))))
-               (cons (first M) (cons seen (rest M)))]
+               (cons (first M) (append seen (rest M)))]
               [else (rotate/a (rest M)
-                              (append (first M) seen))])))
+                              (cons (first M) seen))])))
     (rotate/a M0 '())))
 
 
