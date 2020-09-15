@@ -330,6 +330,26 @@
                               (cons (first M) seen))])))
     (rotate/a M0 '())))
 
+;;====
+;; 504
+
+; List-of N -> Number
+; consumes a list of natural Numbers lon and produces the
+; corresponding number
+
+(check-expect (to10 '(0)) 0)
+(check-expect (to10 '(1 2 0)) 120)
+
+(define (to10 lon0)
+  (local
+    ((define (to10/a a lon)
+      (cond
+        [(empty? lon) a]
+        [else
+         (to10/a (+ (* (first lon) (expt 10 (sub1 (length lon)))) a)
+                    (rest lon))])))
+
+    (to10/a 0 lon0)))
 
 
 
