@@ -373,6 +373,26 @@
       [else
        (is-prime?/a n0 (sub1 n0))])))
 
+;;====
+;; 506
+
+; List-of X -> List of Y
+; consumes a list l and applies a function f to each item on the list
+
+(check-expect (my-map (lambda (x) x) '()) '())
+(check-expect (my-map add1 '(1 2 3)) '(2 3 4))
+(check-expect (my-map even? '(0 1 2)) '(#true #false #true))
+
+(define (fn-my-map f l)
+  (cond
+    [(empty? l) ...]
+    [else (... (f (first l)) (fn-my-map f (rest l)))]))
+
+(define (my-map f l)
+  (cond
+    [(empty? l) '()]
+    [else (cons (f (first l)) (my-map f (rest l)))]))
+
 
 
 
