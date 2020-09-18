@@ -393,6 +393,35 @@
     [(empty? l) '()]
     [else (cons (f (first l)) (my-map f (rest l)))]))
 
+;;====
+;; accumulator version of map
+
+
+(check-expect (map-accumulator (lambda (x) x) '()) '())
+(check-expect (map-accumulator add1 '(1 2 3)) '(2 3 4))
+(check-expect (map-accumulator even? '(0 1 2)) '(#true #false #true))
+
+(define (fn-map-accumulator f l0)
+  (local
+    (; accumulator a is the application of f to l so far
+     (define (map-accumulator/a f l a)
+       (cond
+         [(empty? l) ...]
+         [else
+          (map-accumulator/a f (rest l) (... (f (first l)) a))])))
+    (map-accumulator/a f l0 '())))
+
+(define (map-accumulator f l0)
+  (local
+    (; accumulator a is the application of f to l so far
+     (define (map-accumulator/a f l a)
+       (cond
+         [(empty? l) (reverse a)]
+         [else
+          (map-accumulator/a f (rest l) (cons (f (first l)) a))])))
+    (map-accumulator/a f l0 '())))
+     
+
 
 
 
