@@ -343,13 +343,35 @@
 (define (to10 lon0)
   (local
     ((define (to10/a a lon)
-      (cond
-        [(empty? lon) a]
-        [else
-         (to10/a (+ (* (first lon) (expt 10 (sub1 (length lon)))) a)
-                    (rest lon))])))
+       (cond
+         [(empty? lon) a]
+         [else
+          (to10/a (+ (* (first lon) (expt 10 (sub1 (length lon)))) a)
+                  (rest lon))])))
 
     (to10/a 0 lon0)))
+
+;;====
+;; 505
+
+; N [>=1] -> Boolean
+; determines whether n is a prime number
+(check-expect (is-prime? 5) #true)
+(check-expect (is-prime? 42) #false)
+(check-expect (is-prime? 1) #false)
+
+(define (is-prime? n0)
+  (local
+    (; accumulator a is the N to be tested for primality
+     (define (is-prime?/a a n)
+       (cond
+         [(= n 1) #true]     
+         [(integer? (/ a n)) #false]             
+         [else (is-prime?/a a (sub1 n))])))
+    (cond
+      [(= n0 1) #false]
+      [else
+       (is-prime?/a n0 (sub1 n0))])))
 
 
 
