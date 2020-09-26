@@ -394,7 +394,7 @@
     [else (cons (f (first l)) (my-map f (rest l)))]))
 
 ;;====
-;; accumulator version of map
+;; 506 accumulator version of map
 
 
 (check-expect (map-accumulator (lambda (x) x) '()) '())
@@ -421,8 +421,37 @@
           (map-accumulator/a f (rest l) (cons (f (first l)) a))])))
     (map-accumulator/a f l0 '())))
      
+;;====
+;; 507
 
+; N [ X ] -> List-of Y
+; consumes a Natural number n and function f and produces a list of
+; f applied to n0
 
+; (check-expect (build-l*st n f) (build-list n f))
+(check-expect (build-l*st 3 add1) (build-list 3 add1))
+
+(define (fn-build-l*st n0 f)
+  (local
+    (; accumulator a contains the list of f applied to n0 so far
+     (define (build-l*st/a n0 a f)
+       (cond
+         [(zero? n0) (... (... (f n0)) ...)]
+         [else
+          (build-l*st/a (... n0) (... (f n0) a) f)])))
+
+    (build-l*st/a (... n0) '() f)))
+
+(define (build-l*st n0 f)
+  (local
+    (; accumulator a contains the list of f applied to n0 so far
+     (define (build-l*st/a n0 a f)
+       (cond
+         [(zero? n0) (cons (f n0) a)]
+         [else
+          (build-l*st/a (sub1 n0) (cons (f n0) a) f)])))
+
+    (build-l*st/a (sub1 n0) '() f)))
 
 
 
