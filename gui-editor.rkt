@@ -67,6 +67,66 @@
 
     (place-between '() ed)))
 
+;;====
+;; 509
+
+; List-of 1Stirng Number -> Editor
+; consumes a List of 1String's ed and a natural Number x
+; and produces an Editor split at x
+
+(check-expect
+ (split (explode "something") 29)
+ (make-editor (explode "some") (explode "thing")))
+
+(check-expect
+ (split (explode "something") 0)
+ (make-editor '() (explode "something")))
+
+(check-expect
+ (split (explode "something") 999)
+ (make-editor (explode "something") '()))
+
+(define (fn-split ed0 x)
+  (local
+    ((define (fn-split/a ed a)
+       (cond
+         [(empty? ed) ...]
+         [(and
+           (string=? (implode ed0)
+                     (implode (append a ed)))
+           (<= (image-width (editor-text a))
+               x
+               (image-width (editor-text (append a ed)))))
+          (...)]
+         [else (fn-split/a ... ...)])))
+         
+
+    (fn-split/a ed0 '())))
+
+(define (split ed0 x)
+  (local
+    (; accumulator a is an Editor with pre and post fields
+     ; processed so far
+     (define (split/a ed p a)
+       (cond
+         [(empty? ed) a]
+         [(and
+           (string=?
+            (implode ed0)
+            (implode (append (editor-pre a) (editor-post a))))
+           (<= (image-width (editor-text p))
+               x
+               (image-width
+                (editor-text (append p (list (first ed)))))))
+          (make-editor (editor-pre a) ed)]
+         [else
+          (split/a (rest ed) (append p (list (first ed)))
+                   (make-editor
+                    (append (editor-pre a) (list (first ed)))
+                    (rest ed)))])))
+           
+    (split/a ed0 '() (make-editor '() ed0))))
+
 
 
 
