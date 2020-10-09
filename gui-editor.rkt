@@ -127,7 +127,37 @@
            
     (split/a ed0 '() (make-editor '() ed0))))
 
+(define (split.v2 ed0 x)
+  (local
+    (
+     (define (between-x? p s)
+       (cond
+         [(and
+           (string=? (implode (append p s)) (implode ed0))
+           (<= (image-width (editor-text p))
+               x
+               (image-width
+                (editor-text
+                 (append
+                  p
+                  (cond
+                    [else (if (empty? s) '() (list (first s)))]))))))
+          #true]
+         [else
+          #false]))
+     
+     (define (split/a ed a)
+       (cond
+         [(empty? ed) a]
+         [(between-x? (editor-pre a) (editor-post a)) a]
+         [else
+          (split/a (rest ed)
+                   (make-editor
+                    (append (editor-pre a) (list (first ed)))
+                    (rest ed)))])))
 
+    (split/a ed0 (make-editor '() ed0))))
+                                     
 
 
 
